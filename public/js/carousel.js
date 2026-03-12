@@ -29,6 +29,7 @@ const state = {
   rotation: 0,
   suppressClick: false
 };
+const ROTATION_COOKIE_NAME = "sdgCarouselRotation";
 
 const config = {
   cardWidth: 230,
@@ -102,6 +103,21 @@ function animateRotationTo(targetRotation, durationMs, onComplete) {
   tweenRafId = requestAnimationFrame(tick);
 }
 
+function persistRotation() {
+  const value = encodeURIComponent(state.rotation.toFixed(4));
+  document.cookie = `${ROTATION_COOKIE_NAME}=${value}; Path=/; Max-Age=86400; SameSite=Lax`;
+}
+
+function restoreRotation() {
+  const cookies = document.cookie ? document.cookie.split("; ") : [];
+  const found = cookies.find((row) => row.startsWith(`${ROTATION_COOKIE_NAME}=`));
+  if (!found) return;
+  const value = Number(decodeURIComponent(found.split("=")[1]));
+  if (Number.isFinite(value)) {
+    state.rotation = value;
+  }
+}
+
 function updateLayout() {
   layout.scale = window.innerHeight / 1920;
   layout.cardWidth = config.cardWidth;
@@ -168,7 +184,7 @@ const items = Array.from({ length: ringSlots }, (_, index) => {
   el.appendChild(label);
   cardsLayer.appendChild(el);
 
-  return { el, label, baseAngle, index, isFiller };
+  return { el, label, baseAngle, index, isFiller, goalId: itemData.id };
 });
 
 function focusCard(item) {
@@ -182,6 +198,25 @@ function focusCard(item) {
   animateRotationTo(state.rotation - diff, config.snapDurationMs);
 }
 
+function openDetail(goalId) {
+  persistRotation();
+  window.location.href = `/sdg.html?id=${goalId}`;
+}
+
+function focusCardAndOpenDetail(item) {
+  stopTween();
+  const diff = normalizeAngle(item.baseAngle + state.rotation - config.focusAngle);
+
+  if (Math.abs(diff) <= config.centerSnapThreshold) {
+    openDetail(item.goalId);
+    return;
+  }
+
+  animateRotationTo(state.rotation - diff, config.snapDurationMs, () => {
+    openDetail(item.goalId);
+  });
+}
+
 
 items.forEach((item) => {
   item.el.addEventListener("click", (event) => {
@@ -191,7 +226,7 @@ items.forEach((item) => {
     }
     event.stopPropagation();
     if (item.isFiller) return;
-    focusCard(item);
+    focusCardAndOpenDetail(item);
   });
 });
 
@@ -225,6 +260,7 @@ function render() {
     item.el.style.filter = "none";
 
   });
+  persistRotation();
 }
 
 const drag = {
@@ -331,6 +367,7 @@ if (fullscreenBtn) {
   });
 }
 
+restoreRotation();
 updateLayout();
 render();
 window.addEventListener("resize", () => {
