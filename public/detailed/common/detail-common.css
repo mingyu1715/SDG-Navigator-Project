@@ -1,0 +1,151 @@
+:root {
+  --bg: #f3f3f3;
+  --card-bg: #ffffff;
+  --text: #222;
+  --muted: #666;
+  --border: #e3e3e3;
+  --page-accent: #222;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 12% 14%, rgba(255,255,255,0.8), transparent 34%),
+    radial-gradient(circle at 88% 76%, rgba(0,0,0,0.05), transparent 38%),
+    var(--bg);
+}
+
+.detail-page {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.detail-wrap {
+  max-width: 900px;
+  margin: 32px auto;
+  padding: 16px;
+}
+
+.detail-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08);
+}
+
+.detail-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.goal-label {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.goal-title {
+  margin: 8px 0 0;
+  font-size: 34px;
+  line-height: 1.05;
+}
+
+.goal-sub {
+  margin: 8px 0 0;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.goal-badge {
+  width: 74px;
+  height: 74px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 36px;
+  font-weight: 700;
+  background: var(--page-accent);
+}
+
+.detail-grid {
+  margin-top: 20px;
+  display: grid;
+  gap: 12px;
+}
+
+.box {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.box h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+
+.box p,
+.box ul {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #454545;
+}
+
+.box ul {
+  padding-left: 18px;
+}
+
+.detail-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn.primary {
+  background: var(--page-accent);
+  color: #fff;
+}
+
+.btn.ghost {
+  background: #efefef;
+  color: #333;
+}
+
+.meta {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #666;
+}
+
+@media (max-width: 760px) {
+  .detail-card { padding: 16px; }
+  .goal-title { font-size: 24px; }
+  .goal-badge {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    font-size: 28px;
+  }
+}

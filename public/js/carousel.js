@@ -200,7 +200,8 @@ function focusCard(item) {
 
 function openDetail(goalId) {
   persistRotation();
-  window.location.href = `/sdg.html?id=${goalId}`;
+  const id = String(goalId).padStart(2, "0");
+  window.location.href = `/detailed/sdg-${id}/`;
 }
 
 function focusCardAndOpenDetail(item) {
