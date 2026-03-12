@@ -183,17 +183,6 @@ body {
   display: none;
 }
 
-.page-title {
-  position: absolute;
-  top: 18px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #5f5f5f;
-  font-size: 14px;
-  letter-spacing: 0.02em;
-  z-index: 4;
-}
-
 .page-actions {
   position: absolute;
   left: 50%;

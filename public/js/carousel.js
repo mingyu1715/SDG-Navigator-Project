@@ -31,25 +31,25 @@ const state = {
 };
 
 const config = {
-  cardWidth: 250,
-  cardHeight: 360,
-  radiusRatio: 1.10,
-  centerYRatio: 1.72,
+  cardWidth: 230,
+  cardHeight: 332,
+  radiusRatio: 1.28,
+  centerYRatio: 1.90,
   centerX: () => window.innerWidth * 0.5,
   baseStart: -72,
-  gap: 10,
+  gap: 360 / 44,
   focusAngle: 0,
   centerSnapThreshold: 0.8,
   snapDurationMs: 680,
   inertiaSnapDurationMs: 560,
-  dragSensitivity: 0.18,
+  dragSensitivity: 0.105,
   moveThreshold: 6
 };
 
 const layout = {
   scale: 1,
-  cardWidth: 250,
-  cardHeight: 360,
+  cardWidth: 230,
+  cardHeight: 332,
   centerX: 0,
   centerY: 0,
   radius: 0
@@ -123,12 +123,12 @@ function updateLayout() {
   arc.style.display = "block";
 }
 
-const ringSlots = 46;
+const ringSlots = 44;
 const sequence = [
   ...SDG_DATA,
-  ...Array.from({ length: 6 }, () => BLACK_FILLER),
+  ...Array.from({ length: 5 }, () => BLACK_FILLER),
   ...SDG_DATA,
-  ...Array.from({ length: 6 }, () => BLACK_FILLER)
+  ...Array.from({ length: 5 }, () => BLACK_FILLER)
 ];
 
 const items = Array.from({ length: ringSlots }, (_, index) => {
@@ -171,15 +171,7 @@ const items = Array.from({ length: ringSlots }, (_, index) => {
   return { el, label, baseAngle, index, isFiller };
 });
 
-function stopInertia() {
-  if (drag.rafId !== null) {
-    cancelAnimationFrame(drag.rafId);
-    drag.rafId = null;
-  }
-}
-
 function focusCard(item) {
-  stopInertia();
   stopTween();
 
   const diff = normalizeAngle(item.baseAngle + state.rotation - config.focusAngle);
@@ -190,22 +182,6 @@ function focusCard(item) {
   animateRotationTo(state.rotation - diff, config.snapDurationMs);
 }
 
-function getNearestSdgItem(fromAngle) {
-  let nearest = null;
-  let minDiff = Infinity;
-
-  items.forEach((item) => {
-    if (item.isFiller) return;
-    const diff = Math.abs(normalizeAngle(item.baseAngle + state.rotation - fromAngle));
-    if (diff < minDiff) {
-      minDiff = diff;
-      nearest = item;
-    }
-  });
-
-  return nearest;
-}
-
 
 items.forEach((item) => {
   item.el.addEventListener("click", (event) => {
@@ -214,11 +190,7 @@ items.forEach((item) => {
       return;
     }
     event.stopPropagation();
-    if (item.isFiller) {
-      const nearest = getNearestSdgItem(config.focusAngle);
-      if (nearest) focusCard(nearest);
-      return;
-    }
+    if (item.isFiller) return;
     focusCard(item);
   });
 });
@@ -237,8 +209,8 @@ function render() {
     const focusDiff = normalizeAngle(angleDeg - config.focusAngle);
     const depthFactor = 1 - clamp(Math.abs(focusDiff) / 120, 0, 1);
 
-    const easedDepth = Math.pow(depthFactor, 1.22);
-    const scale = 0.76 + easedDepth * 0.26;
+    const easedDepth = Math.pow(depthFactor, 1.42);
+    const scale = 0.56 + easedDepth * 0.38;
     const opacity = 1;
     const depthRank = Math.round(depthFactor * 10000);
     const zIndex = depthRank * 100 + (ringSlots - item.index);
@@ -250,26 +222,9 @@ function render() {
     item.el.style.opacity = String(opacity);
     item.el.style.zIndex = String(zIndex);
     item.el.style.pointerEvents = "auto";
+    item.el.style.filter = "none";
 
   });
-}
-
-function snapToClosestCard() {
-  const currentRotation = state.rotation;
-  let closestDiff = Infinity;
-  let targetRotation = currentRotation;
-
-  items.forEach((item) => {
-    if (item.isFiller) return;
-    const diff = normalizeAngle(item.baseAngle + currentRotation - config.focusAngle);
-    const absDiff = Math.abs(diff);
-    if (absDiff < closestDiff) {
-      closestDiff = absDiff;
-      targetRotation = currentRotation - diff;
-    }
-  });
-
-  animateRotationTo(targetRotation, config.inertiaSnapDurationMs);
 }
 
 const drag = {
@@ -283,17 +238,22 @@ const drag = {
   rafId: null
 };
 
+function stopInertia() {
+  if (drag.rafId !== null) {
+    cancelAnimationFrame(drag.rafId);
+    drag.rafId = null;
+  }
+}
+
 function startInertia() {
   stopInertia();
-  const decay = 0.92;
-  const minSpeed = 0.005;
+  const decay = 0.88;
+  const minSpeed = 0.004;
 
   function tick() {
     drag.velocityDeg *= decay;
-
     if (Math.abs(drag.velocityDeg) < minSpeed) {
       stopInertia();
-      snapToClosestCard();
       return;
     }
 
@@ -316,7 +276,6 @@ stage.addEventListener("pointerdown", (event) => {
   drag.lastT = performance.now();
   drag.velocityDeg = 0;
   state.suppressClick = false;
-
   stopInertia();
   stopTween();
 });
@@ -345,7 +304,7 @@ function finishPointer(event) {
   if (!drag.isDown || event.pointerId !== drag.pointerId) return;
 
   drag.isDown = false;
-  if (state.suppressClick) {
+  if (drag.moved) {
     startInertia();
   }
 
