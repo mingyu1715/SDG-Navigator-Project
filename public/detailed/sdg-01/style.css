@@ -80,6 +80,47 @@ body {
   z-index: 6;
 }
 
+.goal-hero {
+  position: absolute;
+  top: 56px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  text-align: center;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.35s ease;
+}
+
+.goal-hero.is-hidden {
+  opacity: 0;
+}
+
+.goal-kicker {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: rgba(214, 224, 240, 0.72);
+  text-transform: uppercase;
+}
+
+.goal-main-title {
+  margin: 7px 0 0;
+  font-size: clamp(30px, 5.2vw, 50px);
+  line-height: 0.96;
+  letter-spacing: -0.03em;
+  font-weight: 800;
+  color: #eef4ff;
+}
+
+.goal-subtitle {
+  margin: 6px 0 0;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(208, 220, 238, 0.75);
+}
+
 .space-layer,
 .starfield,
 .nebula {
@@ -464,6 +505,18 @@ body {
 
   .page-mark {
     font-size: 22px;
+  }
+
+  .goal-hero {
+    top: 50px;
+  }
+
+  .goal-main-title {
+    font-size: clamp(24px, 7.2vw, 34px);
+  }
+
+  .goal-subtitle {
+    font-size: 11px;
   }
 }
 

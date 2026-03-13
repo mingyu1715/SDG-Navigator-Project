@@ -173,6 +173,7 @@ async function openMain(options = {}) {
     const targetRect = mainView.getCenterCardRect();
     await transitionDetailToMain({ detailRoot, targetRect });
   } finally {
+    detailView.reset();
     detailView.setVisible(false);
     appState.currentView = "main";
     appState.currentGoalId = null;

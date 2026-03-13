@@ -1,6 +1,8 @@
 import { getGoalById } from "../data/sdgs.js";
 import { fetchGoalDetail } from "../services/sdgService.js";
 
+const LEGACY_GOAL_IDS = new Set([1, 4]);
+
 export class DetailView {
   constructor(root, options = {}) {
     this.root = root;
@@ -23,7 +25,8 @@ export class DetailView {
     this.backBtn.addEventListener("click", () => this.onBack());
     window.addEventListener("message", (event) => {
       if (event.origin !== window.location.origin) return;
-      if (!event.data || event.data.type !== "sdg01:back-main") return;
+      if (!event.data) return;
+      if (!["sdg01:back-main", "sdg04:back-main", "sdg:back-main"].includes(event.data.type)) return;
       this.onBack();
     });
   }
@@ -57,13 +60,14 @@ export class DetailView {
     });
   }
 
-  showLegacy01() {
+  showLegacyGoal(goalId) {
     if (this.panelWrap) this.panelWrap.hidden = true;
     if (this.legacyHost) this.legacyHost.hidden = false;
     // Keep SPA back button visible so returning to main stays in-app (no reload).
     if (this.backBtn) this.backBtn.hidden = false;
-    if (this.legacyFrame && this.legacyFrame.getAttribute("src") !== "/detailed/sdg-01/index.html") {
-      this.legacyFrame.setAttribute("src", "/detailed/sdg-01/index.html");
+    const legacySrc = `/detailed/sdg-${String(goalId).padStart(2, "0")}/index.html`;
+    if (this.legacyFrame && this.legacyFrame.getAttribute("src") !== legacySrc) {
+      this.legacyFrame.setAttribute("src", legacySrc);
     }
   }
 
@@ -82,6 +86,23 @@ export class DetailView {
     this.root.style.setProperty("--detail-accent", color || "#101827");
     if (this.badge) {
       this.badge.style.background = color || "#101827";
+    }
+  }
+
+  reset() {
+    // Reset detail state when returning to main so next entry starts fresh.
+    this.showGenericPanel();
+    this.setAccent("#101827");
+    if (this.goalLabel) this.goalLabel.textContent = "SDG GOAL";
+    if (this.title) this.title.textContent = "불러오는 중...";
+    if (this.sub) this.sub.textContent = "상세 정보를 준비 중입니다.";
+    if (this.badge) this.badge.textContent = "-";
+    if (this.desc) this.desc.textContent = "";
+    if (this.features) this.features.innerHTML = "";
+    if (this.status) this.status.textContent = "대기 중";
+
+    if (this.legacyFrame) {
+      this.legacyFrame.removeAttribute("src");
     }
   }
 
@@ -108,8 +129,8 @@ export class DetailView {
   }
 
   async load(goalId) {
-    if (Number(goalId) === 1) {
-      this.showLegacy01();
+    if (LEGACY_GOAL_IDS.has(Number(goalId))) {
+      this.showLegacyGoal(goalId);
       await this.waitLegacyFrameReady();
       return null;
     }

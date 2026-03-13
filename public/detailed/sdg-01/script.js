@@ -199,6 +199,7 @@ const LIFE_SCENARIOS = [
 const experienceEl = document.getElementById("experience");
 const launchButton = document.getElementById("launchButton");
 const rerollButton = document.getElementById("rerollButton");
+const goalHero = document.querySelector(".goal-hero");
 const resultPanel = document.getElementById("resultPanel");
 const panelCloseButton = document.getElementById("panelCloseButton");
 const statusChip = document.getElementById("statusChip");
@@ -323,8 +324,8 @@ function initScene() {
 }
 
 function bindEvents() {
-  launchButton.addEventListener("click", startLottery);
-  rerollButton.addEventListener("click", startLottery);
+  launchButton.addEventListener("click", () => startLottery("launch"));
+  rerollButton.addEventListener("click", () => startLottery("reroll"));
   if (panelCloseButton) {
     panelCloseButton.addEventListener("click", () => {
       experienceEl.classList.remove("reveal");
@@ -361,7 +362,7 @@ async function navigateToMainWithReverse() {
   returningToMain = true;
 
   if (window.parent && window.parent !== window) {
-    window.parent.postMessage({ type: "sdg01:back-main" }, window.location.origin);
+    window.parent.postMessage({ type: "sdg:back-main", goalId: 1 }, window.location.origin);
     returningToMain = false;
     return;
   }
@@ -427,7 +428,11 @@ async function navigateToMainWithReverse() {
   window.location.href = "/index.html";
 }
 
-function startLottery() {
+function startLottery(source = "launch") {
+  if (source === "launch" && goalHero) {
+    goalHero.classList.add("is-hidden");
+  }
+
   launchButton.disabled = true;
   rerollButton.disabled = true;
   experienceEl.classList.remove("reveal");
