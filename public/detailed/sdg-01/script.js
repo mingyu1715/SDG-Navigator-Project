@@ -199,6 +199,8 @@ const LIFE_SCENARIOS = [
 const experienceEl = document.getElementById("experience");
 const launchButton = document.getElementById("launchButton");
 const rerollButton = document.getElementById("rerollButton");
+const resultPanel = document.getElementById("resultPanel");
+const panelCloseButton = document.getElementById("panelCloseButton");
 const statusChip = document.getElementById("statusChip");
 const targetReadout = document.getElementById("targetReadout");
 const resultTitle = document.getElementById("resultTitle");
@@ -207,26 +209,46 @@ const birthPlace = document.getElementById("birthPlace");
 const regionNote = document.getElementById("regionNote");
 const incomeTier = document.getElementById("incomeTier");
 const incomeNote = document.getElementById("incomeNote");
-const educationChance = document.getElementById("educationChance");
-const educationBar = document.getElementById("educationBar");
 const waterAccess = document.getElementById("waterAccess");
 const waterNote = document.getElementById("waterNote");
-const lifeExpectancy = document.getElementById("lifeExpectancy");
-const lifeNote = document.getElementById("lifeNote");
 const narrative = document.getElementById("narrative");
 const canvas = document.getElementById("globeCanvas");
+const COUNTRY_GEOJSON_URL = "https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson";
+const ISO2_TO_ISO3 = {
+  ET: "ETH",
+  MG: "MDG",
+  SL: "SLE",
+  NP: "NPL",
+  NE: "NER",
+  TD: "TCD",
+  MZ: "MOZ",
+  YE: "YEM",
+  HT: "HTI",
+  MW: "MWI",
+  CD: "COD",
+  AF: "AFG",
+  SD: "SDN",
+  PG: "PNG",
+  LR: "LBR"
+};
 
 let renderer;
 let scene;
 let camera;
 let globeGroup;
+let galaxyGroup;
 let globe;
 let marker;
 let markerRing;
+let countryOutlineGroup;
 let currentScenario = null;
 let spinVelocity = 0.0035;
 let targetRotation = null;
 let lockOnResult = false;
+let lotteryStartedAt = 0;
+let countryBordersReady = false;
+let countryFeaturesByIso3 = new Map();
+let pendingCountryIso2 = null;
 
 initScene();
 bindEvents();
@@ -238,12 +260,13 @@ function initScene() {
 
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
-  camera.position.set(0, 0, 4.6);
+  camera.position.set(0, 0, 5.8);
 
   const ambientLight = new THREE.AmbientLight(0xffffff, 1.15);
   const directionalLight = new THREE.DirectionalLight(0xffffff, 1.25);
   directionalLight.position.set(5, 3, 6);
   scene.add(ambientLight, directionalLight);
+  createGalaxyBackdrop();
 
   globeGroup = new THREE.Group();
   scene.add(globeGroup);
@@ -269,14 +292,14 @@ function initScene() {
   globeGroup.add(globe);
 
   marker = new THREE.Mesh(
-    new THREE.SphereGeometry(0.038, 20, 20),
+    new THREE.SphereGeometry(0.024, 18, 18),
     new THREE.MeshBasicMaterial({ color: 0xff6f47 })
   );
   marker.visible = false;
   globe.add(marker);
 
   markerRing = new THREE.Mesh(
-    new THREE.RingGeometry(0.07, 0.1, 48),
+    new THREE.RingGeometry(0.05, 0.07, 48),
     new THREE.MeshBasicMaterial({
       color: 0xff9f80,
       transparent: true,
@@ -287,6 +310,10 @@ function initScene() {
   markerRing.visible = false;
   globe.add(markerRing);
 
+  countryOutlineGroup = new THREE.Group();
+  globe.add(countryOutlineGroup);
+
+  loadCountryBorders();
   resizeScene();
   window.addEventListener("resize", resizeScene);
 }
@@ -294,6 +321,11 @@ function initScene() {
 function bindEvents() {
   launchButton.addEventListener("click", startLottery);
   rerollButton.addEventListener("click", startLottery);
+  if (panelCloseButton) {
+    panelCloseButton.addEventListener("click", () => {
+      experienceEl.classList.remove("reveal");
+    });
+  }
 }
 
 function startLottery() {
@@ -304,14 +336,16 @@ function startLottery() {
 
   currentScenario = pickScenario(currentScenario);
   targetRotation = getTargetRotation(currentScenario.lat, currentScenario.lon);
+  lotteryStartedAt = performance.now();
   lockOnResult = false;
   spinVelocity = 0.28;
   marker.visible = false;
   markerRing.visible = false;
-  educationBar.style.width = "0%";
+  clearCountryOutline();
+  pendingCountryIso2 = null;
 
   statusChip.textContent = "회전 중";
-  targetReadout.textContent = "지구본이 빠르게 회전합니다. 새로운 출생지를 선택하고 있습니다.";
+  targetReadout.textContent = "새로운 출생지를 선택하고 있습니다.";
 
   window.clearTimeout(startLottery.midTimer);
   startLottery.midTimer = window.setTimeout(() => {
@@ -338,18 +372,19 @@ function revealScenario(scenario) {
   resultSummary.textContent = scenario.summary;
   birthPlace.textContent = `${scenario.flag} ${scenario.country}, ${scenario.region}`;
   regionNote.textContent = "무작위로 선택된 출생 지역";
-  incomeTier.textContent = scenario.incomeTier;
-  incomeNote.textContent = "국가 내 상대적 소득 분포 기준";
-  educationChance.textContent = `고등학교 진학 확률 ${scenario.educationChance}%`;
-  waterAccess.textContent = `매일 ${scenario.waterDistanceKm}km 이동`;
-  waterNote.textContent = "식수 접근을 위한 예상 이동 거리";
-  lifeExpectancy.textContent = `${scenario.lifeExpectancy}세`;
-  lifeNote.textContent = "빈곤 관련 조건을 반영한 체감 지표";
+  const dailyBudgetKrw = estimateDailyBudgetKrw(scenario);
+  const mealCoverage = estimateMealCoverage(dailyBudgetKrw);
+  incomeTier.textContent = `약 ${dailyBudgetKrw.toLocaleString("ko-KR")}원/일`;
+  incomeNote.textContent = `하루 세 끼 중 약 ${mealCoverage}끼 정도만 안정적으로 가능`;
+  waterAccess.textContent = formatWaterAccess(scenario.waterDistanceKm);
+  waterNote.textContent = "식수를 위해 이동에 쓰는 하루 시간";
   narrative.textContent = scenario.narrative;
+  resultSummary.textContent = scenario.summary;
 
   marker.visible = true;
   markerRing.visible = true;
-  educationBar.style.width = `${scenario.educationChance}%`;
+  pendingCountryIso2 = scenario.flag;
+  renderCountryOutlineForCountryCode(scenario.flag);
 
   launchButton.disabled = false;
   rerollButton.disabled = false;
@@ -357,6 +392,17 @@ function revealScenario(scenario) {
 
 function animate() {
   window.requestAnimationFrame(animate);
+  const now = performance.now();
+  const isSpinning = experienceEl.classList.contains("spinning");
+  const isReveal = experienceEl.classList.contains("reveal");
+  const rawProgress = isSpinning && lotteryStartedAt ? clamp((now - lotteryStartedAt) / 3300, 0, 1) : 0;
+  const diveProgress = easeInOutCubic(clamp((rawProgress - 0.12) / 0.88, 0, 1));
+  const galaxySpin = isSpinning ? 0.0015 : 0.00045;
+  if (galaxyGroup) {
+    galaxyGroup.rotation.y += galaxySpin;
+    galaxyGroup.rotation.z += galaxySpin * 0.35;
+    galaxyGroup.rotation.x = Math.sin(now * 0.00006) * 0.08;
+  }
 
   if (!lockOnResult) {
     if (spinVelocity > 0.006) {
@@ -372,14 +418,44 @@ function animate() {
 
   if (targetRotation) {
     if (!lockOnResult) {
-      globeGroup.rotation.y = damp(globeGroup.rotation.y, targetRotation.y, 0.06);
-      globeGroup.rotation.x = damp(globeGroup.rotation.x, targetRotation.x, 0.06);
+      const alignFactor = 0.05 + diveProgress * 0.06;
+      globeGroup.rotation.y = damp(globeGroup.rotation.y, targetRotation.y, alignFactor);
+      globeGroup.rotation.x = damp(globeGroup.rotation.x, targetRotation.x, alignFactor);
     }
   } else {
     globeGroup.rotation.x = damp(globeGroup.rotation.x, -0.16, 0.04);
   }
 
-  camera.position.z = damp(camera.position.z, experienceEl.classList.contains("reveal") ? 3.1 : 4.6, 0.04);
+  let cameraTargetZ = 5.8;
+  let cameraTargetFov = 42;
+  let cameraTargetX = 0;
+  let cameraTargetY = 0;
+
+  if (isSpinning) {
+    cameraTargetZ = lerp(6.1, 3.6, diveProgress);
+    cameraTargetFov = lerp(48, 36, diveProgress);
+    if (targetRotation) {
+      cameraTargetX = lerp(0, clamp(-targetRotation.y * 0.22, -0.34, 0.34), diveProgress);
+      cameraTargetY = lerp(0, clamp(targetRotation.x * 0.18, -0.24, 0.24), diveProgress);
+    }
+  } else if (isReveal) {
+    cameraTargetX = 0;
+    cameraTargetY = 0;
+    cameraTargetZ = 3.95;
+    cameraTargetFov = 36;
+  }
+
+  if (isReveal) {
+    camera.position.set(cameraTargetX, cameraTargetY, cameraTargetZ);
+    camera.fov = cameraTargetFov;
+  } else {
+    camera.position.x = damp(camera.position.x, cameraTargetX, 0.08);
+    camera.position.y = damp(camera.position.y, cameraTargetY, 0.08);
+    camera.position.z = damp(camera.position.z, cameraTargetZ, 0.07);
+    camera.fov = damp(camera.fov, cameraTargetFov, 0.07);
+  }
+  camera.lookAt(0, 0, 0);
+  camera.updateProjectionMatrix();
 
   if (currentScenario) {
     const point = latLonToVector3(currentScenario.lat, currentScenario.lon, 1.41);
@@ -389,7 +465,8 @@ function animate() {
     const ringPoint = latLonToVector3(currentScenario.lat, currentScenario.lon, 1.44);
     markerRing.position.copy(ringPoint);
     markerRing.lookAt(new THREE.Vector3(0, 0, 0));
-    markerRing.scale.setScalar(1 + Math.sin(Date.now() * 0.008) * 0.12);
+    markerRing.scale.setScalar(1 + Math.sin(Date.now() * 0.008) * 0.07);
+
   }
 
   renderer.render(scene, camera);
@@ -436,4 +513,307 @@ function latLonToVector3(lat, lon, radius) {
 
 function damp(current, target, factor) {
   return current + (target - current) * factor;
+}
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function lerp(start, end, t) {
+  return start + (end - start) * t;
+}
+
+function easeInOutCubic(t) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
+function formatWaterAccess(distanceKm) {
+  const oneWayMin = Math.round(distanceKm * 12);
+  const roundTripMin = oneWayMin * 2;
+  const hour = Math.floor(roundTripMin / 60);
+  const minute = roundTripMin % 60;
+  const timeText = hour > 0 ? `${hour}시간 ${minute}분` : `${minute}분`;
+
+  return `하루 ${distanceKm}km (도보 왕복 약 ${timeText})`;
+}
+
+function estimateDailyBudgetKrw(scenario) {
+  const tierMatch = scenario.incomeTier.match(/(\d+)%/);
+  const tierPercent = tierMatch ? Number(tierMatch[1]) : 20;
+
+  const tierBase = tierPercent <= 10 ? 3700 : 4900;
+  const waterPenalty = Math.round(scenario.waterDistanceKm * 180);
+  const educationPenalty = Math.max(0, Math.round((30 - scenario.educationChance) * 35));
+  const lifePenalty = Math.max(0, Math.round((68 - scenario.lifeExpectancy) * 70));
+
+  const roughBudget = tierBase - waterPenalty - educationPenalty - lifePenalty;
+  const boundedBudget = clamp(roughBudget, 1800, 6200);
+  return Math.round(boundedBudget / 100) * 100;
+}
+
+function estimateMealCoverage(dailyBudgetKrw) {
+  if (dailyBudgetKrw < 2600) {
+    return 1;
+  }
+  if (dailyBudgetKrw < 4200) {
+    return 2;
+  }
+  return 3;
+}
+
+function createGalaxyBackdrop() {
+  galaxyGroup = new THREE.Group();
+  scene.add(galaxyGroup);
+
+  const deepStars = createStarPoints({
+    count: 2800,
+    minRadius: 42,
+    maxRadius: 80,
+    color: 0xaec6ef,
+    size: 0.13,
+    opacity: 0.68
+  });
+  galaxyGroup.add(deepStars);
+
+  const brightStars = createStarPoints({
+    count: 900,
+    minRadius: 38,
+    maxRadius: 70,
+    color: 0xe8f2ff,
+    size: 0.2,
+    opacity: 0.92
+  });
+  galaxyGroup.add(brightStars);
+
+  const milkyBand = createMilkyWayBand({
+    count: 2200,
+    radius: 60,
+    color: 0xb9d0ff,
+    size: 0.18,
+    opacity: 0.32
+  });
+  milkyBand.rotation.x = THREE.MathUtils.degToRad(62);
+  milkyBand.rotation.y = THREE.MathUtils.degToRad(18);
+  galaxyGroup.add(milkyBand);
+}
+
+function createStarPoints(config) {
+  const positions = new Float32Array(config.count * 3);
+  for (let i = 0; i < config.count; i += 1) {
+    const radius = THREE.MathUtils.lerp(config.minRadius, config.maxRadius, Math.random());
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    const sinPhi = Math.sin(phi);
+    positions[i * 3] = radius * sinPhi * Math.cos(theta);
+    positions[i * 3 + 1] = radius * Math.cos(phi);
+    positions[i * 3 + 2] = radius * sinPhi * Math.sin(theta);
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  const material = new THREE.PointsMaterial({
+    color: config.color,
+    size: config.size,
+    transparent: true,
+    opacity: config.opacity,
+    depthWrite: false
+  });
+  return new THREE.Points(geometry, material);
+}
+
+function createMilkyWayBand(config) {
+  const positions = new Float32Array(config.count * 3);
+  for (let i = 0; i < config.count; i += 1) {
+    const theta = Math.random() * Math.PI * 2;
+    const spread = (Math.random() - 0.5) * 7.5;
+    const radius = config.radius + (Math.random() - 0.5) * 8;
+    const y = spread;
+    positions[i * 3] = radius * Math.cos(theta);
+    positions[i * 3 + 1] = y;
+    positions[i * 3 + 2] = radius * Math.sin(theta);
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  const material = new THREE.PointsMaterial({
+    color: config.color,
+    size: config.size,
+    transparent: true,
+    opacity: config.opacity,
+    depthWrite: false
+  });
+  return new THREE.Points(geometry, material);
+}
+
+async function loadCountryBorders() {
+  try {
+    const res = await fetch(COUNTRY_GEOJSON_URL);
+    if (!res.ok) {
+      throw new Error(`geojson load failed: ${res.status}`);
+    }
+
+    const geojson = await res.json();
+    const features = Array.isArray(geojson.features) ? geojson.features : [];
+    countryFeaturesByIso3 = new Map();
+
+    for (const feature of features) {
+      const iso3 = getFeatureIso3(feature);
+      if (iso3) {
+        countryFeaturesByIso3.set(iso3, feature);
+      }
+    }
+
+    countryBordersReady = true;
+    if (pendingCountryIso2) {
+      renderCountryOutlineForCountryCode(pendingCountryIso2);
+    }
+  } catch (error) {
+    console.warn("Failed to load country borders:", error);
+  }
+}
+
+function getFeatureIso3(feature) {
+  const props = feature && feature.properties ? feature.properties : {};
+  const candidates = [
+    props.ISO_A3,
+    props.iso_a3,
+    props["ISO3166-1-Alpha-3"],
+    feature && feature.id
+  ];
+
+  for (const raw of candidates) {
+    if (typeof raw === "string" && raw.length === 3) {
+      return raw.toUpperCase();
+    }
+  }
+  return null;
+}
+
+function renderCountryOutlineForCountryCode(iso2) {
+  if (!countryBordersReady || !iso2) {
+    return;
+  }
+
+  const iso3 = ISO2_TO_ISO3[String(iso2).toUpperCase()];
+  if (!iso3) {
+    clearCountryOutline();
+    return;
+  }
+
+  const feature = countryFeaturesByIso3.get(iso3);
+  if (!feature || !feature.geometry) {
+    clearCountryOutline();
+    return;
+  }
+
+  clearCountryOutline();
+  const geometry = feature.geometry;
+  if (geometry.type === "Polygon") {
+    addPolygonOutline(geometry.coordinates);
+  } else if (geometry.type === "MultiPolygon") {
+    for (const polygonCoords of geometry.coordinates) {
+      addPolygonOutline(polygonCoords);
+    }
+  }
+}
+
+function addPolygonOutline(rings) {
+  if (!Array.isArray(rings)) {
+    return;
+  }
+
+  for (const ring of rings) {
+    const line = buildOutlineLine(ring);
+    if (line) {
+      countryOutlineGroup.add(line);
+    }
+  }
+}
+
+function buildOutlineLine(ring) {
+  if (!Array.isArray(ring) || ring.length < 2) {
+    return null;
+  }
+
+  const layers = [
+    { radius: 1.364, color: 0xff8f63, opacity: 0.5 },
+    { radius: 1.368, color: 0xfff07a, opacity: 0.98 },
+    { radius: 1.372, color: 0xfff7bf, opacity: 0.55 }
+  ];
+
+  const layerPoints = layers.map((layer) => buildRingPoints(ring, layer.radius));
+  if (!layerPoints[1] || layerPoints[1].length < 2) {
+    return null;
+  }
+
+  const group = new THREE.Group();
+  for (let i = 0; i < layers.length; i += 1) {
+    const points = layerPoints[i];
+    if (!points || points.length < 2) {
+      continue;
+    }
+    const material = new THREE.LineBasicMaterial({
+      color: layers[i].color,
+      transparent: true,
+      opacity: layers[i].opacity
+    });
+    const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), material);
+    line.renderOrder = 5 + i;
+    group.add(line);
+  }
+  return group.children.length ? group : null;
+}
+
+function buildRingPoints(ring, radius) {
+  const points = [];
+  for (const coord of ring) {
+    if (!Array.isArray(coord) || coord.length < 2) {
+      continue;
+    }
+    const lon = Number(coord[0]);
+    const lat = Number(coord[1]);
+    if (Number.isFinite(lat) && Number.isFinite(lon)) {
+      points.push(latLonToVector3(lat, lon, radius));
+    }
+  }
+  return points;
+}
+
+function clearCountryOutline() {
+  if (!countryOutlineGroup) {
+    return;
+  }
+
+  while (countryOutlineGroup.children.length) {
+    const child = countryOutlineGroup.children[0];
+    countryOutlineGroup.remove(child);
+    disposeObject3D(child);
+  }
+}
+
+function disposeObject3D(object3D) {
+  if (!object3D) {
+    return;
+  }
+
+  if (object3D.children && object3D.children.length) {
+    while (object3D.children.length) {
+      const child = object3D.children[0];
+      object3D.remove(child);
+      disposeObject3D(child);
+    }
+  }
+
+  if (object3D.geometry) {
+    object3D.geometry.dispose();
+  }
+  if (Array.isArray(object3D.material)) {
+    for (const mat of object3D.material) {
+      if (mat) {
+        mat.dispose();
+      }
+    }
+  } else if (object3D.material) {
+    object3D.material.dispose();
+  }
 }
