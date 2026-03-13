@@ -23,18 +23,12 @@ const server = http.createServer(async (req, res) => {
   }
 
   const safePath = path.normalize(pathname);
-  let staticPath = safePath;
+  const hasExt = Boolean(path.extname(safePath));
+  let filePath = path.join(PUBLIC_DIR, safePath === "/" ? "/index.html" : safePath);
 
-  if (safePath === "/") {
-    staticPath = "/index.html";
-  } else if (pathname.endsWith("/") || !path.extname(safePath)) {
-    staticPath = path.join(safePath, "index.html");
-  }
-
-  let filePath = path.join(PUBLIC_DIR, staticPath);
-
-  if (pathname === "/sdg") {
-    filePath = path.join(PUBLIC_DIR, "sdg.html");
+  if (!hasExt) {
+    // SPA fallback: all route paths are resolved by the single app shell.
+    filePath = path.join(PUBLIC_DIR, "/index.html");
   }
 
   if (!filePath.startsWith(PUBLIC_DIR)) {

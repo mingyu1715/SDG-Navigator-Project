@@ -3,25 +3,69 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SDG Circular Cards</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/main.css" />
+  <title>SDG SPA Navigator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Pretendard:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/app.css" />
+  <link rel="stylesheet" href="/css/loader.css" />
 </head>
 <body>
-  <div class="stage" id="stage">
-    <div class="page-mark">SDG</div>
-    <div class="page-actions">
-      <a href="#" id="fullscreenBtn" class="text-link">fullscrean</a>
-      <span class="text-link">·</span>
-      <a href="https://ncsd.go.kr/" target="_blank" rel="noopener noreferrer" class="text-link">about sdg</a>
-    </div>
-    <div class="cards-layer" id="cardsLayer"></div>
-    <div class="arc" id="arc"></div>
-    <div class="shadow"></div>
+  <div id="app" class="app-shell">
+    <section id="mainView" class="view main-view" aria-label="SDG 메인 화면">
+      <div class="page-mark">SDG</div>
+      <div class="page-actions">
+        <button id="fullscreenBtn" class="text-link" type="button">fullscreen</button>
+        <span class="text-link">·</span>
+        <a href="https://ncsd.go.kr/" target="_blank" rel="noopener noreferrer" class="text-link">about sdg</a>
+      </div>
+      <div class="cards-layer" id="cardsLayer"></div>
+      <div class="arc" id="arc"></div>
+      <div class="shadow"></div>
+    </section>
+
+    <section id="detailView" class="view detail-view" aria-hidden="true">
+      <button id="detailBackBtn" class="detail-back" type="button" aria-label="메인으로 돌아가기">←</button>
+      <div id="detailLegacyHost" class="detail-legacy-host" hidden>
+        <iframe
+          id="detailLegacyFrame"
+          class="detail-legacy-frame"
+          title="SDG 01 Legacy Detail"
+          loading="eager"
+          referrerpolicy="no-referrer"
+        ></iframe>
+      </div>
+      <main class="detail-wrap">
+        <article class="detail-card" id="detailPanel">
+          <header class="detail-top">
+            <div>
+              <p id="detailGoalLabel" class="detail-goal">SDG GOAL</p>
+              <h2 id="detailTitle" class="detail-title">불러오는 중...</h2>
+              <p id="detailSub" class="detail-sub">상세 정보를 준비 중입니다.</p>
+            </div>
+            <div id="detailGoalBadge" class="detail-badge">1</div>
+          </header>
+
+          <section class="detail-block">
+            <h3>목표 설명</h3>
+            <p id="detailDesc"></p>
+          </section>
+
+          <section class="detail-block">
+            <h3>핵심 포인트</h3>
+            <ul id="detailFeatures"></ul>
+          </section>
+
+          <section class="detail-block compact">
+            <h3>상태</h3>
+            <p id="detailStatus">대기 중</p>
+          </section>
+        </article>
+      </main>
+    </section>
   </div>
 
-  <script src="/js/carousel.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script type="module" src="/app/main.js"></script>
 </body>
 </html>

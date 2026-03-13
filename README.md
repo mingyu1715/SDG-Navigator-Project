@@ -1,9 +1,6 @@
-# SDG Navigator Project
+# SDG Navigator (SPA)
 
-원형 카드 캐러셀 기반 SDG 탐색 UI + 상세 페이지 + Node.js API 프로젝트입니다.
-
-## Reference
-- 원본 레퍼런스: https://fff.cmiscm.com/#!/main
+원형 드래그 카드 메인 화면과 상세 화면을 한 문서 안에서 전환하는 SPA 프로젝트입니다.
 
 ## 실행
 
@@ -11,64 +8,40 @@
 npm start
 ```
 
-- 로컬 주소: `http://localhost:3000`
+- URL: `http://localhost:3000`
 
-## 핵심 구조
+## 현재 동작
 
-### 1) 서버 통합 진입점
-- `server.js`
-  - 서버 시작
-  - API 라우트 연결
-  - 정적 파일 서빙
+- 단일 앱 셸: `public/index.html`
+- 카드 클릭 시 문서 이동 없이 in-app 라우팅 전환
+- 브라우저 뒤로가기/앞으로가기 지원 (`history.pushState`)
+- 새로고침 시 항상 메인(`/`)으로 복귀
+- 초기 진입 시 오버레이 로더 표시
 
-### 2) API 라우트
-- `routes/sdgRoutes.js`
-  - `GET /api/sdgs`
-  - `GET /api/sdgs/:id`
-  - `POST /api/sdgs/:id/visit`
-  - `POST /api/sdgs/:id/action`
+## 폴더 구조 (핵심)
 
-### 3) 서비스 계층 (SDG별 분리)
-- `services/sdg/sdg1Service.js` ~ `services/sdg/sdg17Service.js`
-  - SDG별 데이터/비즈니스 로직
-- `services/sdg/index.js`
-  - 서비스 통합 레지스트리
-- `services/sdg/createSdgService.js`
-  - 공통 서비스 생성 팩토리
+- `server.js`: API + 정적 파일 + SPA fallback
+- `public/index.html`: SPA 엔트리
+- `public/css/app.css`: 메인/상세 공통 UI
+- `public/css/loader.css`: 초기 로딩 오버레이
+- `public/app/main.js`: 앱 부트스트랩, 뷰 전환 제어
+- `public/app/router.js`: History API 라우터
+- `public/app/transitions.js`: 메인 <-> 상세 GSAP 전환
+- `public/app/views/mainView.js`: 원형 카드 UI/드래그/관성
+- `public/app/views/detailView.js`: 상세 렌더링/SDG01 레거시 호스트
+- `public/app/services/sdgService.js`: 상세 데이터 로드
+- `public/app/data/sdgs.js`: SDG 기본 메타 데이터
+- `public/app/data/detailDrafts.js`: SDG02~17 임시 상세 초안 데이터
 
-### 4) 공통 HTTP 유틸
-- `lib/httpUtils.js`
-  - `sendJson`, `sendFile`, `parseBody`
+## API
 
-### 5) 프론트
-- 메인 캐러셀
-  - `public/index.html`
-  - `public/js/carousel.js`
-  - `public/css/main.css`
-- 상세 페이지 (SDG별 폴더 분리)
-  - `public/detailed/sdg-01/` ... `public/detailed/sdg-17/`
-    - `index.html`
-    - `style.css`
-    - `script.js`
-  - 공통(임시): `public/detailed/common/detail-common.js`, `detail-common.css`  
-    상세 개발 시 필수 아님, 페이지별 독립 구현 가능
+- `GET /api/sdgs`
+- `GET /api/sdgs/:id`
+- `POST /api/sdgs/:id/visit`
+- `POST /api/sdgs/:id/action`
 
-## 상세 페이지 라우팅
-- 메인 카드 클릭 시: `/detailed/sdg-XX/`로 이동
+## SDG 상세 데이터 수정
 
-## SDG 하나 추가/수정 방법
-
-### 데이터/백엔드
-1. `services/sdg/sdgNService.js` 수정
-2. `services/sdg/index.js`에 서비스 등록/확인
-
-### 프론트 상세
-1. `public/detailed/sdg-XX/index.html`
-2. `public/detailed/sdg-XX/style.css`
-3. `public/detailed/sdg-XX/script.js`
-
-## API 요약
-- `GET /api/sdgs`: SDG 목록 요약
-- `GET /api/sdgs/:id`: SDG 상세
-- `POST /api/sdgs/:id/visit`: 방문수 증가
-- `POST /api/sdgs/:id/action`: 샘플 액션 실행
+1. 임시 상세(02~17) 수정: `public/app/data/detailDrafts.js`
+2. API 기반 상세 로직 수정: `services/sdg/*`, `public/app/services/sdgService.js`
+3. SDG01 레거시 화면 수정: `public/detailed/sdg-01/*`

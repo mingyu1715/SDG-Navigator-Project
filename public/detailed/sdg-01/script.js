@@ -214,6 +214,8 @@ const waterNote = document.getElementById("waterNote");
 const narrative = document.getElementById("narrative");
 const canvas = document.getElementById("globeCanvas");
 const COUNTRY_GEOJSON_URL = "https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson";
+const RETURN_RECT_SESSION_KEY = "sdgReturnCardRect";
+const MAIN_HISTORY_URL = "/";
 const ISO2_TO_ISO3 = {
   ET: "ETH",
   MG: "MDG",
@@ -249,10 +251,12 @@ let lotteryStartedAt = 0;
 let countryBordersReady = false;
 let countryFeaturesByIso3 = new Map();
 let pendingCountryIso2 = null;
+let returningToMain = false;
 
 initScene();
 bindEvents();
 animate();
+initHistoryRouting();
 
 function initScene() {
   renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
@@ -326,6 +330,101 @@ function bindEvents() {
       experienceEl.classList.remove("reveal");
     });
   }
+  bindMainReturnLinks();
+}
+
+function bindMainReturnLinks() {
+  const selectors = [
+    "a[href='/index.html']",
+    "a[href='/']",
+    "a[href='index.html']",
+    "a[href='./index.html']"
+  ];
+  const links = document.querySelectorAll(selectors.join(","));
+  links.forEach((link) => {
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      void navigateToMainWithReverse();
+    });
+  });
+}
+
+function initHistoryRouting() {
+  const expectedRoute = "/detailed/sdg-01/";
+  if (window.location.pathname !== expectedRoute) {
+    history.replaceState(history.state || {}, "", expectedRoute);
+  }
+}
+
+async function navigateToMainWithReverse() {
+  if (returningToMain) return;
+  returningToMain = true;
+
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: "sdg01:back-main" }, window.location.origin);
+    returningToMain = false;
+    return;
+  }
+
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  if (!("animate" in experienceEl)) {
+    window.location.href = "/index.html";
+    return;
+  }
+
+  let targetLeft = (vw - Math.min(250, vw * 0.58)) / 2;
+  let targetTop = (vh - Math.min(250, vw * 0.58) * (36 / 25)) / 2;
+  let targetWidth = Math.min(250, vw * 0.58);
+  let targetHeight = targetWidth * (36 / 25);
+  try {
+    const saved = JSON.parse(sessionStorage.getItem(RETURN_RECT_SESSION_KEY) || "null");
+    if (saved && Number(saved.goalId) === 1) {
+      targetLeft = saved.left * vw;
+      targetTop = saved.top * vh;
+      targetWidth = saved.width * vw;
+      targetHeight = saved.height * vh;
+    }
+  } catch {
+    // keep fallback target
+  }
+
+  document.documentElement.style.overflow = "hidden";
+  document.body.style.overflow = "hidden";
+  experienceEl.style.position = "relative";
+  experienceEl.style.zIndex = "9999";
+  experienceEl.style.willChange = "transform, clip-path, filter";
+
+  const targetScale = Math.min(targetWidth / vw, targetHeight / vh);
+  const targetCenterX = targetLeft + targetWidth / 2;
+  const targetCenterY = targetTop + targetHeight / 2;
+  const dx = targetCenterX - vw / 2;
+  const dy = targetCenterY - vh / 2;
+  const insetTop = Math.max(0, targetTop);
+  const insetRight = Math.max(0, vw - (targetLeft + targetWidth));
+  const insetBottom = Math.max(0, vh - (targetTop + targetHeight));
+  const insetLeft = Math.max(0, targetLeft);
+
+  const shrink = experienceEl.animate(
+    [
+      {
+        transformOrigin: "50% 50%",
+        transform: "translate3d(0, 0, 0) scale(1)",
+        clipPath: "inset(0px 0px 0px 0px round 0px)",
+        filter: "brightness(1)"
+      },
+      {
+        transformOrigin: "50% 50%",
+        transform: `translate3d(${dx}px, ${dy}px, 0) scale(${targetScale})`,
+        clipPath: `inset(${insetTop}px ${insetRight}px ${insetBottom}px ${insetLeft}px round 14px)`,
+        filter: "brightness(0.96)"
+      }
+    ],
+    { duration: 980, easing: "cubic-bezier(0.22, 1, 0.36, 1)", fill: "forwards" }
+  );
+
+  await shrink.finished.catch(() => null);
+  window.location.href = "/index.html";
 }
 
 function startLottery() {
