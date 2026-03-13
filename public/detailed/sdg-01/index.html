@@ -3,49 +3,113 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SDG 01 Detail</title>
-  <link rel="stylesheet" href="../common/detail-common.css" />
+  <title>SDG 1 | 생존의 로또</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./style.css" />
 </head>
-<body class="detail-page" data-goal="01">
-  <main class="detail-wrap">
-    <section class="detail-card">
-      <div class="detail-top">
-        <div>
-          <p class="goal-label" id="goalLabel">SDG GOAL 01</p>
-          <h1 class="goal-title" id="goalTitle">Loading...</h1>
-          <p class="goal-sub" id="goalSub">데이터를 불러오는 중입니다.</p>
+<body>
+  <div class="experience" id="experience">
+    <a class="close-button" href="/index.html" aria-label="메인으로 돌아가기">×</a>
+
+    <div class="page-mark">SDG</div>
+    <div class="page-actions">
+      <a href="/index.html" class="text-link">main</a>
+      <span class="text-link">·</span>
+      <a href="https://ncsd.go.kr/" target="_blank" rel="noopener noreferrer" class="text-link">about sdg</a>
+    </div>
+
+    <div class="space-layer">
+      <div class="starfield starfield-a"></div>
+      <div class="starfield starfield-b"></div>
+      <div class="nebula nebula-a"></div>
+      <div class="nebula nebula-b"></div>
+    </div>
+
+    <main class="experience-stage">
+      <section class="globe-panel">
+        <div class="globe-frame">
+          <div class="orbit orbit-a"></div>
+          <div class="orbit orbit-b"></div>
+          <canvas id="globeCanvas" aria-label="3D globe simulation"></canvas>
+
+          <div class="globe-overlay">
+            <div class="status-chip" id="statusChip">생존의 로또</div>
+            <div class="target-readout" id="targetReadout">
+              버튼을 누르면 지구 반대편의 삶이 시작됩니다.
+            </div>
+          </div>
         </div>
-        <div class="goal-badge" id="goalBadge">1</div>
-      </div>
 
-      <div class="detail-grid">
-        <article class="box">
-          <h3>목표 설명</h3>
-          <p id="goalDesc"></p>
-        </article>
+        <div class="cta-wrap">
+          <button class="launch-button" id="launchButton" type="button">
+            나의 새로운 삶 시작하기
+          </button>
+        </div>
+      </section>
 
-        <article class="box">
-          <h3>세부 기능</h3>
-          <ul id="goalFeatures"></ul>
-        </article>
+      <aside class="result-panel" id="resultPanel" aria-live="polite">
+        <div class="panel-shell">
+          <h2 id="resultTitle">아직 결과가 선택되지 않았습니다</h2>
+          <p class="panel-summary" id="resultSummary">
+            한 번의 클릭으로 당신의 출발선이 완전히 달라집니다.
+          </p>
 
-        <article class="box">
-          <h3>백엔드 상태</h3>
-          <p id="backendStatus">API 연결 중...</p>
-        </article>
-      </div>
+          <div class="metric-grid">
+            <article class="metric-card emphasis">
+              <span class="metric-label">태어난 곳</span>
+              <strong class="metric-value" id="birthPlace">-</strong>
+              <span class="metric-note" id="regionNote">무작위로 선택된 출생 지역입니다.</span>
+            </article>
 
-      <div class="detail-actions">
-        <button class="btn primary" id="simulateBtn" type="button">샘플 액션 호출</button>
-        <button class="btn ghost" id="backBtn" type="button">메인으로 돌아가기</button>
-      </div>
+            <article class="metric-card">
+              <span class="metric-label">사회적 계층</span>
+              <strong class="metric-value" id="incomeTier">-</strong>
+              <span class="metric-note" id="incomeNote">가구 소득 분위 기준</span>
+            </article>
 
-      <p class="meta" id="visitMeta"></p>
-    </section>
-  </main>
+            <article class="metric-card">
+              <span class="metric-label">교육 확률</span>
+              <strong class="metric-value" id="educationChance">-</strong>
+              <div class="progress-track" aria-hidden="true">
+                <div class="progress-bar" id="educationBar"></div>
+              </div>
+              <span class="metric-note">고등학교 진학 가능성</span>
+            </article>
 
-  <script src="../common/detail-common.js"></script>
+            <article class="metric-card">
+              <span class="metric-label">물 접근성</span>
+              <strong class="metric-value" id="waterAccess">-</strong>
+              <span class="metric-note" id="waterNote">깨끗한 물까지 일일 이동 거리</span>
+            </article>
+
+            <article class="metric-card">
+              <span class="metric-label">예상 기대 수명</span>
+              <strong class="metric-value" id="lifeExpectancy">-</strong>
+              <span class="metric-note" id="lifeNote">빈곤 환경을 반영한 체감 지표</span>
+            </article>
+
+            <article class="metric-card narrative-card">
+              <span class="metric-label">오늘의 현실</span>
+              <p class="narrative" id="narrative">
+                다음 결과는 추상적인 불평등을 하나의 현실로 보여줍니다.
+              </p>
+            </article>
+          </div>
+
+          <div class="panel-actions">
+            <button class="secondary-button" id="rerollButton" type="button">
+              다른 삶 다시 보기
+            </button>
+            <a class="text-link" href="/index.html">메인으로 돌아가기</a>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
   <script src="./script.js"></script>
 </body>
 </html>
