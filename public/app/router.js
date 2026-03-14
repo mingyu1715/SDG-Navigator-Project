@@ -1,25 +1,43 @@
 const listeners = new Set();
+const MAIN_PATH = "/";
+const DETAIL_ROUTE_RE = /^\/detailed\/sdg-(\d{2})(?:\/|\/index\.html)?$/;
 
-function normalizePath(pathname) {
-  if (!pathname || pathname === "/index.html") return "/";
-  return pathname;
+function normalizePath(inputPath) {
+  if (!inputPath) return MAIN_PATH;
+
+  let path = String(inputPath);
+  try {
+    if (/^https?:\/\//.test(path)) {
+      path = new URL(path).pathname;
+    }
+  } catch {
+    // ignore malformed absolute URL inputs
+  }
+
+  path = path.split("?")[0].split("#")[0];
+  if (!path.startsWith("/")) {
+    path = `/${path}`;
+  }
+  path = path.replace(/\/{2,}/g, "/");
+
+  if (path === "/index.html") {
+    return MAIN_PATH;
+  }
+
+  return path;
 }
 
 export function parseRoute(pathname = window.location.pathname) {
   const path = normalizePath(pathname);
-  if (path === "/") return { name: "main", path };
+  if (path === MAIN_PATH) return { name: "main", path: MAIN_PATH };
 
-  const detailMatch = path.match(/^\/detailed\/sdg-(\d{2})\/?$/);
+  const detailMatch = path.match(DETAIL_ROUTE_RE);
   if (detailMatch) {
-    return { name: "detail", goalId: Number(detailMatch[1]), path: `/detailed/sdg-${detailMatch[1]}/` };
+    const goalIdText = detailMatch[1];
+    return { name: "detail", goalId: Number(goalIdText), path: `/detailed/sdg-${goalIdText}/` };
   }
 
-  const legacyDetailMatch = path.match(/^\/detailed\/sdg-(\d{2})\/index\.html$/);
-  if (legacyDetailMatch) {
-    return { name: "detail", goalId: Number(legacyDetailMatch[1]), path: `/detailed/sdg-${legacyDetailMatch[1]}/` };
-  }
-
-  return { name: "main", path: "/" };
+  return { name: "main", path: MAIN_PATH, redirectedFrom: path };
 }
 
 export function subscribe(listener) {
@@ -32,16 +50,27 @@ export function emitRoute(route) {
 }
 
 export function startRouter() {
-  window.addEventListener("popstate", () => {
+  const onPopState = () => {
     emitRoute(parseRoute(window.location.pathname));
-  });
+  };
+
+  window.addEventListener("popstate", onPopState);
+  return () => {
+    window.removeEventListener("popstate", onPopState);
+  };
 }
 
 export function navigate(path, options = {}) {
   const { replace = false, emit = true, state = {} } = options;
-  const method = replace ? "replaceState" : "pushState";
-  history[method](state, "", path);
+  const route = parseRoute(path);
+  const canonicalPath = route.path;
+  const currentPath = normalizePath(window.location.pathname);
+  const method = replace || currentPath === canonicalPath ? "replaceState" : "pushState";
+
+  history[method](state, "", canonicalPath);
   if (emit) {
-    emitRoute(parseRoute(path));
+    emitRoute(route);
   }
+
+  return route;
 }
