@@ -47,13 +47,6 @@ function setMainVisible(visible) {
   mainRoot.style.pointerEvents = visible ? "auto" : "none";
 }
 
-function isReloadNavigation() {
-  const nav = performance.getEntriesByType("navigation");
-  if (Array.isArray(nav) && nav[0] && nav[0].type === "reload") return true;
-  if (performance.navigation && performance.navigation.type === 1) return true;
-  return false;
-}
-
 function withTimeout(promise, timeoutMs) {
   return Promise.race([
     Promise.resolve(promise).catch(() => null),
@@ -185,11 +178,17 @@ async function handleRoute(route) {
   if (!route) return;
 
   if (route.name === "detail" && route.goalId) {
-    await openDetail(route.goalId, { source: appState.initialized ? "route" : "route" });
+    if (!getGoalById(route.goalId)) {
+      navigate("/", { replace: true, emit: false, state: { view: "main" } });
+      await openMain({ source: "route" });
+      return;
+    }
+
+    await openDetail(route.goalId, { source: "route" });
     return;
   }
 
-  await openMain({ source: appState.initialized ? "route" : "route" });
+  await openMain({ source: "route" });
 }
 
 function bootstrapApp() {
@@ -203,18 +202,8 @@ function bootstrapApp() {
     void handleRoute(route);
   });
 
-  // On browser refresh, always return to the main route after boot loader.
-  if (isReloadNavigation()) {
-    navigate("/", { replace: true, emit: false });
-    emitRoute({ name: "main", path: "/" });
-    appState.initialized = true;
-    return;
-  }
-
   const initial = parseRoute(window.location.pathname);
-  if (initial.name === "main" && window.location.pathname !== "/") {
-    navigate("/", { replace: true, emit: false });
-  } else if (initial.name === "detail" && initial.path !== window.location.pathname) {
+  if (initial.path !== window.location.pathname) {
     navigate(initial.path, { replace: true, emit: false });
   }
   emitRoute(initial);
