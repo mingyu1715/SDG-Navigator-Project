@@ -15,7 +15,7 @@
     <section id="mainView" class="view main-view" aria-label="SDG 메인 화면">
       <div class="page-mark">SDG</div>
       <div class="page-actions">
-        <button id="fullscreenBtn" class="text-link" type="button">fullscreen</button>
+        <button id="mainFullscreenBtn" class="text-link" type="button">fullscreen</button>
         <span class="text-link">·</span>
         <a href="https://ncsd.go.kr/" target="_blank" rel="noopener noreferrer" class="text-link">about sdg</a>
       </div>
@@ -26,42 +26,42 @@
 
     <section id="detailView" class="view detail-view" aria-hidden="true">
       <button id="detailBackBtn" class="detail-back" type="button" aria-label="메인으로 돌아가기">←</button>
-      <div id="detailLegacyHost" class="detail-legacy-host" hidden>
-        <iframe
-          id="detailLegacyFrame"
-          class="detail-legacy-frame"
-          title="SDG 01 Legacy Detail"
-          loading="eager"
-          referrerpolicy="no-referrer"
-        ></iframe>
-      </div>
+      <div class="detail-page-mark">SDG</div>
+      <header class="detail-frame-header" id="detailFrameHeader">
+        <div class="detail-title-block">
+          <p id="detailGoalLabel" class="detail-goal">SDG GOAL</p>
+          <h2 id="detailTitle" class="detail-title">불러오는 중...</h2>
+          <p id="detailSub" class="detail-sub">상세 정보를 준비 중입니다.</p>
+          <p id="detailLead" class="detail-lead">핵심 배경과 맥락을 불러오는 중입니다.</p>
+          <p id="detailHint" class="detail-hint">잠시만 기다려 주세요</p>
+        </div>
+      </header>
       <main class="detail-wrap">
         <article class="detail-card" id="detailPanel">
-          <header class="detail-top">
-            <div>
-              <p id="detailGoalLabel" class="detail-goal">SDG GOAL</p>
-              <h2 id="detailTitle" class="detail-title">불러오는 중...</h2>
-              <p id="detailSub" class="detail-sub">상세 정보를 준비 중입니다.</p>
-            </div>
-            <div id="detailGoalBadge" class="detail-badge">1</div>
-          </header>
+          <div id="detailGenericContent" class="detail-generic-content">
+            <section class="detail-block">
+              <h3>목표 설명</h3>
+              <p id="detailDesc"></p>
+            </section>
 
-          <section class="detail-block">
-            <h3>목표 설명</h3>
-            <p id="detailDesc"></p>
-          </section>
+            <section class="detail-block">
+              <h3>핵심 포인트</h3>
+              <ul id="detailFeatures"></ul>
+            </section>
 
-          <section class="detail-block">
-            <h3>핵심 포인트</h3>
-            <ul id="detailFeatures"></ul>
-          </section>
-
-          <section class="detail-block compact">
-            <h3>상태</h3>
-            <p id="detailStatus">대기 중</p>
-          </section>
+            <section class="detail-block compact">
+              <h3>상태</h3>
+              <p id="detailStatus">대기 중</p>
+            </section>
+          </div>
+          <section id="detailCustomContent" class="detail-custom-content" hidden></section>
         </article>
       </main>
+      <div class="detail-actions page-actions">
+        <button id="detailFullscreenBtn" class="text-link" type="button">fullscreen</button>
+        <span class="text-link">·</span>
+        <a href="https://ncsd.go.kr/" target="_blank" rel="noopener noreferrer" class="text-link">about sdg</a>
+      </div>
     </section>
   </div>
 

@@ -1,80 +1,60 @@
 import { getGoalById } from "../data/sdgs.js";
 import { fetchGoalDetail } from "../services/sdgService.js";
-
-const LEGACY_GOAL_IDS = new Set([1, 4]);
+import { DetailFrame } from "./detailFrame.js";
+import { createCustomDetailRenderers, getDetailFrameMeta } from "../details/registry.js";
 
 export class DetailView {
   constructor(root, options = {}) {
     this.root = root;
     this.onBack = options.onBack || (() => {});
+    this.onFullscreen = options.onFullscreen || (() => {});
 
-    this.backBtn = root.querySelector("#detailBackBtn");
-    this.legacyHost = root.querySelector("#detailLegacyHost");
-    this.legacyFrame = root.querySelector("#detailLegacyFrame");
+    this.frame = new DetailFrame(root, {
+      onBack: this.onBack,
+      onFullscreen: this.onFullscreen
+    });
+
     this.panelWrap = root.querySelector(".detail-wrap");
-    this.goalLabel = root.querySelector("#detailGoalLabel");
-    this.title = root.querySelector("#detailTitle");
-    this.sub = root.querySelector("#detailSub");
-    this.badge = root.querySelector("#detailGoalBadge");
+    this.panel = root.querySelector("#detailPanel");
+    this.genericContent = root.querySelector("#detailGenericContent");
+    this.customContent = root.querySelector("#detailCustomContent");
     this.desc = root.querySelector("#detailDesc");
     this.features = root.querySelector("#detailFeatures");
     this.status = root.querySelector("#detailStatus");
+    this.activeCustomRenderer = null;
+    this.customRenderers = createCustomDetailRenderers(this.customContent);
   }
 
   mount() {
-    this.backBtn.addEventListener("click", () => this.onBack());
-    window.addEventListener("message", (event) => {
-      if (event.origin !== window.location.origin) return;
-      if (!event.data) return;
-      if (!["sdg01:back-main", "sdg04:back-main", "sdg:back-main"].includes(event.data.type)) return;
-      this.onBack();
-    });
-  }
-
-  async waitLegacyFrameReady(timeoutMs = 2600) {
-    if (!this.legacyFrame) return;
-    await new Promise((resolve) => {
-      let done = false;
-      const finish = () => {
-        if (done) return;
-        done = true;
-        this.legacyFrame.removeEventListener("load", onLoad);
-        this.legacyFrame.removeEventListener("error", onError);
-        clearTimeout(timer);
-        resolve();
-      };
-      const onLoad = () => finish();
-      const onError = () => finish();
-      const timer = setTimeout(finish, timeoutMs);
-
-      this.legacyFrame.addEventListener("load", onLoad, { once: true });
-      this.legacyFrame.addEventListener("error", onError, { once: true });
-
-      try {
-        if (this.legacyFrame.contentDocument?.readyState === "complete") {
-          finish();
-        }
-      } catch {
-        // ignore
-      }
-    });
-  }
-
-  showLegacyGoal(goalId) {
-    if (this.panelWrap) this.panelWrap.hidden = true;
-    if (this.legacyHost) this.legacyHost.hidden = false;
-    // Keep SPA back button visible so returning to main stays in-app (no reload).
-    if (this.backBtn) this.backBtn.hidden = false;
-    const legacySrc = `/detailed/sdg-${String(goalId).padStart(2, "0")}/index.html`;
-    if (this.legacyFrame && this.legacyFrame.getAttribute("src") !== legacySrc) {
-      this.legacyFrame.setAttribute("src", legacySrc);
-    }
+    this.frame.mount();
   }
 
   showGenericPanel() {
-    if (this.legacyHost) this.legacyHost.hidden = true;
+    this.frame.setMode("generic");
     if (this.panelWrap) this.panelWrap.hidden = false;
-    if (this.backBtn) this.backBtn.hidden = false;
+    if (this.panel) {
+      this.panel.classList.remove("detail-card-custom");
+      this.panel.classList.remove("detail-card-sdg01");
+      this.panel.classList.remove("detail-card-sdg04");
+    }
+    if (this.genericContent) this.genericContent.hidden = false;
+    if (this.customContent) this.customContent.hidden = true;
+  }
+
+  showCustomPanel(renderer) {
+    this.frame.setMode(renderer?.frameMode || "generic");
+    if (this.panelWrap) this.panelWrap.hidden = false;
+    if (this.panel) {
+      this.panel.classList.add("detail-card-custom");
+      this.panel.classList.remove("detail-card-sdg01");
+      this.panel.classList.remove("detail-card-sdg04");
+      if (renderer && renderer.panelClass) {
+        this.panel.classList.add(renderer.panelClass);
+      }
+    }
+    if (this.genericContent) this.genericContent.hidden = true;
+    if (this.customContent) this.customContent.hidden = false;
+    this.activeCustomRenderer = renderer;
   }
 
   setVisible(visible) {
@@ -83,35 +63,22 @@ export class DetailView {
   }
 
   setAccent(color) {
-    this.root.style.setProperty("--detail-accent", color || "#101827");
-    if (this.badge) {
-      this.badge.style.background = color || "#101827";
-    }
+    this.frame.setAccent(color || "#101827");
   }
 
   reset() {
     // Reset detail state when returning to main so next entry starts fresh.
+    this.destroyActiveCustomRenderer();
     this.showGenericPanel();
-    this.setAccent("#101827");
-    if (this.goalLabel) this.goalLabel.textContent = "SDG GOAL";
-    if (this.title) this.title.textContent = "불러오는 중...";
-    if (this.sub) this.sub.textContent = "상세 정보를 준비 중입니다.";
-    if (this.badge) this.badge.textContent = "-";
+    this.frame.reset();
     if (this.desc) this.desc.textContent = "";
     if (this.features) this.features.innerHTML = "";
     if (this.status) this.status.textContent = "대기 중";
-
-    if (this.legacyFrame) {
-      this.legacyFrame.removeAttribute("src");
-    }
   }
 
   renderDetail(goalId, detail) {
     this.showGenericPanel();
-    this.goalLabel.textContent = `SDG GOAL ${String(goalId).padStart(2, "0")}`;
-    this.title.textContent = detail.title || `SDG ${String(goalId).padStart(2, "0")}`;
-    this.sub.textContent = detail.subtitle || "";
-    if (this.badge) this.badge.textContent = String(goalId);
+    this.frame.setGoalMeta(goalId, detail);
     this.desc.textContent = detail.description || "설명 정보가 없습니다.";
     this.features.innerHTML = "";
 
@@ -128,18 +95,36 @@ export class DetailView {
     this.status.textContent = "표시 완료";
   }
 
+  destroyActiveCustomRenderer() {
+    if (!this.activeCustomRenderer) return;
+    if (typeof this.activeCustomRenderer.destroy === "function") {
+      this.activeCustomRenderer.destroy();
+    }
+    this.activeCustomRenderer = null;
+  }
+
+  async renderCustomDetail(goalId, baseGoal) {
+    const renderer = this.customRenderers.get(goalId);
+    if (!renderer) return false;
+    this.destroyActiveCustomRenderer();
+    this.showCustomPanel(renderer);
+    this.frame.setGoalMeta(goalId, getDetailFrameMeta(goalId, baseGoal));
+    await Promise.resolve(renderer.render());
+    return true;
+  }
+
   async load(goalId) {
-    if (LEGACY_GOAL_IDS.has(Number(goalId))) {
-      this.showLegacyGoal(goalId);
-      await this.waitLegacyFrameReady();
-      return null;
+    const id = Number(goalId);
+    const base = getGoalById(id);
+    this.setAccent(base?.color || "#101827");
+
+    if (await this.renderCustomDetail(id, base)) {
+      return { custom: true };
     }
 
     this.showGenericPanel();
-    const base = getGoalById(goalId);
-    if (base) this.setAccent(base.color);
-    const detail = await fetchGoalDetail(goalId);
-    this.renderDetail(goalId, detail);
+    const detail = await fetchGoalDetail(id);
+    this.renderDetail(id, detail);
     this.status.textContent = "임시 상세(수정 가능)";
     return detail;
   }

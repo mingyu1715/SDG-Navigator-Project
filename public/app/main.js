@@ -20,38 +20,38 @@ const BOOT_MAX_WAIT_MS = 4500;
 const PRELOAD_REQ_TIMEOUT_MS = 1200;
 const MIN_INITIAL_LOADER_MS = 520;
 
+async function toggleFullscreen() {
+  try {
+    if (!document.fullscreenElement) {
+      await document.documentElement.requestFullscreen();
+      return;
+    }
+    await document.exitFullscreen();
+  } catch {
+    // ignore
+  }
+}
+
 const mainView = new MainView(mainRoot, {
   onSelect: (goalId, cardEl) => {
     void openDetail(goalId, { source: "user", cardEl });
   },
-  onFullscreen: async () => {
-    try {
-      if (!document.fullscreenElement) {
-        await document.documentElement.requestFullscreen();
-      } else {
-        await document.exitFullscreen();
-      }
-    } catch {
-      // ignore
-    }
+  onFullscreen: () => {
+    void toggleFullscreen();
   }
 });
 
 const detailView = new DetailView(detailRoot, {
   onBack: () => {
     void openMain({ source: "user" });
+  },
+  onFullscreen: () => {
+    void toggleFullscreen();
   }
 });
 
 function setMainVisible(visible) {
   mainRoot.style.pointerEvents = visible ? "auto" : "none";
-}
-
-function isReloadNavigation() {
-  const nav = performance.getEntriesByType("navigation");
-  if (Array.isArray(nav) && nav[0] && nav[0].type === "reload") return true;
-  if (performance.navigation && performance.navigation.type === 1) return true;
-  return false;
 }
 
 function withTimeout(promise, timeoutMs) {
@@ -66,9 +66,8 @@ function nextFrame() {
 }
 
 function getBootPreloadTargets() {
-  const detailPages = SDG_DATA.map((goal) => `/detailed/sdg-${String(goal.id).padStart(2, "0")}/index.html`);
   const apiTargets = SDG_DATA.map((goal) => `/api/sdgs/${goal.id}`);
-  return [...detailPages, ...apiTargets];
+  return apiTargets;
 }
 
 function fetchWithTimeout(url, timeoutMs) {
@@ -185,11 +184,17 @@ async function handleRoute(route) {
   if (!route) return;
 
   if (route.name === "detail" && route.goalId) {
-    await openDetail(route.goalId, { source: appState.initialized ? "route" : "route" });
+    if (!getGoalById(route.goalId)) {
+      navigate("/", { replace: true, emit: false, state: { view: "main" } });
+      await openMain({ source: "route" });
+      return;
+    }
+
+    await openDetail(route.goalId, { source: "route" });
     return;
   }
 
-  await openMain({ source: appState.initialized ? "route" : "route" });
+  await openMain({ source: "route" });
 }
 
 function bootstrapApp() {
@@ -203,18 +208,8 @@ function bootstrapApp() {
     void handleRoute(route);
   });
 
-  // On browser refresh, always return to the main route after boot loader.
-  if (isReloadNavigation()) {
-    navigate("/", { replace: true, emit: false });
-    emitRoute({ name: "main", path: "/" });
-    appState.initialized = true;
-    return;
-  }
-
   const initial = parseRoute(window.location.pathname);
-  if (initial.name === "main" && window.location.pathname !== "/") {
-    navigate("/", { replace: true, emit: false });
-  } else if (initial.name === "detail" && initial.path !== window.location.pathname) {
+  if (initial.path !== window.location.pathname) {
     navigate(initial.path, { replace: true, emit: false });
   }
   emitRoute(initial);

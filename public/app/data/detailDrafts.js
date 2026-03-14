@@ -1,6 +1,6 @@
 import { SDG_DATA, getGoalById } from "./sdgs.js";
 
-// SDG01은 별도 커스텀(legacy) 화면을 사용하므로 여기서 제외한다.
+// SDG01은 별도 커스텀 상세 모듈을 사용하므로 여기서 제외한다.
 // SDG02~17 임시 상세를 빠르게 수정하려면 이 파일만 편집하면 된다.
 const DRAFT_OVERRIDES = {
   2: {
