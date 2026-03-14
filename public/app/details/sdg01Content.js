@@ -288,13 +288,16 @@ export class Sdg01DetailContent {
     this.onResize = () => this.resizeScene();
   }
 
-  async render() {
+  render() {
     if (!this.host) return;
     this.disposeRequested = false;
     this.host.innerHTML = this.template();
     this.cacheRefs();
     this.bindEvents();
+    void this.initThreeSceneAsync();
+  }
 
+  async initThreeSceneAsync() {
     const three = await loadThreeGlobal();
     if (this.disposeRequested) return;
 
