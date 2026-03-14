@@ -130,7 +130,7 @@ export class MainView {
       this.render();
     });
 
-    const fullscreenBtn = document.getElementById("fullscreenBtn");
+    const fullscreenBtn = this.root.querySelector("#mainFullscreenBtn");
     if (fullscreenBtn) {
       fullscreenBtn.addEventListener("click", () => this.onFullscreen());
     }
