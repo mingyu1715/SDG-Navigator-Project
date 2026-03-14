@@ -63,6 +63,7 @@ export class DetailView {
   }
 
   showLegacyGoal(goalId) {
+    this.frame.setMode("legacy");
     this.frame.setGoalMeta(goalId);
     if (this.panelWrap) this.panelWrap.hidden = true;
     if (this.legacyHost) this.legacyHost.hidden = false;
@@ -73,6 +74,7 @@ export class DetailView {
   }
 
   showGenericPanel() {
+    this.frame.setMode("generic");
     if (this.legacyHost) this.legacyHost.hidden = true;
     if (this.panelWrap) this.panelWrap.hidden = false;
   }
