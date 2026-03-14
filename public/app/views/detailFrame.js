@@ -11,11 +11,15 @@ export class DetailFrame {
     this.onFullscreen = options.onFullscreen || (() => {});
 
     this.backBtn = root.querySelector("#detailBackBtn");
+    this.pageMark = root.querySelector(".detail-page-mark");
+    this.header = root.querySelector("#detailFrameHeader");
+    this.actions = root.querySelector(".detail-actions");
     this.fullscreenBtn = root.querySelector("#detailFullscreenBtn");
     this.goalLabel = root.querySelector("#detailGoalLabel");
     this.title = root.querySelector("#detailTitle");
     this.sub = root.querySelector("#detailSub");
     this.badge = root.querySelector("#detailGoalBadge");
+    this.mode = "generic";
   }
 
   mount() {
@@ -35,6 +39,16 @@ export class DetailFrame {
     }
   }
 
+  setMode(mode = "generic") {
+    this.mode = mode;
+    const isLegacy = mode === "legacy";
+
+    if (this.backBtn) this.backBtn.hidden = isLegacy;
+    if (this.pageMark) this.pageMark.hidden = isLegacy;
+    if (this.header) this.header.hidden = isLegacy;
+    if (this.actions) this.actions.hidden = isLegacy;
+  }
+
   setGoalMeta(goalId, detail = null) {
     const id = Number(goalId);
     const goal = getGoalById(id);
@@ -50,6 +64,7 @@ export class DetailFrame {
   }
 
   reset() {
+    this.setMode("generic");
     if (this.goalLabel) this.goalLabel.textContent = "SDG GOAL";
     if (this.title) this.title.textContent = "불러오는 중...";
     if (this.sub) this.sub.textContent = "상세 정보를 준비 중입니다.";
