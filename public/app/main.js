@@ -20,26 +20,33 @@ const BOOT_MAX_WAIT_MS = 4500;
 const PRELOAD_REQ_TIMEOUT_MS = 1200;
 const MIN_INITIAL_LOADER_MS = 520;
 
+async function toggleFullscreen() {
+  try {
+    if (!document.fullscreenElement) {
+      await document.documentElement.requestFullscreen();
+      return;
+    }
+    await document.exitFullscreen();
+  } catch {
+    // ignore
+  }
+}
+
 const mainView = new MainView(mainRoot, {
   onSelect: (goalId, cardEl) => {
     void openDetail(goalId, { source: "user", cardEl });
   },
-  onFullscreen: async () => {
-    try {
-      if (!document.fullscreenElement) {
-        await document.documentElement.requestFullscreen();
-      } else {
-        await document.exitFullscreen();
-      }
-    } catch {
-      // ignore
-    }
+  onFullscreen: () => {
+    void toggleFullscreen();
   }
 });
 
 const detailView = new DetailView(detailRoot, {
   onBack: () => {
     void openMain({ source: "user" });
+  },
+  onFullscreen: () => {
+    void toggleFullscreen();
   }
 });
 
