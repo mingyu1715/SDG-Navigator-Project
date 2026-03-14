@@ -76,6 +76,7 @@ function contextForRate(country) {
 export class Sdg04DetailContent {
   constructor(host) {
     this.host = host;
+    this.panelClass = "detail-card-sdg04";
     this.refs = {};
     this.state = this.createInitialState();
   }

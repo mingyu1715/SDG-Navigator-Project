@@ -15,7 +15,6 @@ const appState = {
 const mainRoot = document.getElementById("mainView");
 const detailRoot = document.getElementById("detailView");
 const FIRST_VISIT_KEY = "sdgSpaFirstVisitDoneSessionV1";
-const LEGACY_DETAIL_PREFETCH_IDS = new Set([1]);
 
 const BOOT_MAX_WAIT_MS = 4500;
 const PRELOAD_REQ_TIMEOUT_MS = 1200;
@@ -67,11 +66,8 @@ function nextFrame() {
 }
 
 function getBootPreloadTargets() {
-  const detailPages = SDG_DATA
-    .filter((goal) => LEGACY_DETAIL_PREFETCH_IDS.has(goal.id))
-    .map((goal) => `/detailed/sdg-${String(goal.id).padStart(2, "0")}/index.html`);
   const apiTargets = SDG_DATA.map((goal) => `/api/sdgs/${goal.id}`);
-  return [...detailPages, ...apiTargets];
+  return apiTargets;
 }
 
 function fetchWithTimeout(url, timeoutMs) {
