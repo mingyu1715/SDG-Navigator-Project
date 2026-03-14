@@ -1,8 +1,12 @@
 import { getGoalById } from "../data/sdgs.js";
 import { fetchGoalDetail } from "../services/sdgService.js";
 import { DetailFrame } from "./detailFrame.js";
+import { Sdg04DetailContent } from "../details/sdg04Content.js";
 
-const LEGACY_GOAL_IDS = new Set([1, 4]);
+const LEGACY_GOAL_IDS = new Set([1]);
+const CUSTOM_FRAME_META = {
+  4: { title: "The Lens of Illiteracy", subtitle: "문맹의 시선" }
+};
 
 export class DetailView {
   constructor(root, options = {}) {
@@ -18,9 +22,16 @@ export class DetailView {
     this.legacyHost = root.querySelector("#detailLegacyHost");
     this.legacyFrame = root.querySelector("#detailLegacyFrame");
     this.panelWrap = root.querySelector(".detail-wrap");
+    this.panel = root.querySelector("#detailPanel");
+    this.genericContent = root.querySelector("#detailGenericContent");
+    this.customContent = root.querySelector("#detailCustomContent");
     this.desc = root.querySelector("#detailDesc");
     this.features = root.querySelector("#detailFeatures");
     this.status = root.querySelector("#detailStatus");
+    this.activeCustomRenderer = null;
+    this.customRenderers = new Map([
+      [4, new Sdg04DetailContent(this.customContent)]
+    ]);
   }
 
   mount() {
@@ -28,7 +39,7 @@ export class DetailView {
     window.addEventListener("message", (event) => {
       if (event.origin !== window.location.origin) return;
       if (!event.data) return;
-      if (!["sdg01:back-main", "sdg04:back-main", "sdg:back-main"].includes(event.data.type)) return;
+      if (!["sdg01:back-main", "sdg:back-main"].includes(event.data.type)) return;
       this.onBack();
     });
   }
@@ -63,6 +74,7 @@ export class DetailView {
   }
 
   showLegacyGoal(goalId) {
+    this.destroyActiveCustomRenderer();
     this.frame.setMode("legacy");
     this.frame.setGoalMeta(goalId);
     if (this.panelWrap) this.panelWrap.hidden = true;
@@ -77,6 +89,19 @@ export class DetailView {
     this.frame.setMode("generic");
     if (this.legacyHost) this.legacyHost.hidden = true;
     if (this.panelWrap) this.panelWrap.hidden = false;
+    if (this.panel) this.panel.classList.remove("detail-card-custom");
+    if (this.genericContent) this.genericContent.hidden = false;
+    if (this.customContent) this.customContent.hidden = true;
+  }
+
+  showCustomPanel(renderer) {
+    this.frame.setMode("generic");
+    if (this.legacyHost) this.legacyHost.hidden = true;
+    if (this.panelWrap) this.panelWrap.hidden = false;
+    if (this.panel) this.panel.classList.add("detail-card-custom");
+    if (this.genericContent) this.genericContent.hidden = true;
+    if (this.customContent) this.customContent.hidden = false;
+    this.activeCustomRenderer = renderer;
   }
 
   setVisible(visible) {
@@ -90,6 +115,7 @@ export class DetailView {
 
   reset() {
     // Reset detail state when returning to main so next entry starts fresh.
+    this.destroyActiveCustomRenderer();
     this.showGenericPanel();
     this.frame.reset();
     if (this.desc) this.desc.textContent = "";
@@ -120,6 +146,33 @@ export class DetailView {
     this.status.textContent = "표시 완료";
   }
 
+  destroyActiveCustomRenderer() {
+    if (!this.activeCustomRenderer) return;
+    if (typeof this.activeCustomRenderer.destroy === "function") {
+      this.activeCustomRenderer.destroy();
+    }
+    this.activeCustomRenderer = null;
+  }
+
+  getCustomFrameMeta(goalId, baseGoal) {
+    const meta = CUSTOM_FRAME_META[goalId];
+    if (meta) return meta;
+    return {
+      title: baseGoal?.title || `SDG ${String(goalId).padStart(2, "0")}`,
+      subtitle: baseGoal?.sub || ""
+    };
+  }
+
+  renderCustomDetail(goalId, baseGoal) {
+    const renderer = this.customRenderers.get(goalId);
+    if (!renderer) return false;
+    this.destroyActiveCustomRenderer();
+    this.showCustomPanel(renderer);
+    this.frame.setGoalMeta(goalId, this.getCustomFrameMeta(goalId, baseGoal));
+    renderer.render();
+    return true;
+  }
+
   async load(goalId) {
     const id = Number(goalId);
     const base = getGoalById(id);
@@ -129,6 +182,10 @@ export class DetailView {
       this.showLegacyGoal(id);
       await this.waitLegacyFrameReady();
       return null;
+    }
+
+    if (this.renderCustomDetail(id, base)) {
+      return { custom: true };
     }
 
     this.showGenericPanel();

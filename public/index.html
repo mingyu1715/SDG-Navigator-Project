@@ -47,20 +47,23 @@
       </div>
       <main class="detail-wrap">
         <article class="detail-card" id="detailPanel">
-          <section class="detail-block">
-            <h3>목표 설명</h3>
-            <p id="detailDesc"></p>
-          </section>
+          <div id="detailGenericContent" class="detail-generic-content">
+            <section class="detail-block">
+              <h3>목표 설명</h3>
+              <p id="detailDesc"></p>
+            </section>
 
-          <section class="detail-block">
-            <h3>핵심 포인트</h3>
-            <ul id="detailFeatures"></ul>
-          </section>
+            <section class="detail-block">
+              <h3>핵심 포인트</h3>
+              <ul id="detailFeatures"></ul>
+            </section>
 
-          <section class="detail-block compact">
-            <h3>상태</h3>
-            <p id="detailStatus">대기 중</p>
-          </section>
+            <section class="detail-block compact">
+              <h3>상태</h3>
+              <p id="detailStatus">대기 중</p>
+            </section>
+          </div>
+          <section id="detailCustomContent" class="detail-custom-content" hidden></section>
         </article>
       </main>
       <div class="detail-actions page-actions">
