@@ -317,7 +317,7 @@ export class Sdg01DetailContent {
   template() {
     return `
       <div class="sdg01-exp" data-role="root">
-        <header class="sdg01-hero">
+        <header class="sdg01-hero" data-role="hero">
           <p class="sdg01-kicker">SDG GOAL 01</p>
           <p class="sdg01-main-title">생존의 로또</p>
           <p class="sdg01-subtitle">No Poverty</p>
@@ -392,6 +392,7 @@ export class Sdg01DetailContent {
     const get = (role) => this.host.querySelector(`[data-role="${role}"]`);
     this.refs = {
       root: get("root"),
+      hero: get("hero"),
       canvas: get("canvas"),
       launchButton: get("launchButton"),
       rerollButton: get("rerollButton"),
@@ -579,6 +580,9 @@ export class Sdg01DetailContent {
 
   startLottery(source = "launch") {
     if (!this.refs.root) return;
+    if (source === "launch") {
+      this.refs.hero?.classList.add("is-hidden");
+    }
 
     this.refs.launchButton.disabled = true;
     this.refs.rerollButton.disabled = true;

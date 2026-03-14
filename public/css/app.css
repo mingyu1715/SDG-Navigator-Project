@@ -414,31 +414,36 @@ body {
   z-index: 4;
   text-align: center;
   pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.35s ease;
+}
+
+.sdg01-hero.is-hidden {
+  opacity: 0;
 }
 
 .sdg01-kicker {
   margin: 0;
   font-size: 11px;
-  letter-spacing: 0.12em;
-  color: rgba(214, 224, 240, 0.72);
+  letter-spacing: 0.14em;
+  color: #9ea8bf;
   text-transform: uppercase;
 }
 
 .sdg01-main-title {
-  margin: 7px 0 0;
-  font-size: clamp(30px, 5.2vw, 50px);
-  line-height: 0.96;
-  letter-spacing: -0.03em;
+  margin: 12px 0 0;
+  font-size: clamp(40px, 7.8vw, 84px);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
   font-weight: 800;
-  color: #eef4ff;
+  color: #eff3ff;
 }
 
 .sdg01-subtitle {
-  margin: 6px 0 0;
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(208, 220, 238, 0.75);
+  margin: 2px 0 0;
+  font-size: clamp(16px, 2.4vw, 24px);
+  color: #cfd6e6;
+  font-weight: 500;
 }
 
 .sdg01-stage {
@@ -1056,11 +1061,11 @@ body {
 
 @media (max-width: 560px) {
   .sdg01-main-title {
-    font-size: clamp(32px, 10vw, 44px);
+    font-size: clamp(32px, 11vw, 48px);
   }
 
   .sdg01-subtitle {
-    font-size: 11px;
+    font-size: 16px;
   }
 
   .sdg01-cta-wrap {
