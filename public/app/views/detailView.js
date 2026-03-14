@@ -3,8 +3,6 @@ import { fetchGoalDetail } from "../services/sdgService.js";
 import { DetailFrame } from "./detailFrame.js";
 import { createCustomDetailRenderers, getDetailFrameMeta } from "../details/registry.js";
 
-const LEGACY_GOAL_IDS = new Set([1]);
-
 export class DetailView {
   constructor(root, options = {}) {
     this.root = root;
@@ -16,8 +14,6 @@ export class DetailView {
       onFullscreen: this.onFullscreen
     });
 
-    this.legacyHost = root.querySelector("#detailLegacyHost");
-    this.legacyFrame = root.querySelector("#detailLegacyFrame");
     this.panelWrap = root.querySelector(".detail-wrap");
     this.panel = root.querySelector("#detailPanel");
     this.genericContent = root.querySelector("#detailGenericContent");
@@ -31,69 +27,31 @@ export class DetailView {
 
   mount() {
     this.frame.mount();
-    window.addEventListener("message", (event) => {
-      if (event.origin !== window.location.origin) return;
-      if (!event.data) return;
-      if (!["sdg01:back-main", "sdg:back-main"].includes(event.data.type)) return;
-      this.onBack();
-    });
-  }
-
-  async waitLegacyFrameReady(timeoutMs = 2600) {
-    if (!this.legacyFrame) return;
-    await new Promise((resolve) => {
-      let done = false;
-      const finish = () => {
-        if (done) return;
-        done = true;
-        this.legacyFrame.removeEventListener("load", onLoad);
-        this.legacyFrame.removeEventListener("error", onError);
-        clearTimeout(timer);
-        resolve();
-      };
-      const onLoad = () => finish();
-      const onError = () => finish();
-      const timer = setTimeout(finish, timeoutMs);
-
-      this.legacyFrame.addEventListener("load", onLoad, { once: true });
-      this.legacyFrame.addEventListener("error", onError, { once: true });
-
-      try {
-        if (this.legacyFrame.contentDocument?.readyState === "complete") {
-          finish();
-        }
-      } catch {
-        // ignore
-      }
-    });
-  }
-
-  showLegacyGoal(goalId) {
-    this.destroyActiveCustomRenderer();
-    this.frame.setMode("legacy");
-    this.frame.setGoalMeta(goalId);
-    if (this.panelWrap) this.panelWrap.hidden = true;
-    if (this.legacyHost) this.legacyHost.hidden = false;
-    const legacySrc = `/detailed/sdg-${String(goalId).padStart(2, "0")}/index.html`;
-    if (this.legacyFrame && this.legacyFrame.getAttribute("src") !== legacySrc) {
-      this.legacyFrame.setAttribute("src", legacySrc);
-    }
   }
 
   showGenericPanel() {
     this.frame.setMode("generic");
-    if (this.legacyHost) this.legacyHost.hidden = true;
     if (this.panelWrap) this.panelWrap.hidden = false;
-    if (this.panel) this.panel.classList.remove("detail-card-custom");
+    if (this.panel) {
+      this.panel.classList.remove("detail-card-custom");
+      this.panel.classList.remove("detail-card-sdg01");
+      this.panel.classList.remove("detail-card-sdg04");
+    }
     if (this.genericContent) this.genericContent.hidden = false;
     if (this.customContent) this.customContent.hidden = true;
   }
 
   showCustomPanel(renderer) {
     this.frame.setMode("generic");
-    if (this.legacyHost) this.legacyHost.hidden = true;
     if (this.panelWrap) this.panelWrap.hidden = false;
-    if (this.panel) this.panel.classList.add("detail-card-custom");
+    if (this.panel) {
+      this.panel.classList.add("detail-card-custom");
+      this.panel.classList.remove("detail-card-sdg01");
+      this.panel.classList.remove("detail-card-sdg04");
+      if (renderer && renderer.panelClass) {
+        this.panel.classList.add(renderer.panelClass);
+      }
+    }
     if (this.genericContent) this.genericContent.hidden = true;
     if (this.customContent) this.customContent.hidden = false;
     this.activeCustomRenderer = renderer;
@@ -116,10 +74,6 @@ export class DetailView {
     if (this.desc) this.desc.textContent = "";
     if (this.features) this.features.innerHTML = "";
     if (this.status) this.status.textContent = "대기 중";
-
-    if (this.legacyFrame) {
-      this.legacyFrame.removeAttribute("src");
-    }
   }
 
   renderDetail(goalId, detail) {
@@ -149,13 +103,13 @@ export class DetailView {
     this.activeCustomRenderer = null;
   }
 
-  renderCustomDetail(goalId, baseGoal) {
+  async renderCustomDetail(goalId, baseGoal) {
     const renderer = this.customRenderers.get(goalId);
     if (!renderer) return false;
     this.destroyActiveCustomRenderer();
     this.showCustomPanel(renderer);
     this.frame.setGoalMeta(goalId, getDetailFrameMeta(goalId, baseGoal));
-    renderer.render();
+    await Promise.resolve(renderer.render());
     return true;
   }
 
@@ -164,13 +118,7 @@ export class DetailView {
     const base = getGoalById(id);
     this.setAccent(base?.color || "#101827");
 
-    if (LEGACY_GOAL_IDS.has(id)) {
-      this.showLegacyGoal(id);
-      await this.waitLegacyFrameReady();
-      return null;
-    }
-
-    if (this.renderCustomDetail(id, base)) {
+    if (await this.renderCustomDetail(id, base)) {
       return { custom: true };
     }
 
