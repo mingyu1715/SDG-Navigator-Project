@@ -1,13 +1,8 @@
 const COUNTRIES = [
   { name: "Finland", nameKo: "핀란드", literacyRate: 99, region: "유럽" },
   { name: "South Korea", nameKo: "대한민국", literacyRate: 99, region: "아시아" },
-  { name: "Japan", nameKo: "일본", literacyRate: 99, region: "아시아" },
-  { name: "Brazil", nameKo: "브라질", literacyRate: 93, region: "남미" },
   { name: "India", nameKo: "인도", literacyRate: 74, region: "아시아" },
-  { name: "Pakistan", nameKo: "파키스탄", literacyRate: 59, region: "아시아" },
-  { name: "Afghanistan", nameKo: "아프가니스탄", literacyRate: 37, region: "아시아" },
-  { name: "Niger", nameKo: "니제르", literacyRate: 19, region: "아프리카" },
-  { name: "Chad", nameKo: "차드", literacyRate: 22, region: "아프리카" }
+  { name: "Niger", nameKo: "니제르", literacyRate: 19, region: "아프리카" }
 ];
 
 const SENTENCES = [
@@ -80,20 +75,31 @@ export class Sdg04DetailContent {
     this.frameMode = "immersive";
     this.refs = {};
     this.state = this.createInitialState();
+    this.hasEnteredMain = false;
+    this.stepRevealTimers = [];
   }
 
   createInitialState() {
+    const defaultCountry = COUNTRIES.find((country) => country.name === "India") || COUNTRIES[0];
     return {
-      selectedCountry: COUNTRIES[4],
+      selectedCountry: defaultCountry,
       currentSentenceIndex: 0,
       showKorean: true,
       hasStarted: false
     };
   }
 
+  setTitleSectorHidden(hidden) {
+    const detailRoot = this.host?.closest("#detailView");
+    if (!detailRoot) return;
+    detailRoot.classList.toggle("sdg04-title-hidden", Boolean(hidden));
+  }
+
   render() {
     if (!this.host) return;
     this.state = this.createInitialState();
+    this.setTitleSectorHidden(true);
+    this.hasEnteredMain = false;
     this.host.innerHTML = `
       <div class="sdg04-experience">
         <section class="sdg04-hero" data-role="hero">
@@ -106,15 +112,19 @@ export class Sdg04DetailContent {
             누군가에게는 의미 없는 기호일 뿐입니다.
           </p>
           <p class="sdg04-hint">국가를 선택하여 시작하세요</p>
+          <p class="sdg04-hero-hint">국가를 선택하면 같은 문장이 다르게 읽히는 현실을 체험할 수 있습니다.</p>
           <div class="sdg04-country-grid" data-role="heroCountries"></div>
         </section>
 
-        <section class="sdg04-main hidden" data-role="main">
-          <header class="sdg04-main-header">
-            <button type="button" class="sdg04-lang-toggle" data-role="langToggle">English</button>
+        <section class="sdg04-main" data-role="main" aria-hidden="true">
+          <header class="sdg04-main-header sdg04-step">
+            <p class="sdg04-focus-copy">읽히지 않는 문장이 만드는 현실의 간극</p>
+            <div class="sdg04-head-actions">
+              <button type="button" class="sdg04-lang-toggle" data-role="langToggle">English</button>
+            </div>
           </header>
 
-          <section class="sdg04-card sdg04-country">
+          <section class="sdg04-spotlight sdg04-step">
             <p class="sdg04-overline">선택된 국가</p>
             <h3 data-role="countryNameKo">-</h3>
             <p class="sdg04-muted" data-role="countryMeta">-</p>
@@ -127,39 +137,23 @@ export class Sdg04DetailContent {
                 <div class="sdg04-meter-fill" data-role="literacyFill"></div>
               </div>
             </div>
+            <p class="sdg04-context-line" data-role="contextMessage">-</p>
           </section>
 
-          <section class="sdg04-card sdg04-context" data-role="contextMessage">-</section>
-
-          <section class="sdg04-sentence-nav">
-            <span class="sdg04-muted" data-role="sentenceCount">1 / 1</span>
-            <div class="sdg04-nav-buttons">
-              <button type="button" class="sdg04-nav-btn" data-role="prevSentence" aria-label="이전 문장">‹</button>
-              <button type="button" class="sdg04-nav-btn" data-role="nextSentence" aria-label="다음 문장">›</button>
+          <section class="sdg04-message sdg04-step">
+            <div class="sdg04-message-head">
+              <p class="sdg04-overline">현재 문장</p>
+              <button type="button" class="sdg04-next-btn" data-role="nextSentence">다른 문장</button>
             </div>
-          </section>
-
-          <section class="sdg04-card">
-            <div class="sdg04-badge-line">
-              <span class="sdg04-category" data-role="categoryBadge">교육</span>
-            </div>
+            <p class="sdg04-category" data-role="categoryBadge">교육</p>
             <p class="sdg04-distorted" data-role="distortedText">-</p>
             <p class="sdg04-impact hidden" data-role="impactText">-</p>
+            <p class="sdg04-muted sdg04-sentence-index" data-role="sentenceCount">1 / 1</p>
           </section>
 
-          <section class="sdg04-card">
-            <h4>다른 국가와 비교해보세요</h4>
-            <div class="sdg04-country-grid" data-role="compareCountries"></div>
-          </section>
-
-          <section class="sdg04-stats">
-            <article class="sdg04-card sdg04-stat"><strong>773M</strong><span>전 세계 문맹 성인 인구</span></article>
-            <article class="sdg04-card sdg04-stat"><strong>2/3</strong><span>문맹 인구 중 여성 비율</span></article>
-            <article class="sdg04-card sdg04-stat"><strong>250M</strong><span>기초 문해력 부족 아동</span></article>
-          </section>
-
-          <section class="sdg04-closing">
-            <p>"글을 읽을 수 없다는 것은 세상으로부터 단절되는 것입니다."</p>
+          <section class="sdg04-switch sdg04-step">
+            <p class="sdg04-overline">국가 전환</p>
+            <div class="sdg04-country-grid sdg04-country-grid-compact" data-role="compareCountries"></div>
           </section>
         </section>
       </div>
@@ -184,7 +178,6 @@ export class Sdg04DetailContent {
       literacyFill: get("literacyFill"),
       contextMessage: get("contextMessage"),
       sentenceCount: get("sentenceCount"),
-      prevSentence: get("prevSentence"),
       nextSentence: get("nextSentence"),
       categoryBadge: get("categoryBadge"),
       distortedText: get("distortedText"),
@@ -192,17 +185,32 @@ export class Sdg04DetailContent {
     };
   }
 
+  clearStepMotion() {
+    this.stepRevealTimers.forEach((timer) => window.clearTimeout(timer));
+    this.stepRevealTimers = [];
+    if (!this.host) return;
+    this.host.querySelectorAll(".sdg04-step").forEach((step) => step.classList.remove("in-view"));
+  }
+
+  setupStepMotion() {
+    if (!this.host) return;
+    this.clearStepMotion();
+
+    const steps = this.host.querySelectorAll(".sdg04-step");
+    if (!steps.length) return;
+
+    steps.forEach((step, idx) => {
+      const timer = window.setTimeout(() => {
+        step.classList.add("in-view");
+      }, idx * 90);
+      this.stepRevealTimers.push(timer);
+    });
+  }
+
   bindEvents() {
     if (this.refs.langToggle) {
       this.refs.langToggle.addEventListener("click", () => {
         this.state.showKorean = !this.state.showKorean;
-        this.renderSentence();
-      });
-    }
-
-    if (this.refs.prevSentence) {
-      this.refs.prevSentence.addEventListener("click", () => {
-        this.state.currentSentenceIndex = (this.state.currentSentenceIndex - 1 + SENTENCES.length) % SENTENCES.length;
         this.renderSentence();
       });
     }
@@ -231,6 +239,7 @@ export class Sdg04DetailContent {
       button.addEventListener("click", () => {
         this.state.selectedCountry = country;
         this.state.hasStarted = true;
+        this.setTitleSectorHidden(true);
         this.renderAll();
       });
 
@@ -277,8 +286,22 @@ export class Sdg04DetailContent {
 
   updateVisibility() {
     if (!this.refs.hero || !this.refs.main) return;
-    this.refs.hero.classList.toggle("hidden", this.state.hasStarted);
-    this.refs.main.classList.toggle("hidden", !this.state.hasStarted);
+    const started = Boolean(this.state.hasStarted);
+    const root = this.host?.querySelector(".sdg04-experience");
+    if (root) root.classList.toggle("is-started", started);
+    this.refs.main.setAttribute("aria-hidden", started ? "false" : "true");
+
+    if (!started) {
+      this.hasEnteredMain = false;
+      this.clearStepMotion();
+      return;
+    }
+
+    if (!this.hasEnteredMain) {
+      this.hasEnteredMain = true;
+      this.setupStepMotion();
+      return;
+    }
   }
 
   renderAll() {
@@ -290,12 +313,18 @@ export class Sdg04DetailContent {
   }
 
   reset() {
+    this.setTitleSectorHidden(false);
+    this.clearStepMotion();
+    this.hasEnteredMain = false;
     this.render();
   }
 
   destroy() {
+    this.clearStepMotion();
     this.refs = {};
     if (this.host) this.host.innerHTML = "";
     this.state = this.createInitialState();
+    this.hasEnteredMain = false;
+    this.setTitleSectorHidden(false);
   }
 }

@@ -317,18 +317,6 @@ export class Sdg01DetailContent {
   template() {
     return `
       <div class="sdg01-exp" data-role="root">
-        <header class="sdg01-hero" data-role="hero">
-          <p class="sdg01-goal-label">SDG GOAL 01</p>
-          <h2 class="sdg01-title">생존의 로또</h2>
-          <p class="sdg01-subtitle">No Poverty</p>
-          <p class="sdg01-lead">
-            같은 지구, 다른 출발선.<br />
-            태어나는 위치만으로,<br />
-            하루의 생존 조건이 달라집니다.
-          </p>
-          <p class="sdg01-hint">시작 버튼을 눌러 체험하세요</p>
-        </header>
-
         <main class="sdg01-stage">
           <section class="sdg01-globe-panel">
             <div class="sdg01-globe-frame">
@@ -398,7 +386,6 @@ export class Sdg01DetailContent {
     const get = (role) => this.host.querySelector(`[data-role="${role}"]`);
     this.refs = {
       root: get("root"),
-      hero: get("hero"),
       canvas: get("canvas"),
       launchButton: get("launchButton"),
       rerollButton: get("rerollButton"),
@@ -427,8 +414,34 @@ export class Sdg01DetailContent {
     }
     if (this.refs.panelCloseButton) {
       this.refs.panelCloseButton.addEventListener("click", () => {
-        this.refs.root?.classList.remove("reveal");
+        this.hideResultPanel({ restoreTitle: true });
       });
+    }
+  }
+
+  setTitleSectorHidden(hidden) {
+    const detailRoot = this.host?.closest("#detailView");
+    if (!detailRoot) return;
+    detailRoot.classList.toggle("sdg01-title-hidden", Boolean(hidden));
+  }
+
+  hideResultPanel(options = {}) {
+    const { restoreTitle = false } = options;
+    this.refs.root?.classList.remove("reveal");
+    this.refs.root?.classList.remove("spinning");
+    this.lockOnResult = false;
+    this.spinVelocity = 0.0035;
+
+    if (this.marker) this.marker.visible = false;
+    if (this.markerRing) this.markerRing.visible = false;
+
+    if (this.refs.statusChip) this.refs.statusChip.textContent = "생존의 로또";
+    if (this.refs.targetReadout) {
+      this.refs.targetReadout.textContent = "버튼을 누르면 지구 반대편의 삶이 시작됩니다.";
+    }
+
+    if (restoreTitle) {
+      this.setTitleSectorHidden(false);
     }
   }
 
@@ -587,7 +600,7 @@ export class Sdg01DetailContent {
   startLottery(source = "launch") {
     if (!this.refs.root) return;
     if (source === "launch") {
-      this.refs.hero?.classList.add("is-hidden");
+      this.setTitleSectorHidden(true);
     }
 
     this.refs.launchButton.disabled = true;
@@ -791,6 +804,7 @@ export class Sdg01DetailContent {
   }
 
   reset() {
+    this.setTitleSectorHidden(false);
     void this.render();
   }
 
@@ -799,6 +813,7 @@ export class Sdg01DetailContent {
     window.removeEventListener("resize", this.onResize);
     this.destroyScene();
     this.refs = {};
+    this.setTitleSectorHidden(false);
     if (this.host) {
       this.host.innerHTML = "";
     }
