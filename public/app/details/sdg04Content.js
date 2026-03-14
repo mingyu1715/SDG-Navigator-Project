@@ -77,6 +77,7 @@ export class Sdg04DetailContent {
   constructor(host) {
     this.host = host;
     this.panelClass = "detail-card-sdg04";
+    this.frameMode = "immersive";
     this.refs = {};
     this.state = this.createInitialState();
   }
@@ -96,6 +97,9 @@ export class Sdg04DetailContent {
     this.host.innerHTML = `
       <div class="sdg04-experience">
         <section class="sdg04-hero" data-role="hero">
+          <p class="sdg04-goal-label">SDG GOAL 04</p>
+          <h2 class="sdg04-title">문맹의 시선</h2>
+          <p class="sdg04-subtitle">The Lens of Illiteracy</p>
           <p class="sdg04-lead">
             같은 정보, 다른 세상.<br />
             누군가에게는 기회가 되는 문장이,<br />
@@ -152,6 +156,10 @@ export class Sdg04DetailContent {
             <article class="sdg04-card sdg04-stat"><strong>773M</strong><span>전 세계 문맹 성인 인구</span></article>
             <article class="sdg04-card sdg04-stat"><strong>2/3</strong><span>문맹 인구 중 여성 비율</span></article>
             <article class="sdg04-card sdg04-stat"><strong>250M</strong><span>기초 문해력 부족 아동</span></article>
+          </section>
+
+          <section class="sdg04-closing">
+            <p>"글을 읽을 수 없다는 것은 세상으로부터 단절되는 것입니다."</p>
           </section>
         </section>
       </div>

@@ -266,6 +266,7 @@ export class Sdg01DetailContent {
   constructor(host) {
     this.host = host;
     this.panelClass = "detail-card-sdg01";
+    this.frameMode = "immersive";
     this.refs = {};
     this.THREE = null;
     this.renderer = null;
@@ -317,7 +318,7 @@ export class Sdg01DetailContent {
     return `
       <div class="sdg01-exp" data-role="root">
         <header class="sdg01-hero">
-          <p class="sdg01-kicker">SDG 01 EXPERIENCE</p>
+          <p class="sdg01-kicker">SDG GOAL 01</p>
           <p class="sdg01-main-title">생존의 로또</p>
           <p class="sdg01-subtitle">No Poverty</p>
         </header>
@@ -325,6 +326,8 @@ export class Sdg01DetailContent {
         <main class="sdg01-stage">
           <section class="sdg01-globe-panel">
             <div class="sdg01-globe-frame">
+              <div class="sdg01-orbit sdg01-orbit-a"></div>
+              <div class="sdg01-orbit sdg01-orbit-b"></div>
               <canvas class="sdg01-canvas" data-role="canvas"></canvas>
               <div class="sdg01-globe-overlay">
                 <div class="sdg01-status-chip" data-role="statusChip">생존의 로또</div>

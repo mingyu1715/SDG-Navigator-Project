@@ -42,11 +42,13 @@ export class DetailFrame {
   setMode(mode = "generic") {
     this.mode = mode;
     const isLegacy = mode === "legacy";
+    const isImmersive = mode === "immersive";
 
     if (this.backBtn) this.backBtn.hidden = isLegacy;
     if (this.pageMark) this.pageMark.hidden = isLegacy;
-    if (this.header) this.header.hidden = isLegacy;
+    if (this.header) this.header.hidden = isLegacy || isImmersive;
     if (this.actions) this.actions.hidden = isLegacy;
+    this.root.classList.toggle("detail-mode-immersive", isImmersive);
   }
 
   setGoalMeta(goalId, detail = null) {
