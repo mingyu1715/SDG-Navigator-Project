@@ -42,7 +42,7 @@ export class DetailView {
   }
 
   showCustomPanel(renderer) {
-    this.frame.setMode("generic");
+    this.frame.setMode(renderer?.frameMode || "generic");
     if (this.panelWrap) this.panelWrap.hidden = false;
     if (this.panel) {
       this.panel.classList.add("detail-card-custom");
