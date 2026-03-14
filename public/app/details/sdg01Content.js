@@ -318,9 +318,15 @@ export class Sdg01DetailContent {
     return `
       <div class="sdg01-exp" data-role="root">
         <header class="sdg01-hero" data-role="hero">
-          <p class="sdg01-kicker">SDG GOAL 01</p>
-          <p class="sdg01-main-title">생존의 로또</p>
+          <p class="sdg01-goal-label">SDG GOAL 01</p>
+          <h2 class="sdg01-title">생존의 로또</h2>
           <p class="sdg01-subtitle">No Poverty</p>
+          <p class="sdg01-lead">
+            같은 지구, 다른 출발선.<br />
+            태어나는 위치만으로,<br />
+            하루의 생존 조건이 달라집니다.
+          </p>
+          <p class="sdg01-hint">시작 버튼을 눌러 체험하세요</p>
         </header>
 
         <main class="sdg01-stage">
