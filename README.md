@@ -16,6 +16,7 @@ npm start
 - 카드 클릭 시 문서 이동 없이 in-app 라우팅 전환
 - 브라우저 뒤로가기/앞으로가기 지원 (`history.pushState`)
 - 상세 경로 직접 진입/새로고침 지원 (`/detailed/sdg-xx/`)
+- 과거 링크 호환: `/detailed/sdg-xx/index.html`도 SPA로 리다이렉트 처리
 - 초기 진입 시 오버레이 로더 표시
 - SDG01/SDG04 포함 상세 화면은 iframe 없이 SPA 내부 렌더링
 
@@ -37,6 +38,7 @@ npm start
 - `public/app/services/sdgService.js`: 상세 데이터 로드
 - `public/app/data/sdgs.js`: SDG 기본 메타 데이터
 - `public/app/data/detailDrafts.js`: SDG02~17 임시 상세 초안 데이터
+- `public/detailed/*`: 사용 중단(레거시 정적 상세 제거)
 
 ## API
 

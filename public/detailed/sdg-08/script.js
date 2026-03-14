@@ -1,1 +1,0 @@
-initDetailPage(8);
