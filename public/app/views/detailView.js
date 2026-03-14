@@ -1,12 +1,9 @@
 import { getGoalById } from "../data/sdgs.js";
 import { fetchGoalDetail } from "../services/sdgService.js";
 import { DetailFrame } from "./detailFrame.js";
-import { Sdg04DetailContent } from "../details/sdg04Content.js";
+import { createCustomDetailRenderers, getDetailFrameMeta } from "../details/registry.js";
 
 const LEGACY_GOAL_IDS = new Set([1]);
-const CUSTOM_FRAME_META = {
-  4: { title: "The Lens of Illiteracy", subtitle: "문맹의 시선" }
-};
 
 export class DetailView {
   constructor(root, options = {}) {
@@ -29,9 +26,7 @@ export class DetailView {
     this.features = root.querySelector("#detailFeatures");
     this.status = root.querySelector("#detailStatus");
     this.activeCustomRenderer = null;
-    this.customRenderers = new Map([
-      [4, new Sdg04DetailContent(this.customContent)]
-    ]);
+    this.customRenderers = createCustomDetailRenderers(this.customContent);
   }
 
   mount() {
@@ -154,21 +149,12 @@ export class DetailView {
     this.activeCustomRenderer = null;
   }
 
-  getCustomFrameMeta(goalId, baseGoal) {
-    const meta = CUSTOM_FRAME_META[goalId];
-    if (meta) return meta;
-    return {
-      title: baseGoal?.title || `SDG ${String(goalId).padStart(2, "0")}`,
-      subtitle: baseGoal?.sub || ""
-    };
-  }
-
   renderCustomDetail(goalId, baseGoal) {
     const renderer = this.customRenderers.get(goalId);
     if (!renderer) return false;
     this.destroyActiveCustomRenderer();
     this.showCustomPanel(renderer);
-    this.frame.setGoalMeta(goalId, this.getCustomFrameMeta(goalId, baseGoal));
+    this.frame.setGoalMeta(goalId, getDetailFrameMeta(goalId, baseGoal));
     renderer.render();
     return true;
   }
