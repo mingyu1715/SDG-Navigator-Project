@@ -422,7 +422,7 @@ body {
   opacity: 0;
 }
 
-.sdg01-kicker {
+.sdg01-goal-label {
   margin: 0;
   font-size: 11px;
   letter-spacing: 0.14em;
@@ -430,7 +430,7 @@ body {
   text-transform: uppercase;
 }
 
-.sdg01-main-title {
+.sdg01-title {
   margin: 12px 0 0;
   font-size: clamp(40px, 7.8vw, 84px);
   line-height: 1.02;
@@ -444,6 +444,23 @@ body {
   font-size: clamp(16px, 2.4vw, 24px);
   color: #cfd6e6;
   font-weight: 500;
+}
+
+.sdg01-lead {
+  margin: 22px 0 0;
+  line-height: 1.58;
+  color: #c2cadb;
+  font-size: 16px;
+  text-align: center;
+}
+
+.sdg01-hint {
+  margin: 18px 0 0;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8893aa;
+  text-align: center;
 }
 
 .sdg01-stage {
@@ -1060,12 +1077,22 @@ body {
 }
 
 @media (max-width: 560px) {
-  .sdg01-main-title {
+  .sdg01-title {
     font-size: clamp(32px, 11vw, 48px);
   }
 
   .sdg01-subtitle {
     font-size: 16px;
+  }
+
+  .sdg01-lead {
+    font-size: 14px;
+    margin-top: 16px;
+  }
+
+  .sdg01-hint {
+    font-size: 11px;
+    margin-top: 14px;
   }
 
   .sdg01-cta-wrap {
