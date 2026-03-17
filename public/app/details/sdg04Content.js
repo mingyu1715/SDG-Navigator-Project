@@ -36,6 +36,27 @@ const SENTENCES = [
   }
 ];
 
+const RELATED_RESOURCES = [
+  {
+    type: "VIDEO",
+    title: "UNESCO Education Playlist",
+    description: "교육을 받지 못한 아동의 현실을 다룬 영상 모음",
+    url: "https://www.youtube.com/@UNESCO/videos"
+  },
+  {
+    type: "ARTICLE",
+    title: "UNICEF: Education",
+    description: "문해율 격차와 교육 접근성 문제를 설명한 기사",
+    url: "https://www.unicef.org/education"
+  },
+  {
+    type: "REPORT",
+    title: "UNESCO UIS Literacy Data",
+    description: "UNESCO 기반 문해율 통계를 확인할 수 있는 보고서 페이지",
+    url: "https://uis.unesco.org/en/topic/literacy"
+  }
+];
+
 const SYMBOLS = ["#", "@", "%", "&", "*", "?", "!", "▓", "▒", "░", "◼"];
 
 function randomSymbol() {
@@ -93,6 +114,17 @@ export class Sdg04DetailContent {
     const detailRoot = this.host?.closest("#detailView");
     if (!detailRoot) return;
     detailRoot.classList.toggle("sdg04-title-hidden", Boolean(hidden));
+  }
+
+  renderResourceItems() {
+    return RELATED_RESOURCES.map((resource) => `
+      <article class="sdg04-resource-item">
+        <p class="sdg04-resource-type">${resource.type}</p>
+        <h4 class="sdg04-resource-title">${resource.title}</h4>
+        <p class="sdg04-resource-desc">${resource.description}</p>
+        <a class="sdg04-resource-open" href="${resource.url}" target="_blank" rel="noopener noreferrer">열기</a>
+      </article>
+    `).join("");
   }
 
   render() {
@@ -154,6 +186,17 @@ export class Sdg04DetailContent {
           <section class="sdg04-switch sdg04-step">
             <p class="sdg04-overline">국가 전환</p>
             <div class="sdg04-country-grid sdg04-country-grid-compact" data-role="compareCountries"></div>
+          </section>
+
+          <section class="sdg04-resources sdg04-step">
+            <p class="sdg04-overline">현실 자료</p>
+            <h3 class="sdg04-resources-title">관련 자료</h3>
+            <p class="sdg04-resources-copy">
+              체험 아래에서 실제 기사, 영상, 보고서를 통해 교육 격차의 현실을 함께 확인해보세요.
+            </p>
+            <div class="sdg04-resource-list">
+              ${this.renderResourceItems()}
+            </div>
           </section>
         </section>
       </div>
