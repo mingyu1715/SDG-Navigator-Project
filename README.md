@@ -18,7 +18,6 @@ npm start
 - 상세 경로 직접 진입/새로고침 지원 (`/detailed/sdg-xx/`)
 - 과거 링크 호환: `/detailed/sdg-xx/index.html`도 SPA로 리다이렉트 처리
 - 초기 진입 시 오버레이 로더 표시
-- SDG01/SDG04 포함 상세 화면은 iframe 없이 SPA 내부 렌더링
 
 ## 폴더 구조 (핵심)
 
