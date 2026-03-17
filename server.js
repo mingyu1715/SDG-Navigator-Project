@@ -5,7 +5,7 @@ const { sendJson, sendFile, parseBody } = require("./lib/httpUtils");
 const { handleSdgRoutes } = require("./routes/sdgRoutes");
 const sdgServices = require("./services/sdg");
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8200;
 const PUBLIC_DIR = path.join(__dirname, "public");
 const LEGACY_DETAIL_INDEX_RE = /^\/detailed\/sdg-\d{2}\/index\.html$/;
 

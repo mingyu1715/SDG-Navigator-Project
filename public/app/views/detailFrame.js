@@ -46,10 +46,11 @@ export class DetailFrame {
     const isLegacy = mode === "legacy";
     const isImmersive = mode === "immersive";
 
-    if (this.backBtn) this.backBtn.hidden = isLegacy;
-    if (this.pageMark) this.pageMark.hidden = isLegacy;
+    // Keep global navigation controls visible across all detail modes.
+    if (this.backBtn) this.backBtn.hidden = false;
+    if (this.pageMark) this.pageMark.hidden = false;
+    if (this.actions) this.actions.hidden = false;
     if (this.header) this.header.hidden = isLegacy;
-    if (this.actions) this.actions.hidden = isLegacy;
     this.root.classList.toggle("detail-mode-immersive", isImmersive);
   }
 

@@ -196,6 +196,27 @@ const LIFE_SCENARIOS = [
   }
 ];
 
+const RELATED_RESOURCES = [
+  {
+    type: "VIDEO",
+    title: "UNDP Channel: Poverty Stories",
+    description: "빈곤이 일상에 미치는 영향을 다룬 현장 영상 모음",
+    url: "https://www.youtube.com/@UNDP/videos"
+  },
+  {
+    type: "ARTICLE",
+    title: "UN SDG 1: No Poverty",
+    description: "전 세계 빈곤 현황과 핵심 과제를 정리한 아티클",
+    url: "https://www.un.org/sustainabledevelopment/poverty/"
+  },
+  {
+    type: "REPORT",
+    title: "World Bank: Poverty and Shared Prosperity",
+    description: "최신 빈곤 지표와 국가별 추세를 다루는 보고서",
+    url: "https://www.worldbank.org/en/publication/poverty-and-shared-prosperity"
+  }
+];
+
 let threeScriptPromise = null;
 
 function clamp(value, min, max) {
@@ -314,6 +335,17 @@ export class Sdg01DetailContent {
     window.addEventListener("resize", this.onResize);
   }
 
+  renderResourceItems() {
+    return RELATED_RESOURCES.map((resource) => `
+      <article class="sdg01-resource-item">
+        <p class="sdg01-resource-type">${resource.type}</p>
+        <h4 class="sdg01-resource-title">${resource.title}</h4>
+        <p class="sdg01-resource-desc">${resource.description}</p>
+        <a class="sdg01-resource-link" href="${resource.url}" target="_blank" rel="noopener noreferrer">열기</a>
+      </article>
+    `).join("");
+  }
+
   template() {
     return `
       <div class="sdg01-exp" data-role="root">
@@ -378,6 +410,19 @@ export class Sdg01DetailContent {
             </div>
           </aside>
         </main>
+
+        <section class="sdg01-resources-wrap">
+          <article class="sdg01-resources-card">
+            <span class="sdg01-fact-label">현실 자료</span>
+            <h3 class="sdg01-resources-title">관련 자료</h3>
+            <p class="sdg01-resources-copy">
+              체험으로 느낀 격차를 실제 기사, 영상, 보고서로 이어서 확인해보세요.
+            </p>
+            <div class="sdg01-resource-list">
+              ${this.renderResourceItems()}
+            </div>
+          </article>
+        </section>
       </div>
     `;
   }
