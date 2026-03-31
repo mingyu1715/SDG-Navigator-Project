@@ -1,4 +1,4 @@
-export const SDG_DATA = [
+const FALLBACK_SDG_DATA = [
   { id: 1, color: "#E5243B", title: "NO POVERTY", sub: "빈곤 퇴치", detailed: "취약계층 기본생활 보장과 안전망 강화로 빈곤의 악순환을 줄입니다." },
   { id: 2, color: "#DDA63A", title: "ZERO HUNGER", sub: "기아 종식", detailed: "안정적 식량 접근성과 영양 개선으로 기아와 영양 불균형을 해소합니다." },
   { id: 3, color: "#4C9F38", title: "GOOD HEALTH", sub: "건강과 웰빙", detailed: "예방 중심 보건체계와 의료 접근성 개선으로 건강한 삶을 지원합니다." },
@@ -17,6 +17,22 @@ export const SDG_DATA = [
   { id: 16, color: "#00689D", title: "PEACE JUSTICE", sub: "평화와 제도", detailed: "투명하고 책임 있는 제도 구축으로 사회 신뢰를 높입니다.", titleSize: 25 },
   { id: 17, color: "#19486A", title: "PARTNERSHIPS", sub: "협력", detailed: "정부·기업·시민사회 협력을 통해 목표 이행 역량을 확장합니다.", titleSize: 21 }
 ];
+
+async function loadSdgData() {
+  try {
+    const res = await fetch("/app/data/sdgs.json", { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (!Array.isArray(data) || !data.length) throw new Error("Invalid SDG data");
+    return data;
+  } catch {
+    return FALLBACK_SDG_DATA;
+  }
+}
+
+export const SDG_DATA = Object.freeze(
+  (await loadSdgData()).map((goal) => ({ ...goal }))
+);
 
 export function getGoalById(goalId) {
   return SDG_DATA.find((goal) => goal.id === Number(goalId)) || null;

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "spoiled-apple",
+    "key": "apple",
+    "name": "변색된 사과",
+    "count": 2,
+    "emoji": "🍎",
+    "status": "상함",
+    "note": "냉장고 구석에서 잊혀진 상태"
+  },
+  {
+    "id": "opened-milk",
+    "key": "milk",
+    "name": "개봉 우유",
+    "count": 1,
+    "emoji": "🥛",
+    "status": "임박",
+    "note": "유통기한 임박"
+  },
+  {
+    "id": "stale-bread",
+    "key": "bread",
+    "name": "굳은 식빵",
+    "count": 1,
+    "emoji": "🍞",
+    "status": "건조",
+    "note": "보관 실수로 품질 저하"
+  },
+  {
+    "id": "leftover-meat",
+    "key": "meat",
+    "name": "남은 고기",
+    "count": 1,
+    "emoji": "🥩",
+    "status": "주의",
+    "note": "남은 분량 관리 실패"
+  }
+]

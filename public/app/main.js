@@ -215,6 +215,7 @@ function bootstrapApp() {
   emitRoute(initial);
 
   appState.initialized = true;
+  return initial;
 }
 
 async function bootstrap() {
@@ -241,7 +242,7 @@ async function bootstrap() {
       ]);
     }
   } finally {
-    bootstrapApp();
+    const initialRoute = bootstrapApp();
     // Keep loader visible for a minimum duration to avoid flicker on fast boots.
     const elapsed = performance.now() - loaderShownAt;
     const remain = Math.max(0, MIN_INITIAL_LOADER_MS - elapsed);
@@ -249,6 +250,10 @@ async function bootstrap() {
       await new Promise((resolve) => setTimeout(resolve, remain));
     }
     hideLoader();
+    if (initialRoute?.name === "main") {
+      await nextFrame();
+      mainView.playIntroToGoal(9);
+    }
   }
 }
 

@@ -35,6 +35,7 @@ export class DetailView {
     if (this.panel) {
       this.panel.classList.remove("detail-card-custom");
       this.panel.classList.remove("detail-card-sdg01");
+      this.panel.classList.remove("detail-card-sdg02");
       this.panel.classList.remove("detail-card-sdg04");
     }
     if (this.genericContent) this.genericContent.hidden = false;
@@ -47,6 +48,7 @@ export class DetailView {
     if (this.panel) {
       this.panel.classList.add("detail-card-custom");
       this.panel.classList.remove("detail-card-sdg01");
+      this.panel.classList.remove("detail-card-sdg02");
       this.panel.classList.remove("detail-card-sdg04");
       if (renderer && renderer.panelClass) {
         this.panel.classList.add(renderer.panelClass);
@@ -60,6 +62,9 @@ export class DetailView {
   setVisible(visible) {
     this.root.classList.toggle("active", visible);
     this.root.setAttribute("aria-hidden", visible ? "false" : "true");
+    if (visible) {
+      this.root.scrollTop = 0;
+    }
   }
 
   setAccent(color) {
@@ -71,6 +76,7 @@ export class DetailView {
     this.destroyActiveCustomRenderer();
     this.showGenericPanel();
     this.frame.reset();
+    this.root.scrollTop = 0;
     if (this.desc) this.desc.textContent = "";
     if (this.features) this.features.innerHTML = "";
     if (this.status) this.status.textContent = "대기 중";

@@ -43,7 +43,10 @@ export class MainView {
       snapDurationMs: 680,
       inertiaSnapDurationMs: 560,
       dragSensitivity: 0.105,
-      moveThreshold: 6
+      moveThreshold: 6,
+      introGoalId: 9,
+      introSpinTurns: 2,
+      introDurationMs: 1500
     };
 
     this.layout = {
@@ -68,6 +71,7 @@ export class MainView {
 
     this.tweenRafId = null;
     this.items = [];
+    this.isIntroPlaying = false;
   }
 
   mount() {
@@ -77,8 +81,31 @@ export class MainView {
     this.render();
   }
 
+  playIntroToGoal(goalId = this.config.introGoalId) {
+    if (this.isIntroPlaying) return;
+    const item = this.items.find((entry) => !entry.isFiller && entry.goalId === Number(goalId));
+    if (!item) return;
+
+    this.stopTween();
+    this.stopInertia();
+    this.state.suppressClick = true;
+    this.isIntroPlaying = true;
+
+    const diff = normalizeAngle(item.baseAngle + this.state.rotation - this.config.focusAngle);
+    const settleRotation = this.state.rotation - diff;
+    const targetRotation = settleRotation + this.config.introSpinTurns * 360;
+
+    this.animateRotationTo(targetRotation, this.config.introDurationMs, () => {
+      this.state.rotation = normalizeAngle(this.state.rotation);
+      this.state.suppressClick = false;
+      this.isIntroPlaying = false;
+      this.render();
+    });
+  }
+
   bindEvents() {
     this.root.addEventListener("pointerdown", (event) => {
+      if (this.isIntroPlaying) return;
       if (event.button !== 0) return;
 
       this.drag.pointerId = event.pointerId;
@@ -176,6 +203,10 @@ export class MainView {
       this.cardsLayer.appendChild(el);
 
       el.addEventListener("click", (event) => {
+        if (this.isIntroPlaying) {
+          event.preventDefault();
+          return;
+        }
         if (this.state.suppressClick) {
           event.preventDefault();
           return;

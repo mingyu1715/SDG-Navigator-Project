@@ -1,0 +1,24 @@
+{
+  "waterPerUnitL": {
+    "apple": 70,
+    "milk": 255,
+    "bread": 40,
+    "meat": 1540
+  },
+  "priceKrw": {
+    "apple": 1500,
+    "milk": 2800,
+    "bread": 3200,
+    "meat": 4800
+  },
+  "avgUnitWeightKg": {
+    "apple": 0.18,
+    "milk": 1.0,
+    "bread": 0.45,
+    "meat": 0.28
+  },
+  "mealCostKrw": 600,
+  "co2eKgPerKgWaste": 2.5,
+  "methaneMultiplier": 25,
+  "drinkPerPersonLPerDay": 2
+}

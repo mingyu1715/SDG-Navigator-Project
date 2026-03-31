@@ -1,0 +1,49 @@
+{
+  "goalLabel": "SDG GOAL 02",
+  "headline": "잊혀진 냉장고의 복수",
+  "subheadline": "The Revenge of a Forgotten Fridge",
+  "lead": "버리는 행동은 자원 낭비와 탄소 배출로 이어집니다.",
+  "openButton": "냉장고 열기",
+  "openHint": "문이나 버튼으로 열 수 있습니다.",
+  "selectTitle": "오늘 버릴 음식을 선택하세요",
+  "selectLead": "냉장고 속 유통기한이 지난 음식들",
+  "selectCtaReady": "버리기",
+  "selectCtaIdle": "음식을 선택하세요",
+  "selectedCountTemplate": "{count}개 선택됨",
+  "reportTitle": "당신이 버린 것들",
+  "reportMessage": "전 세계에서 생산되는 음식의 1/3이 버려집니다. 작은 변화가 지구를 지킵니다.",
+  "dragHint": "식재료를 잡아 버려보세요.",
+  "binLabel": "버리는 순간, 낭비는 끝나지 않습니다.",
+  "resultTitleTemplate": "당신이 방금 버린 {item} {count}개의 대가",
+  "waterLabel": "자원 낭비 (물)",
+  "waterDescTemplate": "약 {waterL}L의 물이 함께 사라졌습니다. 성인 {people}명이 하루 동안 마실 수 있는 양입니다.",
+  "opportunityLabel": "기회비용",
+  "opportunityDescTemplate": "해당 금액은 기아 아동 약 {meals}명의 한 끼를 지원할 수 있는 수준입니다.",
+  "carbonLabel": "탄소 발자국",
+  "carbonDescTemplate": "폐기 과정에서 약 {co2}kgCO2e가 추가 배출됩니다.",
+  "methaneNoteTemplate": "음식물 쓰레기에서 발생하는 메탄은 이산화탄소보다 약 {multiplier}배 강한 온난화 영향을 가집니다.",
+  "retryButton": "다시 체험하기",
+  "scrollHint": "아래로 내려 관련 자료를 확인해보세요",
+  "resourcesTitle": "관련 자료",
+  "resourcesLead": "체험 수치를 실제 데이터와 연결해 보세요.",
+  "resources": [
+    {
+      "type": "DATA",
+      "title": "Water Footprint Network",
+      "description": "식재료별 물 사용량을 확인할 수 있는 데이터베이스",
+      "url": "https://www.waterfootprint.org/"
+    },
+    {
+      "type": "REPORT",
+      "title": "UNEP Food Waste Index",
+      "description": "전 세계 음식물 폐기량과 환경 영향 보고서",
+      "url": "https://www.unep.org/resources/report/unep-food-waste-index-report-2024"
+    },
+    {
+      "type": "ARTICLE",
+      "title": "WFP Hunger Explained",
+      "description": "기아 문제와 식량 접근성의 구조적 원인",
+      "url": "https://www.wfp.org/hunger"
+    }
+  ]
+}
