@@ -38,7 +38,7 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  sendFile(res, filePath);
+  sendFile(req, res, filePath);
 });
 
 server.listen(PORT, () => {

@@ -1,7 +1,3 @@
-import { Sdg01DetailContent } from "./sdg01Content.js";
-import { Sdg02DetailContent } from "./sdg02Content.js";
-import { Sdg04DetailContent } from "./sdg04Content.js";
-
 const FRAME_META_OVERRIDES = new Map([
   [
     1,
@@ -22,6 +18,15 @@ const FRAME_META_OVERRIDES = new Map([
     }
   ],
   [
+    3,
+    {
+      title: "Same Disease, Different Outcome",
+      subtitle: "응급 접근의 격차",
+      lead: "같은 응급상황이라도, 국가별 의료 접근 조건이 다르면 결과는 완전히 달라집니다.",
+      hint: "체험 시작 후 두 환경의 상태 변화를 비교하세요"
+    }
+  ],
+  [
     4,
     {
       title: "The Lens of Illiteracy",
@@ -32,12 +37,49 @@ const FRAME_META_OVERRIDES = new Map([
   ]
 ]);
 
-export function createCustomDetailRenderers(customHost) {
-  return new Map([
-    [1, new Sdg01DetailContent(customHost)],
-    [2, new Sdg02DetailContent(customHost)],
-    [4, new Sdg04DetailContent(customHost)]
-  ]);
+const CUSTOM_RENDERER_FACTORIES = new Map([
+  [
+    1,
+    async (customHost) => {
+      const mod = await import("./sdg01Content.js");
+      return new mod.Sdg01DetailContent(customHost);
+    }
+  ],
+  [
+    2,
+    async (customHost) => {
+      const mod = await import("./sdg02Content.js");
+      return new mod.Sdg02DetailContent(customHost);
+    }
+  ],
+  [
+    3,
+    async (customHost) => {
+      const mod = await import("./sdg03Content.js");
+      return new mod.Sdg03DetailContent(customHost);
+    }
+  ],
+  [
+    4,
+    async (customHost) => {
+      const mod = await import("./sdg04Content.js");
+      return new mod.Sdg04DetailContent(customHost);
+    }
+  ]
+]);
+
+export function hasCustomDetailRenderer(goalId) {
+  return CUSTOM_RENDERER_FACTORIES.has(Number(goalId));
+}
+
+export async function createCustomDetailRenderer(goalId, customHost) {
+  const factory = CUSTOM_RENDERER_FACTORIES.get(Number(goalId));
+  if (!factory) return null;
+  try {
+    return await factory(customHost);
+  } catch {
+    return null;
+  }
 }
 
 export function getDetailFrameMeta(goalId, baseGoal) {

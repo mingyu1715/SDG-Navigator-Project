@@ -11,6 +11,8 @@ function cloneCard(cardEl) {
   return { clone, rect };
 }
 
+const MIN_TRANSITION_LOADER_MS = 1200;
+
 function createLayer(accent, rect) {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
@@ -30,6 +32,19 @@ function createLayer(accent, rect) {
   return { layer, maxRadius };
 }
 
+function createFloatingLoader() {
+  const loader = document.createElement("div");
+  loader.className = "route-transition-loader";
+  loader.setAttribute("aria-live", "polite");
+  loader.setAttribute("aria-label", "상세 페이지 로딩 중");
+  loader.innerHTML = `
+    <div class="route-transition-loader-spinner" aria-hidden="true"></div>
+    <p class="route-transition-loader-text">상세 정보를 불러오는 중...</p>
+  `;
+  document.body.appendChild(loader);
+  return loader;
+}
+
 export function transitionMainToDetail({ cardEl, accent, detailRoot, onHalfOpen, waitForReady }) {
   const gsap = window.gsap;
   if (!gsap || !cardEl) {
@@ -39,6 +54,7 @@ export function transitionMainToDetail({ cardEl, accent, detailRoot, onHalfOpen,
 
   const { clone, rect } = cloneCard(cardEl);
   const { layer, maxRadius } = createLayer(accent, rect);
+  const loader = createFloatingLoader();
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   const cardCenterX = rect.left + rect.width / 2;
@@ -56,6 +72,7 @@ export function transitionMainToDetail({ cardEl, accent, detailRoot, onHalfOpen,
       settled = true;
       if (clone.parentNode) clone.parentNode.removeChild(clone);
       if (layer.parentNode) layer.parentNode.removeChild(layer);
+      if (loader.parentNode) loader.parentNode.removeChild(loader);
       gsap.set(detailRoot, { clearProps: "y" });
       resolve();
     };
@@ -83,15 +100,38 @@ export function transitionMainToDetail({ cardEl, accent, detailRoot, onHalfOpen,
         if (onHalfOpen) onHalfOpen();
         if (waitForReady) {
           tl.pause();
+          let loaderShownAt = 0;
+          if (loader) {
+            loader.classList.add("is-visible");
+            loaderShownAt = performance.now();
+          }
           let resumed = false;
           const resume = () => {
             if (resumed) return;
             resumed = true;
-            try {
-              tl.play();
-            } catch {
-              // ignore
+            const resumeTimeline = () => {
+              if (loader) {
+                loader.classList.remove("is-visible");
+              }
+              try {
+                tl.play();
+              } catch {
+                // ignore
+              }
+            };
+
+            if (!loader || !loaderShownAt) {
+              resumeTimeline();
+              return;
             }
+
+            const elapsed = performance.now() - loaderShownAt;
+            const remain = Math.max(0, MIN_TRANSITION_LOADER_MS - elapsed);
+            if (remain > 0) {
+              window.setTimeout(resumeTimeline, remain);
+              return;
+            }
+            resumeTimeline();
           };
           const resumeTimer = window.setTimeout(resume, 4200);
 
