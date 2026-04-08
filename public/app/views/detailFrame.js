@@ -1,8 +1,5 @@
 import { getGoalById } from "../data/sdgs.js";
-
-function toGoalText(goalId) {
-  return String(goalId).padStart(2, "0");
-}
+import { toDetailFrameViewModel } from "../data/sdgViewAdapters.js";
 
 export class DetailFrame {
   constructor(root, options = {}) {
@@ -57,19 +54,14 @@ export class DetailFrame {
   setGoalMeta(goalId, detail = null) {
     const id = Number(goalId);
     const goal = getGoalById(id);
-    const goalText = toGoalText(id);
+    const frameView = toDetailFrameViewModel(id, goal, detail);
 
-    const koreanTitle = detail?.subtitle || goal?.sub || detail?.title || goal?.title || `목표 ${goalText}`;
-    const englishSubtitle = detail?.title || goal?.title || `SDG GOAL ${goalText}`;
-    const leadText = detail?.lead || detail?.description || "목표의 핵심 맥락을 확인해보세요.";
-    const hintText = detail?.hint || "아래 콘텐츠에서 상세 정보를 확인하세요.";
-
-    if (this.goalLabel) this.goalLabel.textContent = `SDG GOAL ${goalText}`;
-    if (this.title) this.title.textContent = koreanTitle;
-    if (this.sub) this.sub.textContent = englishSubtitle;
-    if (this.lead) this.lead.textContent = leadText;
-    if (this.hint) this.hint.textContent = hintText;
-    if (this.badge) this.badge.textContent = String(id);
+    if (this.goalLabel) this.goalLabel.textContent = frameView.goalLabel;
+    if (this.title) this.title.textContent = frameView.title;
+    if (this.sub) this.sub.textContent = frameView.subtitle;
+    if (this.lead) this.lead.textContent = frameView.lead;
+    if (this.hint) this.hint.textContent = frameView.hint;
+    if (this.badge) this.badge.textContent = frameView.badge;
   }
 
   reset() {

@@ -1,4 +1,5 @@
 import { normalizeCustomDetailRenderer } from "./rendererContract.js";
+import { toDefaultDetailFrameMeta } from "../data/sdgViewAdapters.js";
 
 const FRAME_META_OVERRIDES = new Map([
   [
@@ -122,8 +123,5 @@ export function getDetailFrameMeta(goalId, baseGoal) {
   const override = FRAME_META_OVERRIDES.get(id);
   if (override) return override;
 
-  return {
-    title: baseGoal?.title || `SDG ${String(id).padStart(2, "0")}`,
-    subtitle: baseGoal?.sub || ""
-  };
+  return toDefaultDetailFrameMeta(id, baseGoal);
 }

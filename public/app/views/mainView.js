@@ -1,6 +1,14 @@
 import { SDG_DATA } from "../data/sdgs.js";
+import { toMainCardViewModel } from "../data/sdgViewAdapters.js";
 
-const BLACK_FILLER = { id: 0, color: "#111111", title: "", sub: "", detailed: "", isFiller: true };
+const BLACK_FILLER = {
+  id: 0,
+  color: "#111111",
+  title: "",
+  subtitle: "",
+  description: "",
+  isFiller: true
+};
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -175,6 +183,7 @@ export class MainView {
     this.items = Array.from({ length: ringSlots }, (_, index) => {
       const itemData = sequence[index];
       const isFiller = Boolean(itemData.isFiller);
+      const cardView = isFiller ? itemData : toMainCardViewModel(itemData);
       const baseAngle = this.config.baseStart + index * this.config.gap;
 
       const el = document.createElement("button");
@@ -186,16 +195,16 @@ export class MainView {
 
       const card = document.createElement("div");
       card.className = "card";
-      card.style.setProperty("--card", itemData.color);
+      card.style.setProperty("--card", cardView.color);
       if (isFiller) card.classList.add("filler-card");
-      const titleStyle = itemData.titleSize ? ` style=\"font-size:${itemData.titleSize}px\"` : "";
+      const titleStyle = cardView.titleSize ? ` style=\"font-size:${cardView.titleSize}px\"` : "";
       card.innerHTML = isFiller
         ? ""
         : `
-          <p class="goal-no">${String(itemData.id).padStart(2, "0")}</p>
-          <h1 class="goal-title"${titleStyle}>${itemData.title}</h1>
-          <p class="goal-sub">${itemData.sub}</p>
-          <p class="desc">${itemData.detailed}</p>
+          <p class="goal-no">${String(cardView.id).padStart(2, "0")}</p>
+          <h1 class="goal-title"${titleStyle}>${cardView.title}</h1>
+          <p class="goal-sub">${cardView.subtitle}</p>
+          <p class="desc">${cardView.description}</p>
           <div class="meta"><span>SDG NAVIGATOR</span><span>TEXT EDITION</span></div>
         `;
 
@@ -212,10 +221,10 @@ export class MainView {
           return;
         }
         if (isFiller) return;
-        this.focusCardAndSelect({ el, baseAngle, isFiller, goalId: itemData.id });
+        this.focusCardAndSelect({ el, baseAngle, isFiller, goalId: cardView.id });
       });
 
-      return { el, baseAngle, isFiller, goalId: itemData.id };
+      return { el, baseAngle, isFiller, goalId: cardView.id };
     });
   }
 
