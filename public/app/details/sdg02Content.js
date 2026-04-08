@@ -1,144 +1,25 @@
-import { escapeHtml, loadJsonData, toggleDetailViewClass } from "./sharedRuntime.js";
-
-const DEFAULT_INGREDIENTS = [
-  {
-    id: "spoiled-apple",
-    key: "apple",
-    name: "사과",
-    count: 2,
-    emoji: "🍎"
-  },
-  {
-    id: "opened-milk",
-    key: "milk",
-    name: "우유",
-    count: 1,
-    emoji: "🥛"
-  },
-  {
-    id: "stale-bread",
-    key: "bread",
-    name: "빵",
-    count: 1,
-    emoji: "🍞"
-  },
-  {
-    id: "leftover-meat",
-    key: "meat",
-    name: "고기",
-    count: 1,
-    emoji: "🥩"
-  }
-];
-
-const DEFAULT_IMPACT_RULES = {
-  waterPerUnitL: {
-    apple: 70,
-    milk: 255,
-    bread: 40,
-    meat: 1540
-  },
-  priceKrw: {
-    apple: 1500,
-    milk: 2800,
-    bread: 3200,
-    meat: 4800
-  },
-  avgUnitWeightKg: {
-    apple: 0.18,
-    milk: 1.0,
-    bread: 0.45,
-    meat: 0.28
-  },
-  mealCostKrw: 600,
-  co2eKgPerKgWaste: 2.5,
-  methaneMultiplier: 25,
-  drinkPerPersonLPerDay: 2
-};
-
-const DEFAULT_COPY = {
-  headline: "잊혀진 냉장고의 복수",
-  introLead: "당신이 버리는 음식, 지구는 기억합니다",
-  introCue: "냉장고를 클릭하세요",
-  openButton: "냉장고 열기",
-  selectTitle: "오늘 버릴 음식을 선택하세요",
-  selectLead: "냉장고 속 유통기한이 지난 음식들",
-  selectCtaReady: "버리기",
-  selectCtaIdle: "음식을 선택하세요",
-  selectedCountTemplate: "{count}개 선택됨",
-  reportTitle: "당신이 버린 것들",
-  reportMessage: "전 세계에서 생산되는 음식의 1/3이 버려집니다. 작은 변화가 지구를 지킵니다.",
-  retryButton: "다시 해보기",
-  resourcesTitle: "관련 자료",
-  resourcesLead: "체험 수치를 실제 데이터와 연결해 보세요.",
-  resources: [
-    {
-      type: "DATA",
-      title: "Water Footprint Network",
-      description: "식재료별 물 사용량을 확인할 수 있는 데이터베이스",
-      url: "https://www.waterfootprint.org/"
-    },
-    {
-      type: "REPORT",
-      title: "UNEP Food Waste Index",
-      description: "전 세계 음식물 폐기량과 환경 영향 보고서",
-      url: "https://www.unep.org/resources/report/unep-food-waste-index-report-2024"
-    },
-    {
-      type: "ARTICLE",
-      title: "WFP Hunger Explained",
-      description: "기아 문제와 식량 접근성의 구조적 원인",
-      url: "https://www.wfp.org/hunger"
-    }
-  ]
-};
-
-const [ingredientsData, impactRulesData, copyData] = await Promise.all([
-  loadJsonData("/app/data/sdg02/ingredients.json", DEFAULT_INGREDIENTS),
-  loadJsonData("/app/data/sdg02/impactRules.json", DEFAULT_IMPACT_RULES),
-  loadJsonData("/app/data/sdg02/copy.json", DEFAULT_COPY)
-]);
-
-const INGREDIENTS = Array.isArray(ingredientsData) && ingredientsData.length
-  ? ingredientsData
-  : DEFAULT_INGREDIENTS;
-
-const IMPACT_RULES = {
-  ...DEFAULT_IMPACT_RULES,
-  ...(impactRulesData || {})
-};
-
-const COPY = {
-  ...DEFAULT_COPY,
-  ...(copyData || {})
-};
+import { escapeHtml, toggleDetailViewClass } from "./sharedRuntime.js";
+import {
+  SDG02_COPY,
+  createSdg02InitialState,
+  calculateSdg02Impact,
+  calculateSdg02ItemImpact,
+  formatSdg02Decimal,
+  formatSdg02Number,
+  getSdg02ActionFeedback,
+  getSdg02ConfirmButtonLabel,
+  getSdg02IngredientById,
+  getSdg02ReportDescriptions,
+  getSdg02SelectedCountLabel,
+  getSdg02SelectedItems,
+  renderSdg02FoodGrid,
+  renderSdg02ReportEmojis,
+  renderSdg02ResourcesSection
+} from "./sdg02ContentModel.js";
 
 function getGsap() {
   if (typeof window === "undefined") return null;
   return window.gsap && typeof window.gsap.to === "function" ? window.gsap : null;
-}
-
-function fillTemplate(template, values) {
-  return String(template || "").replace(/\{(\w+)\}/g, (_, key) => {
-    if (Object.prototype.hasOwnProperty.call(values, key)) {
-      return String(values[key]);
-    }
-    return "";
-  });
-}
-
-function formatNumber(value) {
-  return Number(value || 0).toLocaleString("ko-KR");
-}
-
-function formatDecimal(value, digits = 1) {
-  const fixed = Number(value || 0).toFixed(digits);
-  return fixed.endsWith(".0") ? fixed.slice(0, -2) : fixed;
-}
-
-function toCount(item) {
-  const count = Number(item?.count);
-  return Number.isFinite(count) && count > 0 ? count : 1;
 }
 
 export class Sdg02DetailContent {
@@ -170,14 +51,7 @@ export class Sdg02DetailContent {
   }
 
   createInitialState() {
-    return {
-      stage: "intro",
-      selectedIds: new Set(),
-      transitionLock: false,
-      impact: null,
-      draggingId: null,
-      dropCommitted: false
-    };
+    return createSdg02InitialState();
   }
 
   setTitleSectorHidden(hidden) {
@@ -250,7 +124,7 @@ export class Sdg02DetailContent {
     this.host.innerHTML = `
       <div class="sdg02-rx-exp" data-role="root">
         <section class="sdg02-rx-stage sdg02-rx-stage-intro is-active" data-role="stageIntro">
-          <button type="button" class="sdg02-rx-intro-fridge-btn" data-role="introStartButton" aria-label="${escapeHtml(COPY.openButton || "냉장고 열기")}">
+          <button type="button" class="sdg02-rx-intro-fridge-btn" data-role="introStartButton" aria-label="${escapeHtml(SDG02_COPY.openButton || "냉장고 열기")}">
             <div class="sdg02-rx-fridge-shell" aria-hidden="true">
               <div class="sdg02-rx-fridge-back">
                 <div class="sdg02-rx-fridge-divider"></div>
@@ -264,15 +138,15 @@ export class Sdg02DetailContent {
             <span class="sdg02-rx-intro-glow"></span>
           </button>
 
-          <h2 class="sdg02-rx-intro-title">${escapeHtml(COPY.headline || "잊혀진 냉장고의 복수")}</h2>
-          <p class="sdg02-rx-intro-lead">${escapeHtml(COPY.introLead || "당신이 버리는 음식, 지구는 기억합니다")}</p>
-          <p class="sdg02-rx-intro-cue">${escapeHtml(COPY.introCue || "냉장고를 클릭하세요")}</p>
+          <h2 class="sdg02-rx-intro-title">${escapeHtml(SDG02_COPY.headline || "잊혀진 냉장고의 복수")}</h2>
+          <p class="sdg02-rx-intro-lead">${escapeHtml(SDG02_COPY.introLead || "당신이 버리는 음식, 지구는 기억합니다")}</p>
+          <p class="sdg02-rx-intro-cue">${escapeHtml(SDG02_COPY.introCue || "냉장고를 클릭하세요")}</p>
         </section>
 
         <section class="sdg02-rx-stage sdg02-rx-stage-select" data-role="stageSelect" hidden>
           <header class="sdg02-rx-stage-head">
-            <h3 class="sdg02-rx-stage-title">${escapeHtml(COPY.selectTitle || "오늘 버릴 음식을 선택하세요")}</h3>
-            <p class="sdg02-rx-stage-sub">${escapeHtml(COPY.selectLead || "음식을 클릭하면 쓰레기통으로 버려집니다")}</p>
+            <h3 class="sdg02-rx-stage-title">${escapeHtml(SDG02_COPY.selectTitle || "오늘 버릴 음식을 선택하세요")}</h3>
+            <p class="sdg02-rx-stage-sub">${escapeHtml(SDG02_COPY.selectLead || "음식을 클릭하면 쓰레기통으로 버려집니다")}</p>
           </header>
 
           <div class="sdg02-rx-select-workspace">
@@ -285,12 +159,12 @@ export class Sdg02DetailContent {
                 <span class="sdg02-rx-bin-lid" aria-hidden="true"></span>
                 <span class="sdg02-rx-bin-body" aria-hidden="true"></span>
               </div>
-              <p class="sdg02-rx-bin-caption">${escapeHtml(COPY.binLabel || "버리는 순간, 낭비는 끝나지 않습니다.")}</p>
+              <p class="sdg02-rx-bin-caption">${escapeHtml(SDG02_COPY.binLabel || "버리는 순간, 낭비는 끝나지 않습니다.")}</p>
             </aside>
           </div>
 
           <div class="sdg02-rx-select-actions">
-            <p class="sdg02-rx-drag-hint">${escapeHtml(COPY.dragHint || "식재료를 잡아 버려보세요.")}</p>
+            <p class="sdg02-rx-drag-hint">${escapeHtml(SDG02_COPY.dragHint || "식재료를 잡아 버려보세요.")}</p>
             <p class="sdg02-rx-action-feedback" data-role="actionFeedback">음식을 클릭해 버려보세요</p>
             <p class="sdg02-rx-select-count" data-role="selectedCount"></p>
             <button type="button" class="sdg02-rx-confirm-btn" data-role="confirmButton" disabled>
@@ -301,7 +175,7 @@ export class Sdg02DetailContent {
 
         <section class="sdg02-rx-stage sdg02-rx-stage-report" data-role="stageReport" hidden>
           <header class="sdg02-rx-stage-head">
-            <h3 class="sdg02-rx-stage-title" data-role="reportTitle">${escapeHtml(COPY.reportTitle || "당신이 버린 것들")}</h3>
+            <h3 class="sdg02-rx-stage-title" data-role="reportTitle">${escapeHtml(SDG02_COPY.reportTitle || "당신이 버린 것들")}</h3>
             <div class="sdg02-rx-report-emojis" data-role="reportEmojis"></div>
           </header>
 
@@ -340,13 +214,13 @@ export class Sdg02DetailContent {
             </article>
           </div>
 
-          <p class="sdg02-rx-report-message">${escapeHtml(COPY.reportMessage || "전 세계에서 생산되는 음식의 1/3이 버려집니다. 작은 변화가 지구를 지킵니다.")}</p>
+          <p class="sdg02-rx-report-message">${escapeHtml(SDG02_COPY.reportMessage || "전 세계에서 생산되는 음식의 1/3이 버려집니다. 작은 변화가 지구를 지킵니다.")}</p>
 
           <button type="button" class="sdg02-rx-reset-btn" data-role="resetButton">
-            ${escapeHtml(COPY.retryButton || "다시 해보기")}
+            ${escapeHtml(SDG02_COPY.retryButton || "다시 해보기")}
           </button>
 
-          ${this.renderResourcesSection()}
+          ${renderSdg02ResourcesSection()}
         </section>
       </div>
     `;
@@ -355,44 +229,6 @@ export class Sdg02DetailContent {
     this.renderFoodGrid();
     this.bindEvents();
     this.updateSelectUi();
-  }
-
-  renderResourcesSection() {
-    const resources = Array.isArray(COPY.resources)
-      ? COPY.resources.filter((item) => item && item.url)
-      : [];
-
-    if (!resources.length) return "";
-
-    return `
-      <section class="sdg02-rx-resources">
-        <p class="sdg02-rx-resources-overline">현실 자료</p>
-        <h4 class="sdg02-rx-resources-title">${escapeHtml(COPY.resourcesTitle || "관련 자료")}</h4>
-        <p class="sdg02-rx-resources-copy">${escapeHtml(COPY.resourcesLead || "체험 수치를 실제 데이터와 연결해 보세요.")}</p>
-        <div class="sdg02-rx-resource-list">
-          ${this.renderResourceItems(resources)}
-        </div>
-      </section>
-    `;
-  }
-
-  renderResourceItems(resources) {
-    return resources.map((resource, index) => {
-      const type = escapeHtml(resource.type || "자료");
-      const title = escapeHtml(resource.title || "자료 제목");
-      const description = escapeHtml(resource.description || "자료 설명");
-      const url = escapeHtml(resource.url || "#");
-      const delay = index * 90;
-
-      return `
-        <article class="sdg02-rx-resource-item" style="--rx-delay:${delay}ms">
-          <p class="sdg02-rx-resource-type">${type}</p>
-          <h5 class="sdg02-rx-resource-title">${title}</h5>
-          <p class="sdg02-rx-resource-desc">${description}</p>
-          <a class="sdg02-rx-resource-open" href="${url}" target="_blank" rel="noopener noreferrer">열기</a>
-        </article>
-      `;
-    }).join("");
   }
 
   cacheRefs() {
@@ -452,37 +288,14 @@ export class Sdg02DetailContent {
 
   renderFoodGrid() {
     if (!this.refs.foodGrid) return;
-
-    this.refs.foodGrid.innerHTML = INGREDIENTS.map((item) => `
-      <button type="button" class="sdg02-rx-food-item" data-role="foodItem" data-id="${escapeHtml(item.id)}" draggable="true">
-        <span class="sdg02-rx-food-emoji">${escapeHtml(item.emoji || "")}</span>
-        <span class="sdg02-rx-food-name">${escapeHtml(item.name || item.key || "식재료")}</span>
-        <span class="sdg02-rx-food-status">${escapeHtml(item.status || "임박")}</span>
-      </button>
-    `).join("");
-  }
-
-  getIngredientById(id) {
-    return INGREDIENTS.find((item) => item.id === id) || null;
-  }
-
-  calculateItemImpact(item) {
-    if (!item) return null;
-    const count = toCount(item);
-    const water = (Number(IMPACT_RULES.waterPerUnitL?.[item.key]) || 0) * count;
-    const price = (Number(IMPACT_RULES.priceKrw?.[item.key]) || 0) * count;
-    const weight = (Number(IMPACT_RULES.avgUnitWeightKg?.[item.key]) || 0) * count;
-    const carbon = weight * (Number(IMPACT_RULES.co2eKgPerKgWaste) || 0);
-    return { water, price, carbon };
+    this.refs.foodGrid.innerHTML = renderSdg02FoodGrid();
   }
 
   updateActionFeedback(item) {
     if (!this.refs.actionFeedback || !item) return;
-    const impact = this.calculateItemImpact(item);
+    const impact = calculateSdg02ItemImpact(item);
     if (!impact) return;
-
-    const name = item.name || item.key || "식재료";
-    this.refs.actionFeedback.textContent = `${name} 버림 · 물 +${formatNumber(Math.round(impact.water))}L · 탄소 +${formatDecimal(impact.carbon, 1)}kgCO2 · 비용 +${formatNumber(Math.round(impact.price))}원`;
+    this.refs.actionFeedback.textContent = getSdg02ActionFeedback(item, impact);
     this.refs.actionFeedback.classList.remove("is-live");
     this.setTimer(() => {
       this.refs.actionFeedback?.classList.add("is-live");
@@ -548,7 +361,7 @@ export class Sdg02DetailContent {
       this.closeBin();
       return;
     }
-    const targetItem = item || this.getIngredientById(id);
+    const targetItem = item || getSdg02IngredientById(id);
     this.state.selectedIds.add(id);
     if (targetItem) {
       this.updateActionFeedback(targetItem);
@@ -615,7 +428,7 @@ export class Sdg02DetailContent {
     if (this.state.selectedIds.has(id)) return;
     if (this.throwingIds.has(id)) return;
 
-    const item = this.getIngredientById(id);
+    const item = getSdg02IngredientById(id);
     this.throwingIds.add(id);
     button.classList.add("is-throwing");
     this.refs.binDropzone?.classList.add("is-open", "is-hot");
@@ -690,7 +503,7 @@ export class Sdg02DetailContent {
     event.preventDefault();
 
     const droppedId = event.dataTransfer?.getData("text/plain") || this.state.draggingId;
-    const droppedItem = this.getIngredientById(droppedId);
+    const droppedItem = getSdg02IngredientById(droppedId);
 
     this.state.dropCommitted = true;
     this.state.draggingId = null;
@@ -728,17 +541,13 @@ export class Sdg02DetailContent {
 
     const count = this.state.selectedIds.size;
     if (this.refs.selectedCount) {
-      this.refs.selectedCount.textContent = count > 0
-        ? `버린 음식 ${formatNumber(count)}개`
-        : "버린 음식 없음";
+      this.refs.selectedCount.textContent = getSdg02SelectedCountLabel(count);
     }
 
     if (this.refs.confirmButton) {
       const ready = count > 0;
       this.refs.confirmButton.disabled = !ready;
-      this.refs.confirmButton.textContent = ready
-        ? `버린 결과 확인하기 (${formatNumber(count)}개)`
-        : "먼저 음식을 버려주세요";
+      this.refs.confirmButton.textContent = getSdg02ConfirmButtonLabel(count);
     }
 
     if (this.refs.actionFeedback && count === 0 && !this.state.draggingId) {
@@ -747,46 +556,12 @@ export class Sdg02DetailContent {
     }
   }
 
-  getSelectedItems() {
-    return INGREDIENTS.filter((item) => this.state.selectedIds.has(item.id));
-  }
-
-  calculateImpact(items) {
-    const waterPerUnitL = IMPACT_RULES.waterPerUnitL || {};
-    const priceKrw = IMPACT_RULES.priceKrw || {};
-    const avgUnitWeightKg = IMPACT_RULES.avgUnitWeightKg || {};
-    const mealCost = Number(IMPACT_RULES.mealCostKrw) || 600;
-    const carbonPerKg = Number(IMPACT_RULES.co2eKgPerKgWaste) || 0;
-    const drinkPerDay = Number(IMPACT_RULES.drinkPerPersonLPerDay) || 2;
-
-    let totalWater = 0;
-    let totalPrice = 0;
-    let totalWeight = 0;
-
-    items.forEach((item) => {
-      const count = toCount(item);
-      totalWater += (Number(waterPerUnitL[item.key]) || 0) * count;
-      totalPrice += (Number(priceKrw[item.key]) || 0) * count;
-      totalWeight += (Number(avgUnitWeightKg[item.key]) || 0) * count;
-    });
-
-    const totalCarbon = totalWeight * carbonPerKg;
-    return {
-      totalWater,
-      totalPrice,
-      totalCarbon,
-      waterDays: Math.floor(totalWater / drinkPerDay),
-      mealsLost: Math.floor(totalPrice / mealCost),
-      carKm: Math.round(totalCarbon * 4)
-    };
-  }
-
   goReport() {
     if (this.state.stage !== "select") return;
-    const selectedItems = this.getSelectedItems();
+    const selectedItems = getSdg02SelectedItems(this.state.selectedIds);
     if (!selectedItems.length) return;
 
-    this.state.impact = this.calculateImpact(selectedItems);
+    this.state.impact = calculateSdg02Impact(selectedItems);
     this.renderReport(selectedItems, this.state.impact);
     this.refs.stageReport?.classList.remove("is-report-ready");
     this.switchStage("report");
@@ -808,30 +583,31 @@ export class Sdg02DetailContent {
     }
 
     if (this.refs.reportEmojis) {
-      this.refs.reportEmojis.innerHTML = selectedItems.map((item) => `<span>${escapeHtml(item.emoji || "")}</span>`).join("");
+      this.refs.reportEmojis.innerHTML = renderSdg02ReportEmojis(selectedItems);
     }
 
     this.animateValue(this.refs.waterValue, impact.totalWater, {
       duration: 860,
-      formatter: (value) => formatNumber(Math.round(value))
+      formatter: (value) => formatSdg02Number(Math.round(value))
     });
     this.animateValue(this.refs.carbonValue, impact.totalCarbon, {
       duration: 920,
-      formatter: (value) => formatDecimal(value, 1)
+      formatter: (value) => formatSdg02Decimal(value, 1)
     });
     this.animateValue(this.refs.priceValue, impact.totalPrice, {
       duration: 900,
-      formatter: (value) => formatNumber(Math.round(value))
+      formatter: (value) => formatSdg02Number(Math.round(value))
     });
 
+    const descriptions = getSdg02ReportDescriptions(impact);
     if (this.refs.waterDesc) {
-      this.refs.waterDesc.textContent = `${formatNumber(impact.waterDays)}일치 식수`;
+      this.refs.waterDesc.textContent = descriptions.water;
     }
     if (this.refs.carbonDesc) {
-      this.refs.carbonDesc.textContent = `자동차 ${formatNumber(impact.carKm)}km 주행`;
+      this.refs.carbonDesc.textContent = descriptions.carbon;
     }
     if (this.refs.priceDesc) {
-      this.refs.priceDesc.textContent = `기아 아동 ${formatNumber(impact.mealsLost)}끼 식사`;
+      this.refs.priceDesc.textContent = descriptions.price;
     }
   }
 
