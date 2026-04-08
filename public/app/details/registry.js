@@ -46,53 +46,70 @@ const FRAME_META_OVERRIDES = new Map([
   ]
 ]);
 
-const CUSTOM_RENDERER_FACTORIES = new Map([
+const CUSTOM_DETAIL_DEFINITIONS = new Map([
   [
     1,
-    async (customHost) => {
-      const mod = await import("./sdg01Content.js");
-      return new mod.Sdg01DetailContent(customHost);
+    {
+      loadModule: () => import("./sdg01Content.js"),
+      createRenderer: (mod, customHost) => new mod.Sdg01DetailContent(customHost)
     }
   ],
   [
     2,
-    async (customHost) => {
-      const mod = await import("./sdg02Content.js");
-      return new mod.Sdg02DetailContent(customHost);
+    {
+      loadModule: () => import("./sdg02Content.js"),
+      createRenderer: (mod, customHost) => new mod.Sdg02DetailContent(customHost)
     }
   ],
   [
     3,
-    async (customHost) => {
-      const mod = await import("./sdg03Content.js");
-      return new mod.Sdg03DetailContent(customHost);
+    {
+      loadModule: () => import("./sdg03Content.js"),
+      createRenderer: (mod, customHost) => new mod.Sdg03DetailContent(customHost)
     }
   ],
   [
     4,
-    async (customHost) => {
-      const mod = await import("./sdg04Content.js");
-      return new mod.Sdg04DetailContent(customHost);
+    {
+      loadModule: () => import("./sdg04Content.js"),
+      createRenderer: (mod, customHost) => new mod.Sdg04DetailContent(customHost)
     }
   ],
   [
     5,
-    async (customHost) => {
-      const mod = await import("./sdg05Content.js");
-      return new mod.Sdg05DetailContent(customHost);
+    {
+      loadModule: () => import("./sdg05Content.js"),
+      createRenderer: (mod, customHost) => new mod.Sdg05DetailContent(customHost)
     }
   ]
 ]);
 
+function getCustomDetailDefinition(goalId) {
+  return CUSTOM_DETAIL_DEFINITIONS.get(Number(goalId)) || null;
+}
+
 export function hasCustomDetailRenderer(goalId) {
-  return CUSTOM_RENDERER_FACTORIES.has(Number(goalId));
+  return Boolean(getCustomDetailDefinition(goalId));
+}
+
+export async function preloadCustomDetailRenderer(goalId) {
+  const definition = getCustomDetailDefinition(goalId);
+  if (!definition) return false;
+
+  try {
+    await definition.loadModule();
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export async function createCustomDetailRenderer(goalId, customHost) {
-  const factory = CUSTOM_RENDERER_FACTORIES.get(Number(goalId));
-  if (!factory) return null;
+  const definition = getCustomDetailDefinition(goalId);
+  if (!definition) return null;
   try {
-    return await factory(customHost);
+    const mod = await definition.loadModule();
+    return definition.createRenderer(mod, customHost);
   } catch {
     return null;
   }

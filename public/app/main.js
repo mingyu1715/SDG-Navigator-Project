@@ -1,6 +1,7 @@
 import { MainView } from "./views/mainView.js";
 import { DetailView } from "./views/detailView.js";
 import { SDG_DATA, getGoalById, toGoalRoute } from "./data/sdgs.js";
+import { preloadCustomDetailRenderer } from "./details/registry.js";
 import { navigate, parseRoute, startRouter, subscribe, emitRoute } from "./router.js";
 import { transitionMainToDetail, transitionDetailToMain } from "./transitions.js";
 import { ensureLoader, showLoader, hideLoader } from "../js/components/loader.js";
@@ -20,13 +21,6 @@ const MIN_INITIAL_LOADER_MS = 520;
 let bootPreloadStarted = false;
 let detailRenderWarmCalls = 0;
 const warmedDetailGoalIds = new Set();
-const CUSTOM_DETAIL_MODULE_PATHS = new Map([
-  [1, "./details/sdg01Content.js"],
-  [2, "./details/sdg02Content.js"],
-  [3, "./details/sdg03Content.js"],
-  [4, "./details/sdg04Content.js"],
-  [5, "./details/sdg05Content.js"]
-]);
 const DETAIL_WARM_RENDER_PASSES = 3;
 const MAX_DETAIL_RENDER_WARM_CALLS = 8;
 
@@ -126,9 +120,7 @@ async function warmDetailNetworkCache(goalId) {
   if (warmedDetailGoalIds.has(id)) return;
   warmedDetailGoalIds.add(id);
 
-  const customModulePath = CUSTOM_DETAIL_MODULE_PATHS.get(id);
-  if (customModulePath) {
-    await import(customModulePath);
+  if (await preloadCustomDetailRenderer(id)) {
     return;
   }
 
