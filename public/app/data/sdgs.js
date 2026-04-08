@@ -1,3 +1,5 @@
+import { toCardMeta } from "./sdgMetaAdapters.js";
+
 const FALLBACK_SDG_DATA = [
   { id: 1, color: "#E5243B", title: "NO POVERTY", sub: "빈곤 퇴치", detailed: "취약계층 기본생활 보장과 안전망 강화로 빈곤의 악순환을 줄입니다." },
   { id: 2, color: "#DDA63A", title: "ZERO HUNGER", sub: "기아 종식", detailed: "안정적 식량 접근성과 영양 개선으로 기아와 영양 불균형을 해소합니다." },
@@ -31,7 +33,7 @@ async function loadSdgData() {
 }
 
 export const SDG_DATA = Object.freeze(
-  (await loadSdgData()).map((goal) => ({ ...goal }))
+  (await loadSdgData()).map((goal) => toCardMeta(goal))
 );
 
 export function getGoalById(goalId) {

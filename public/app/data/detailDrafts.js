@@ -1,4 +1,5 @@
 import { SDG_DATA, getGoalById } from "./sdgs.js";
+import { toEditableDetailDraft } from "./sdgMetaAdapters.js";
 
 // SDG01은 별도 커스텀 상세 모듈을 사용하므로 여기서 제외한다.
 // SDG02~17 임시 상세를 빠르게 수정하려면 이 파일만 편집하면 된다.
@@ -21,13 +22,7 @@ function toDraft(goalId) {
   if (!goal || goal.id === 1) return null;
 
   const override = DRAFT_OVERRIDES[goal.id] || {};
-  return {
-    id: goal.id,
-    title: goal.title,
-    subtitle: goal.sub,
-    description: override.description || goal.detailed,
-    features: override.features || ["초안 포인트를 입력하세요."]
-  };
+  return toEditableDetailDraft(goal, override);
 }
 
 export const EDITABLE_DETAIL_DRAFTS = Object.freeze(

@@ -1,5 +1,6 @@
 import { getGoalById } from "../data/sdgs.js";
 import { getEditableDetailDraft } from "../data/detailDrafts.js";
+import { toGoalDetailFallback } from "../data/sdgMetaAdapters.js";
 
 const cache = new Map();
 
@@ -21,13 +22,7 @@ export async function fetchGoalDetail(goalId) {
     cache.set(id, data);
     return data;
   } catch {
-    const fallbackData = {
-      id,
-      title: fallback ? fallback.title : `SDG ${String(id).padStart(2, "0")}`,
-      subtitle: fallback ? fallback.sub : "",
-      description: fallback ? fallback.detailed : "상세 정보가 없습니다.",
-      features: ["초안 포인트를 입력하세요."]
-    };
+    const fallbackData = toGoalDetailFallback(id, fallback);
     cache.set(id, fallbackData);
     return fallbackData;
   }

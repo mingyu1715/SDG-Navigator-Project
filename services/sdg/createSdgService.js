@@ -1,25 +1,27 @@
+const {
+  toSdgSummary,
+  toSdgDetail,
+  toSdgVisit,
+  toSdgActionResult
+} = require("./sdgMetaAdapters");
+
 function createSdgService(goal) {
   let visits = 0;
 
   return {
     id: goal.id,
     getSummary() {
-      const { id, title, subtitle, color } = goal;
-      return { id, title, subtitle, color };
+      return toSdgSummary(goal);
     },
     getDetail() {
-      return goal;
+      return toSdgDetail(goal);
     },
     markVisit() {
       visits += 1;
-      return { goalId: goal.id, visits };
+      return toSdgVisit(goal.id, visits);
     },
     runAction(action) {
-      return {
-        goalId: goal.id,
-        action,
-        message: `${goal.title}에 대한 '${action}' 액션이 처리되었습니다.`
-      };
+      return toSdgActionResult(goal, action);
     }
   };
 }
