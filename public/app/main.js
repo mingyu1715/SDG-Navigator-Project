@@ -25,7 +25,8 @@ const CUSTOM_DETAIL_MODULE_PATHS = new Map([
   [1, "./details/sdg01Content.js"],
   [2, "./details/sdg02Content.js"],
   [3, "./details/sdg03Content.js"],
-  [4, "./details/sdg04Content.js"]
+  [4, "./details/sdg04Content.js"],
+  [5, "./details/sdg05Content.js"]
 ]);
 const DETAIL_WARM_RENDER_PASSES = 3;
 const MAX_DETAIL_RENDER_WARM_CALLS = 8;

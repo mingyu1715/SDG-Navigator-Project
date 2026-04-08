@@ -34,6 +34,15 @@ const FRAME_META_OVERRIDES = new Map([
       lead: "같은 정보, 다른 세상. 누군가에게는 기회가 되는 문장이, 누군가에게는 의미 없는 기호일 뿐입니다.",
       hint: "국가를 선택하여 시작하세요"
     }
+  ],
+  [
+    5,
+    {
+      title: "The Gender Pay Clock",
+      subtitle: "임금 시계",
+      lead: "퇴근 시간은 같아도, 임금 격차가 있으면 무급 노동이 시작되는 시각은 달라집니다.",
+      hint: "국가를 선택하고 시작하세요"
+    }
   ]
 ]);
 
@@ -64,6 +73,13 @@ const CUSTOM_RENDERER_FACTORIES = new Map([
     async (customHost) => {
       const mod = await import("./sdg04Content.js");
       return new mod.Sdg04DetailContent(customHost);
+    }
+  ],
+  [
+    5,
+    async (customHost) => {
+      const mod = await import("./sdg05Content.js");
+      return new mod.Sdg05DetailContent(customHost);
     }
   ]
 ]);

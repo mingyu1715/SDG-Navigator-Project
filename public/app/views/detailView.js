@@ -102,6 +102,7 @@ export class DetailView {
       this.panel.classList.remove("detail-card-sdg02");
       this.panel.classList.remove("detail-card-sdg03");
       this.panel.classList.remove("detail-card-sdg04");
+      this.panel.classList.remove("detail-card-sdg05");
     }
     if (this.genericContent) this.genericContent.hidden = false;
     if (this.customContent) this.customContent.hidden = true;
@@ -116,6 +117,7 @@ export class DetailView {
       this.panel.classList.remove("detail-card-sdg02");
       this.panel.classList.remove("detail-card-sdg03");
       this.panel.classList.remove("detail-card-sdg04");
+      this.panel.classList.remove("detail-card-sdg05");
       if (renderer && renderer.panelClass) {
         this.panel.classList.add(renderer.panelClass);
       }
@@ -187,6 +189,7 @@ export class DetailView {
       this.panel.classList.remove("detail-card-sdg02");
       this.panel.classList.remove("detail-card-sdg03");
       this.panel.classList.remove("detail-card-sdg04");
+      this.panel.classList.remove("detail-card-sdg05");
     }
     if (this.genericContent) this.genericContent.hidden = true;
     if (this.customContent) {
