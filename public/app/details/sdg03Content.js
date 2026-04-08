@@ -1,161 +1,18 @@
 import { clearStepMotionTimers, scheduleStepMotion, toggleDetailViewClass } from "./sharedRuntime.js";
-
-const EMERGENCY = {
-  label: "급성 응급상황",
-  severity: 3
-};
-
-const COUNTRIES = {
-  south_korea: {
-    label: "대한민국",
-    access: 5
-  },
-  usa: {
-    label: "미국",
-    access: 4
-  },
-  brazil: {
-    label: "브라질",
-    access: 3
-  },
-  india: {
-    label: "인도",
-    access: 2
-  },
-  south_sudan: {
-    label: "남수단",
-    access: 1
-  }
-};
-
-const COUNTRY_KEYS = Object.keys(COUNTRIES);
-const HIGH_ACCESS_KEYS = ["south_korea", "usa"];
-const LOW_ACCESS_KEYS = ["india", "south_sudan"];
-const HIGH_RESULT_HOLD_MS = 4500;
-const MID_WARNING_HOLD_MS = 2000;
-
-const RESULT_META = {
-  treatable: {
-    key: "treatable",
-    label: "치료 가능",
-    ecgMode: "stable",
-    statusClass: "is-success",
-    accessLabel: "높음",
-    detail: "골든타임 내 처치가 시작되었습니다."
-  },
-  delayed: {
-    key: "delayed",
-    label: "치료 지연",
-    ecgMode: "unstable",
-    statusClass: "is-delay",
-    accessLabel: "낮음",
-    detail: "초기 처치가 늦어지고 있습니다."
-  },
-  near_impossible: {
-    key: "near_impossible",
-    label: "치료 불가에 가까움",
-    ecgMode: "near-flatline",
-    statusClass: "is-critical",
-    accessLabel: "매우 낮음",
-    detail: "이 환경에서는 치료가 시작되지 않습니다."
-  }
-};
-
-function clamp(value, min, max) {
-  return Math.min(max, Math.max(min, value));
-}
-
-function randomFrom(keys) {
-  const idx = Math.floor(Math.random() * keys.length);
-  return keys[idx];
-}
-
-function calcSurvivalPercent(access) {
-  const base = access * 16 - 20;
-  return clamp(Math.round(base), 8, 93);
-}
-
-function calcResponseMinutes(access, severity) {
-  const minutes = 128 - access * 18 + severity * 7;
-  return clamp(Math.round(minutes), 18, 185);
-}
-
-function calcGoldenTimeRate(access, severity) {
-  const rate = access * 18 - severity * 6 + 28;
-  return clamp(Math.round(rate), 8, 94);
-}
-
-function calcHeartRate(resultKey, access) {
-  if (resultKey === "treatable") {
-    return clamp(Math.round(92 - access * 3), 70, 95);
-  }
-  if (resultKey === "delayed") {
-    return clamp(Math.round(106 + (3 - access) * 8), 96, 132);
-  }
-  return clamp(Math.round(52 - (2 - access) * 8), 28, 58);
-}
-
-function calculateOutcome(countryKey) {
-  const country = COUNTRIES[countryKey];
-  const access = country?.access ?? 3;
-  const survival = calcSurvivalPercent(access);
-  const riskIndex = access - EMERGENCY.severity;
-
-  let result = RESULT_META.delayed;
-  if (riskIndex >= 1) {
-    result = RESULT_META.treatable;
-  } else if (riskIndex < 0) {
-    result = RESULT_META.near_impossible;
-  }
-
-  const responseMinutes = calcResponseMinutes(access, EMERGENCY.severity);
-  const goldenRate = calcGoldenTimeRate(access, EMERGENCY.severity);
-  const bpm = calcHeartRate(result.key, access);
-
-  return {
-    country,
-    result,
-    survival,
-    access,
-    responseMinutes,
-    goldenRate,
-    bpm
-  };
-}
-
-function gaussianPulse(phase, center, width, amp) {
-  const dist = (phase - center) / width;
-  return amp * Math.exp(-0.5 * dist * dist);
-}
-
-function pqrstWave(phase, gain = 1) {
-  return (
-    gaussianPulse(phase, 0.19, 0.025, 0.11 * gain) +
-    gaussianPulse(phase, 0.38, 0.010, -0.19 * gain) +
-    gaussianPulse(phase, 0.405, 0.006, 1.30 * gain) +
-    gaussianPulse(phase, 0.435, 0.012, -0.38 * gain) +
-    gaussianPulse(phase, 0.69, 0.055, 0.28 * gain)
-  );
-}
-
-function ecgSignal(mode, beatPhase, timeSec) {
-  if (mode === "stable") {
-    return pqrstWave(beatPhase, 1) + Math.sin(timeSec * 1.7) * 0.018;
-  }
-
-  if (mode === "unstable") {
-    const warpedPhase = (beatPhase * (1 + Math.sin(timeSec * 3.4) * 0.18)) % 1;
-    const gain = 0.76 + Math.sin(timeSec * 4.9) * 0.34 + Math.sin(timeSec * 9.2) * 0.12;
-    const tremor = Math.sin(timeSec * 21) * 0.06 + Math.sin(timeSec * 33) * 0.03;
-    return pqrstWave(warpedPhase, gain) + tremor;
-  }
-
-  if (mode === "near-flatline") {
-    return 0;
-  }
-
-  return pqrstWave(beatPhase, 1.08) + Math.sin(timeSec * 14.2) * 0.04;
-}
+import {
+  SDG03_COUNTRIES,
+  SDG03_COUNTRY_KEYS,
+  SDG03_HIGH_ACCESS_KEYS,
+  SDG03_HIGH_RESULT_HOLD_MS,
+  SDG03_LOW_ACCESS_KEYS,
+  SDG03_MID_WARNING_HOLD_MS,
+  calculateSdg03Outcome,
+  clampSdg03Value,
+  countryFlowSentence,
+  createSdg03InitialState,
+  randomSdg03From,
+  sdg03EcgSignal
+} from "./sdg03ContentModel.js";
 
 function tone(freq, durationMs, type = "sine", gain = 0.06) {
   const Ctx = window.AudioContext || window.webkitAudioContext;
@@ -194,16 +51,6 @@ function disposeToneContext() {
   void ctx.close().catch(() => null);
 }
 
-function countryFlowSentence(countryLabel, resultKey) {
-  if (resultKey === "treatable") {
-    return `${countryLabel}에서는 치료가 시작되었습니다.`;
-  }
-  if (resultKey === "delayed") {
-    return `${countryLabel}에서는 치료가 지연되고 있습니다.`;
-  }
-  return `${countryLabel}에서는 치료가 시작되지 않습니다.`;
-}
-
 export class Sdg03DetailContent {
   constructor(host) {
     this.host = host;
@@ -211,7 +58,7 @@ export class Sdg03DetailContent {
     this.frameMode = "immersive";
     this.refs = {};
     this.disposeRequested = false;
-    this.state = this.createInitialState();
+    this.state = createSdg03InitialState();
     this.ecgRafId = null;
     this.ecgTick = 0;
     this.ecgTrace = [];
@@ -229,17 +76,6 @@ export class Sdg03DetailContent {
     this.boundAction = () => this.startComparison();
   }
 
-  createInitialState() {
-    return {
-      hasStarted: false,
-      phase: "idle",
-      ecgMode: "stable",
-      ecgBpm: 78,
-      statusClass: "",
-      history: []
-    };
-  }
-
   setTitleSectorHidden(hidden) {
     toggleDetailViewClass(this.host, "sdg03-title-hidden", hidden);
   }
@@ -252,7 +88,7 @@ export class Sdg03DetailContent {
     if (this.slotResolver) {
       const resolve = this.slotResolver;
       this.slotResolver = null;
-      resolve(randomFrom(COUNTRY_KEYS));
+      resolve(randomSdg03From(SDG03_COUNTRY_KEYS));
     }
   }
 
@@ -284,7 +120,7 @@ export class Sdg03DetailContent {
     if (!this.host) return;
     this.teardownRuntime();
     this.disposeRequested = false;
-    this.state = this.createInitialState();
+    this.state = createSdg03InitialState();
     this.ecgTrace = [];
     this.ecgWriteIndex = 0;
     this.ecgSampleTime = 0;
@@ -459,7 +295,7 @@ export class Sdg03DetailContent {
       this.state.ecgMode = mode;
     }
     if (typeof bpm === "number" && Number.isFinite(bpm)) {
-      this.state.ecgBpm = clamp(Math.round(bpm), 26, 170);
+      this.state.ecgBpm = clampSdg03Value(Math.round(bpm), 26, 170);
     }
   }
 
@@ -548,8 +384,8 @@ export class Sdg03DetailContent {
 
       this.slotInterval = window.setInterval(() => {
         const elapsed = performance.now() - startAt;
-        const rollingKey = randomFrom(COUNTRY_KEYS);
-        const rollingCountry = COUNTRIES[rollingKey];
+        const rollingKey = randomSdg03From(SDG03_COUNTRY_KEYS);
+        const rollingCountry = SDG03_COUNTRIES[rollingKey];
 
         if (this.refs.countryResult) {
           this.refs.countryResult.textContent = `${rollingCountry.label}에서 결과를 분석 중입니다...`;
@@ -558,7 +394,7 @@ export class Sdg03DetailContent {
         if (elapsed >= totalDuration) {
           window.clearInterval(this.slotInterval);
           this.slotInterval = null;
-          const finalKey = randomFrom(targetKeys);
+          const finalKey = randomSdg03From(targetKeys);
           if (this.slotResolver) {
             const done = this.slotResolver;
             this.slotResolver = null;
@@ -571,7 +407,7 @@ export class Sdg03DetailContent {
 
   async playTier(tier) {
     const isHigh = tier === "high";
-    const targetKeys = isHigh ? HIGH_ACCESS_KEYS : LOW_ACCESS_KEYS;
+    const targetKeys = isHigh ? SDG03_HIGH_ACCESS_KEYS : SDG03_LOW_ACCESS_KEYS;
     const label = isHigh ? "접근 높은 국가" : "접근 낮은 국가";
 
     this.applyStateClass("slot");
@@ -583,7 +419,7 @@ export class Sdg03DetailContent {
     const countryKey = await this.spinCountrySlot(targetKeys);
     if (this.disposeRequested) return null;
 
-    const payload = calculateOutcome(countryKey);
+    const payload = calculateSdg03Outcome(countryKey);
     this.applyOutcome(payload, isHigh ? "1차 결과" : "2차 결과");
     this.setAlert(isHigh ? "첫 번째 결과가 반영되었습니다." : "두 번째 결과가 반영되었습니다.");
 
@@ -621,7 +457,7 @@ export class Sdg03DetailContent {
     if (this.disposeRequested || runId !== this.sequenceVersion) return;
     if (highPayload) this.state.history.push(highPayload);
 
-    await this.wait(HIGH_RESULT_HOLD_MS);
+    await this.wait(SDG03_HIGH_RESULT_HOLD_MS);
     if (this.disposeRequested || runId !== this.sequenceVersion) return;
 
     this.applyStateClass("transition");
@@ -631,7 +467,7 @@ export class Sdg03DetailContent {
     if (this.refs.statusWord) this.refs.statusWord.textContent = "조건 변화";
     if (this.refs.countryResult) this.refs.countryResult.textContent = "같은 환자를 더 낮은 접근 환경으로 이동합니다.";
 
-    await this.wait(MID_WARNING_HOLD_MS);
+    await this.wait(SDG03_MID_WARNING_HOLD_MS);
     if (this.disposeRequested || runId !== this.sequenceVersion) return;
 
     const lowPayload = await this.playTier("low");
@@ -690,7 +526,7 @@ export class Sdg03DetailContent {
 
       const yBase = height * 0.56;
       const mode = this.state.ecgMode;
-      const bpm = clamp(this.state.ecgBpm || 80, 26, 170);
+      const bpm = clampSdg03Value(this.state.ecgBpm || 80, 26, 170);
       const phase = this.state.phase;
 
       let strokeColor = "#66ff9f";
@@ -718,11 +554,11 @@ export class Sdg03DetailContent {
 
       for (let i = 0; i < pointsPerFrame; i += 1) {
         const beatPhase = (this.ecgSampleTime % beatDuration) / beatDuration;
-        let signal = ecgSignal(mode, beatPhase, this.ecgSampleTime);
+        let signal = sdg03EcgSignal(mode, beatPhase, this.ecgSampleTime);
         if (mode === "unstable") {
           const weakA = Math.max(0, Math.sin(this.ecgSampleTime * 6.7) - 0.82) * 2.4;
           const weakB = Math.max(0, -Math.sin(this.ecgSampleTime * 11.4 + 0.8) - 0.86) * 2.2;
-          const attenuation = clamp(1 - weakA - weakB, 0.22, 1);
+          const attenuation = clampSdg03Value(1 - weakA - weakB, 0.22, 1);
           signal *= attenuation;
         }
         const y = mode === "near-flatline" ? yBase : yBase - signal * amplitudePx;
@@ -797,7 +633,7 @@ export class Sdg03DetailContent {
     this.hasEnteredMain = false;
     this.refs = {};
     if (this.host) this.host.innerHTML = "";
-    this.state = this.createInitialState();
+    this.state = createSdg03InitialState();
     this.setTitleSectorHidden(false);
   }
 }
