@@ -218,6 +218,36 @@ const RELATED_RESOURCES = [
 ];
 
 let threeScriptPromise = null;
+let threeLoadHandle = null;
+let ownsThreeGlobal = false;
+
+function detachThreeScript(script = threeLoadHandle?.script || null) {
+  if (!script) return;
+  script.onload = null;
+  script.onerror = null;
+  if (script.parentNode) {
+    script.parentNode.removeChild(script);
+  }
+}
+
+function resetThreeGlobalLoader() {
+  threeScriptPromise = null;
+  if (threeLoadHandle) {
+    const { script, resolve } = threeLoadHandle;
+    detachThreeScript(script);
+    threeLoadHandle = null;
+    resolve(null);
+  }
+
+  if (ownsThreeGlobal && window.THREE) {
+    try {
+      delete window.THREE;
+    } catch {
+      window.THREE = undefined;
+    }
+  }
+  ownsThreeGlobal = false;
+}
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
@@ -273,10 +303,23 @@ function loadThreeGlobal() {
 
   threeScriptPromise = new Promise((resolve) => {
     const script = document.createElement("script");
+    script.dataset.sdg01ThreeScript = "true";
     script.src = "https://unpkg.com/three@0.160.0/build/three.min.js";
     script.async = true;
-    script.onload = () => resolve(window.THREE || null);
-    script.onerror = () => resolve(null);
+    threeLoadHandle = { script, resolve };
+    script.onload = () => {
+      const three = window.THREE || null;
+      ownsThreeGlobal = Boolean(three);
+      detachThreeScript(script);
+      threeLoadHandle = null;
+      resolve(three);
+    };
+    script.onerror = () => {
+      detachThreeScript(script);
+      threeLoadHandle = null;
+      threeScriptPromise = null;
+      resolve(null);
+    };
     document.head.appendChild(script);
   });
 
@@ -307,21 +350,41 @@ export class Sdg01DetailContent {
     this.midTimer = null;
     this.finishTimer = null;
     this.disposeRequested = false;
+    this.renderVersion = 0;
     this.onResize = () => this.resizeScene();
+  }
+
+  resetRuntimeState() {
+    this.currentScenario = null;
+    this.targetRotation = null;
+    this.spinVelocity = 0.0035;
+    this.lockOnResult = false;
+    this.lotteryStartedAt = 0;
+  }
+
+  teardownRuntime() {
+    this.disposeRequested = true;
+    window.removeEventListener("resize", this.onResize);
+    this.destroyScene();
+    this.resetRuntimeState();
+    this.THREE = null;
+    resetThreeGlobalLoader();
   }
 
   render() {
     if (!this.host) return;
+    this.teardownRuntime();
+    const renderVersion = ++this.renderVersion;
     this.disposeRequested = false;
     this.host.innerHTML = this.template();
     this.cacheRefs();
     this.bindEvents();
-    void this.initThreeSceneAsync();
+    void this.initThreeSceneAsync(renderVersion);
   }
 
-  async initThreeSceneAsync() {
+  async initThreeSceneAsync(renderVersion) {
     const three = await loadThreeGlobal();
-    if (this.disposeRequested) return;
+    if (this.disposeRequested || renderVersion !== this.renderVersion) return;
 
     if (!three) {
       this.showFallback();
@@ -854,9 +917,8 @@ export class Sdg01DetailContent {
   }
 
   destroy() {
-    this.disposeRequested = true;
-    window.removeEventListener("resize", this.onResize);
-    this.destroyScene();
+    this.renderVersion += 1;
+    this.teardownRuntime();
     this.refs = {};
     this.setTitleSectorHidden(false);
     if (this.host) {

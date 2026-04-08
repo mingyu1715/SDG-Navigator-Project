@@ -13,7 +13,7 @@ function cloneCard(cardEl) {
 
 const MIN_TRANSITION_LOADER_MS = 1200;
 
-function createLayer(accent, rect) {
+function createLayer(accent) {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   const layer = document.createElement("div");
@@ -53,7 +53,7 @@ export function transitionMainToDetail({ cardEl, accent, detailRoot, onHalfOpen,
   }
 
   const { clone, rect } = cloneCard(cardEl);
-  const { layer, maxRadius } = createLayer(accent, rect);
+  const { layer, maxRadius } = createLayer(accent);
   const loader = createFloatingLoader();
   const vw = window.innerWidth;
   const vh = window.innerHeight;

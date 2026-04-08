@@ -63,10 +63,6 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
-function sleep(ms) {
-  return new Promise((resolve) => window.setTimeout(resolve, ms));
-}
-
 function randomFrom(keys) {
   const idx = Math.floor(Math.random() * keys.length);
   return keys[idx];
@@ -189,6 +185,13 @@ function tone(freq, durationMs, type = "sine", gain = 0.06) {
 
 tone.ctx = null;
 
+function disposeToneContext() {
+  const ctx = tone.ctx;
+  tone.ctx = null;
+  if (!ctx || typeof ctx.close !== "function") return;
+  void ctx.close().catch(() => null);
+}
+
 function countryFlowSentence(countryLabel, resultKey) {
   if (resultKey === "treatable") {
     return `${countryLabel}에서는 치료가 시작되었습니다.`;
@@ -217,6 +220,7 @@ export class Sdg03DetailContent {
     this.autoStartTimer = null;
     this.hasEnteredMain = false;
     this.stepRevealTimers = [];
+    this.delayTimers = new Set();
     this.sequenceVersion = 0;
 
     this.boundEnter = () => this.enterExperience();
@@ -250,6 +254,30 @@ export class Sdg03DetailContent {
       this.slotResolver = null;
       resolve(randomFrom(COUNTRY_KEYS));
     }
+  }
+
+  wait(ms) {
+    return new Promise((resolve) => {
+      const entry = {
+        id: null,
+        resolve
+      };
+
+      entry.id = window.setTimeout(() => {
+        this.delayTimers.delete(entry);
+        resolve();
+      }, ms);
+
+      this.delayTimers.add(entry);
+    });
+  }
+
+  clearDelayTimers() {
+    this.delayTimers.forEach((entry) => {
+      window.clearTimeout(entry.id);
+      entry.resolve();
+    });
+    this.delayTimers.clear();
   }
 
   render() {
@@ -597,14 +625,14 @@ export class Sdg03DetailContent {
     if (this.refs.statusNote) this.refs.statusNote.textContent = "상태 전환 중";
 
     tone(760, 170, "triangle", 0.06);
-    await sleep(820);
+    await this.wait(820);
     if (this.disposeRequested || runId !== this.sequenceVersion) return;
 
     const highPayload = await this.playTier("high");
     if (this.disposeRequested || runId !== this.sequenceVersion) return;
     if (highPayload) this.state.history.push(highPayload);
 
-    await sleep(HIGH_RESULT_HOLD_MS);
+    await this.wait(HIGH_RESULT_HOLD_MS);
     if (this.disposeRequested || runId !== this.sequenceVersion) return;
 
     this.applyStateClass("transition");
@@ -614,14 +642,14 @@ export class Sdg03DetailContent {
     if (this.refs.statusWord) this.refs.statusWord.textContent = "조건 변화";
     if (this.refs.countryResult) this.refs.countryResult.textContent = "같은 환자를 더 낮은 접근 환경으로 이동합니다.";
 
-    await sleep(MID_WARNING_HOLD_MS);
+    await this.wait(MID_WARNING_HOLD_MS);
     if (this.disposeRequested || runId !== this.sequenceVersion) return;
 
     const lowPayload = await this.playTier("low");
     if (this.disposeRequested || runId !== this.sequenceVersion) return;
     if (lowPayload) this.state.history.push(lowPayload);
 
-    await sleep(640);
+    await this.wait(640);
     if (this.disposeRequested || runId !== this.sequenceVersion) return;
 
     const [high, low] = this.state.history;
@@ -764,11 +792,13 @@ export class Sdg03DetailContent {
       window.clearTimeout(this.autoStartTimer);
       this.autoStartTimer = null;
     }
+    this.clearDelayTimers();
     this.clearStepMotion();
     if (this.ecgRafId) {
       window.cancelAnimationFrame(this.ecgRafId);
       this.ecgRafId = null;
     }
+    disposeToneContext();
   }
 
   destroy() {

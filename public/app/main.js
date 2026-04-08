@@ -8,8 +8,7 @@ import { ensureLoader, showLoader, hideLoader } from "../js/components/loader.js
 const appState = {
   currentView: "main",
   currentGoalId: null,
-  transitioning: false,
-  initialized: false
+  transitioning: false
 };
 
 const mainRoot = document.getElementById("mainView");
@@ -364,7 +363,6 @@ function bootstrapApp() {
   }
   emitRoute(initial);
 
-  appState.initialized = true;
   return initial;
 }
 

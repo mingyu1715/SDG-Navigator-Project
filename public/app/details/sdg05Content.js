@@ -211,6 +211,7 @@ export class Sdg05DetailContent {
     this.mainStepTimers = [];
     this.extraStepTimers = [];
     this.hasEnteredMain = false;
+    this.renderVersion = 0;
     this.runVersion = 0;
   }
 
@@ -624,12 +625,13 @@ export class Sdg05DetailContent {
   async render() {
     if (!this.host) return;
     this.teardownRuntime();
+    const renderVersion = ++this.renderVersion;
     this.disposeRequested = false;
     this.hasEnteredMain = false;
     this.setThemeActive(true);
     this.state = this.createInitialState();
     this.countries = await getPayGapData();
-    if (this.disposeRequested) return;
+    if (this.disposeRequested || renderVersion !== this.renderVersion) return;
 
     if (!this.countries.length) {
       this.countries = DEFAULT_PAY_GAP_DATA;
@@ -645,6 +647,7 @@ export class Sdg05DetailContent {
 
   destroy() {
     this.disposeRequested = true;
+    this.renderVersion += 1;
     this.teardownRuntime();
     this.refs = {};
     this.state = this.createInitialState();

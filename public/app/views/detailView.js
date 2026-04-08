@@ -8,6 +8,27 @@ import {
 } from "../details/registry.js";
 
 const MIN_DETAIL_OVERLAY_MS = 1200;
+const DETAIL_PANEL_VARIANT_CLASSES = [
+  "detail-card-custom",
+  "detail-card-sdg01",
+  "detail-card-sdg02",
+  "detail-card-sdg03",
+  "detail-card-sdg04",
+  "detail-card-sdg05"
+];
+const DETAIL_ROOT_VARIANT_CLASSES = [
+  "sdg01-title-hidden",
+  "sdg02-title-hidden",
+  "sdg02-theme",
+  "sdg03-title-hidden",
+  "sdg04-title-hidden",
+  "sdg05-title-hidden",
+  "sdg05-theme"
+];
+const DETAIL_GLOBAL_ORPHAN_SELECTORS = [
+  ".sdg02-rx-throw-ghost",
+  'script[data-sdg01-three-script="true"]'
+];
 
 export class DetailView {
   constructor(root, options = {}) {
@@ -93,17 +114,33 @@ export class DetailView {
     this.loadingOverlay.classList.add("is-hidden");
   }
 
+  clearPanelVariantClasses() {
+    if (!this.panel) return;
+    this.panel.classList.remove(...DETAIL_PANEL_VARIANT_CLASSES);
+  }
+
+  clearRootVariantClasses() {
+    this.root.classList.remove(...DETAIL_ROOT_VARIANT_CLASSES);
+  }
+
+  removeGlobalOrphans() {
+    DETAIL_GLOBAL_ORPHAN_SELECTORS.forEach((selector) => {
+      document.querySelectorAll(selector).forEach((node) => {
+        node.parentNode?.removeChild(node);
+      });
+    });
+  }
+
+  cleanupRendererEnvironment() {
+    this.clearPanelVariantClasses();
+    this.clearRootVariantClasses();
+    this.removeGlobalOrphans();
+  }
+
   showGenericPanel() {
     this.frame.setMode("generic");
     if (this.panelWrap) this.panelWrap.hidden = false;
-    if (this.panel) {
-      this.panel.classList.remove("detail-card-custom");
-      this.panel.classList.remove("detail-card-sdg01");
-      this.panel.classList.remove("detail-card-sdg02");
-      this.panel.classList.remove("detail-card-sdg03");
-      this.panel.classList.remove("detail-card-sdg04");
-      this.panel.classList.remove("detail-card-sdg05");
-    }
+    this.cleanupRendererEnvironment();
     if (this.genericContent) this.genericContent.hidden = false;
     if (this.customContent) this.customContent.hidden = true;
   }
@@ -112,12 +149,8 @@ export class DetailView {
     this.frame.setMode(renderer?.frameMode || "generic");
     if (this.panelWrap) this.panelWrap.hidden = false;
     if (this.panel) {
+      this.clearPanelVariantClasses();
       this.panel.classList.add("detail-card-custom");
-      this.panel.classList.remove("detail-card-sdg01");
-      this.panel.classList.remove("detail-card-sdg02");
-      this.panel.classList.remove("detail-card-sdg03");
-      this.panel.classList.remove("detail-card-sdg04");
-      this.panel.classList.remove("detail-card-sdg05");
       if (renderer && renderer.panelClass) {
         this.panel.classList.add(renderer.panelClass);
       }
@@ -174,23 +207,25 @@ export class DetailView {
 
   destroyActiveCustomRenderer() {
     if (!this.activeCustomRenderer) return;
-    if (typeof this.activeCustomRenderer.destroy === "function") {
-      this.activeCustomRenderer.destroy();
-    }
+    const renderer = this.activeCustomRenderer;
     this.activeCustomRenderer = null;
+    try {
+      if (typeof renderer.destroy === "function") {
+        renderer.destroy();
+      }
+    } finally {
+      this.cleanupRendererEnvironment();
+    }
   }
 
   showCustomLoading(goalId, baseGoal) {
     this.frame.setMode("immersive");
     if (this.panelWrap) this.panelWrap.hidden = false;
     if (this.panel) {
+      this.clearPanelVariantClasses();
       this.panel.classList.add("detail-card-custom");
-      this.panel.classList.remove("detail-card-sdg01");
-      this.panel.classList.remove("detail-card-sdg02");
-      this.panel.classList.remove("detail-card-sdg03");
-      this.panel.classList.remove("detail-card-sdg04");
-      this.panel.classList.remove("detail-card-sdg05");
     }
+    this.clearRootVariantClasses();
     if (this.genericContent) this.genericContent.hidden = true;
     if (this.customContent) {
       this.customContent.hidden = false;

@@ -169,6 +169,8 @@ export class Sdg02DetailContent {
     this.disposeRequested = false;
     this.timers = new Set();
     this.rafIds = new Set();
+    this.throwGhosts = new Set();
+    this.throwAnimations = new Set();
 
     this.state = this.createInitialState();
     this.binDragDepth = 0;
@@ -238,12 +240,32 @@ export class Sdg02DetailContent {
     this.rafIds.clear();
   }
 
+  clearThrowArtifacts() {
+    this.throwAnimations.forEach((animation) => {
+      try {
+        animation.cancel();
+      } catch {
+        // ignore
+      }
+    });
+    this.throwAnimations.clear();
+
+    this.throwGhosts.forEach((ghost) => {
+      if (ghost.parentNode) {
+        ghost.parentNode.removeChild(ghost);
+      }
+    });
+    this.throwGhosts.clear();
+  }
+
   render() {
     if (!this.host) return;
 
     this.teardownRuntime();
     this.disposeRequested = false;
     this.state = this.createInitialState();
+    this.binDragDepth = 0;
+    this.throwingIds.clear();
 
     this.setThemeActive(true);
     this.setTitleSectorHidden(true);
@@ -448,6 +470,7 @@ export class Sdg02DetailContent {
     this.refs.resetButton?.removeEventListener("click", this.boundReset);
     this.clearTimers();
     this.clearRafs();
+    this.clearThrowArtifacts();
   }
 
   renderFoodGrid() {
@@ -509,9 +532,14 @@ export class Sdg02DetailContent {
       const ghost = document.createElement("div");
       ghost.className = "sdg02-rx-throw-ghost";
       ghost.textContent = item?.emoji || "🍽️";
+      this.throwGhosts.add(ghost);
       document.body.appendChild(ghost);
 
       const cleanup = () => {
+        if (animation) {
+          this.throwAnimations.delete(animation);
+        }
+        this.throwGhosts.delete(ghost);
         if (ghost.parentNode) ghost.parentNode.removeChild(ghost);
         resolve();
       };
@@ -528,6 +556,7 @@ export class Sdg02DetailContent {
           fill: "forwards"
         }
       );
+      this.throwAnimations.add(animation);
 
       if (animation && animation.finished && typeof animation.finished.then === "function") {
         animation.finished.then(cleanup).catch(cleanup);
@@ -569,7 +598,7 @@ export class Sdg02DetailContent {
         if (instant) {
           element.classList.add("is-active");
         } else {
-          requestAnimationFrame(() => element.classList.add("is-active"));
+          this.setRaf(() => element.classList.add("is-active"));
         }
         return;
       }
