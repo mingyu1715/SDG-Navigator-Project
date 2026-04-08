@@ -1,3 +1,11 @@
+import {
+  clearStepMotionTimers,
+  escapeHtml,
+  loadJsonData,
+  scheduleStepMotion,
+  toggleDetailViewClass
+} from "./sharedRuntime.js";
+
 const WORK_START_MINUTES = 9 * 60;
 const WORK_END_MINUTES = 18 * 60;
 const WORK_DAY_MINUTES = WORK_END_MINUTES - WORK_START_MINUTES;
@@ -87,18 +95,6 @@ const RESOURCE_ITEMS = [
 
 let payGapDataPromise = null;
 
-async function loadJson(url, fallback) {
-  try {
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    if (!Array.isArray(data) || !data.length) throw new Error("Invalid JSON");
-    return data;
-  } catch {
-    return fallback;
-  }
-}
-
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
@@ -181,20 +177,15 @@ function normalizeCountryData(rawList) {
 
 function getPayGapData() {
   if (!payGapDataPromise) {
-    payGapDataPromise = loadJson("/app/data/sdg05/payGapByCountry.json", DEFAULT_PAY_GAP_DATA)
+    payGapDataPromise = loadJsonData(
+      "/app/data/sdg05/payGapByCountry.json",
+      DEFAULT_PAY_GAP_DATA,
+      (data) => Array.isArray(data) && data.length > 0
+    )
       .then((data) => normalizeCountryData(data))
       .catch(() => DEFAULT_PAY_GAP_DATA);
   }
   return payGapDataPromise;
-}
-
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 }
 
 export class Sdg05DetailContent {
@@ -225,42 +216,23 @@ export class Sdg05DetailContent {
   }
 
   setTitleSectorHidden(hidden) {
-    const detailRoot = this.host?.closest("#detailView");
-    if (!detailRoot) return;
-    detailRoot.classList.toggle("sdg05-title-hidden", Boolean(hidden));
+    toggleDetailViewClass(this.host, "sdg05-title-hidden", hidden);
   }
 
   setThemeActive(active) {
-    const detailRoot = this.host?.closest("#detailView");
-    if (!detailRoot) return;
-    detailRoot.classList.toggle("sdg05-theme", Boolean(active));
+    toggleDetailViewClass(this.host, "sdg05-theme", active);
   }
 
   clearMainStepMotion() {
-    this.mainStepTimers.forEach((timer) => window.clearTimeout(timer));
-    this.mainStepTimers = [];
-    if (!this.host) return;
-    this.host.querySelectorAll(".sdg05-main-step").forEach((step) => step.classList.remove("in-view"));
+    clearStepMotionTimers(this.mainStepTimers, this.host, ".sdg05-main-step");
   }
 
   clearExtraStepMotion() {
-    this.extraStepTimers.forEach((timer) => window.clearTimeout(timer));
-    this.extraStepTimers = [];
-    if (!this.host) return;
-    this.host.querySelectorAll(".sdg05-extra-step").forEach((step) => step.classList.remove("in-view"));
+    clearStepMotionTimers(this.extraStepTimers, this.host, ".sdg05-extra-step");
   }
 
   setupMainStepMotion() {
-    this.clearMainStepMotion();
-    if (!this.host) return;
-
-    const steps = this.host.querySelectorAll(".sdg05-main-step");
-    steps.forEach((step, idx) => {
-      const timer = window.setTimeout(() => {
-        step.classList.add("in-view");
-      }, idx * 110);
-      this.mainStepTimers.push(timer);
-    });
+    scheduleStepMotion(this.mainStepTimers, this.host, ".sdg05-main-step", 110);
   }
 
   updateVisibility() {
@@ -490,14 +462,7 @@ export class Sdg05DetailContent {
     this.clearExtraStepMotion();
     panel.hidden = false;
     panel.setAttribute("aria-hidden", "false");
-
-    const steps = panel.querySelectorAll(".sdg05-extra-step");
-    steps.forEach((step, idx) => {
-      const timer = window.setTimeout(() => {
-        step.classList.add("in-view");
-      }, idx * EXTRA_REVEAL_STAGGER_MS);
-      this.extraStepTimers.push(timer);
-    });
+    scheduleStepMotion(this.extraStepTimers, panel, ".sdg05-extra-step", EXTRA_REVEAL_STAGGER_MS);
   }
 
   renderResult(country, result) {

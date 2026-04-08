@@ -1,3 +1,5 @@
+import { escapeHtml, loadJsonData, toggleDetailViewClass } from "./sharedRuntime.js";
+
 const DEFAULT_INGREDIENTS = [
   {
     id: "spoiled-apple",
@@ -91,22 +93,10 @@ const DEFAULT_COPY = {
   ]
 };
 
-async function loadJson(url, fallback) {
-  try {
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    if (!data) throw new Error("Invalid JSON");
-    return data;
-  } catch {
-    return fallback;
-  }
-}
-
 const [ingredientsData, impactRulesData, copyData] = await Promise.all([
-  loadJson("/app/data/sdg02/ingredients.json", DEFAULT_INGREDIENTS),
-  loadJson("/app/data/sdg02/impactRules.json", DEFAULT_IMPACT_RULES),
-  loadJson("/app/data/sdg02/copy.json", DEFAULT_COPY)
+  loadJsonData("/app/data/sdg02/ingredients.json", DEFAULT_INGREDIENTS),
+  loadJsonData("/app/data/sdg02/impactRules.json", DEFAULT_IMPACT_RULES),
+  loadJsonData("/app/data/sdg02/copy.json", DEFAULT_COPY)
 ]);
 
 const INGREDIENTS = Array.isArray(ingredientsData) && ingredientsData.length
@@ -144,15 +134,6 @@ function formatNumber(value) {
 function formatDecimal(value, digits = 1) {
   const fixed = Number(value || 0).toFixed(digits);
   return fixed.endsWith(".0") ? fixed.slice(0, -2) : fixed;
-}
-
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 }
 
 function toCount(item) {
@@ -200,15 +181,11 @@ export class Sdg02DetailContent {
   }
 
   setTitleSectorHidden(hidden) {
-    const detailRoot = this.host?.closest("#detailView");
-    if (!detailRoot) return;
-    detailRoot.classList.toggle("sdg02-title-hidden", Boolean(hidden));
+    toggleDetailViewClass(this.host, "sdg02-title-hidden", hidden);
   }
 
   setThemeActive(active) {
-    const detailRoot = this.host?.closest("#detailView");
-    if (!detailRoot) return;
-    detailRoot.classList.toggle("sdg02-theme", Boolean(active));
+    toggleDetailViewClass(this.host, "sdg02-theme", active);
   }
 
   setTimer(fn, delay) {

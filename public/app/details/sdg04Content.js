@@ -1,3 +1,5 @@
+import { clearStepMotionTimers, scheduleStepMotion, toggleDetailViewClass } from "./sharedRuntime.js";
+
 const COUNTRIES = [
   { name: "Finland", nameKo: "핀란드", literacyRate: 99, region: "유럽" },
   { name: "South Korea", nameKo: "대한민국", literacyRate: 99, region: "아시아" },
@@ -111,9 +113,7 @@ export class Sdg04DetailContent {
   }
 
   setTitleSectorHidden(hidden) {
-    const detailRoot = this.host?.closest("#detailView");
-    if (!detailRoot) return;
-    detailRoot.classList.toggle("sdg04-title-hidden", Boolean(hidden));
+    toggleDetailViewClass(this.host, "sdg04-title-hidden", hidden);
   }
 
   renderResourceItems() {
@@ -229,25 +229,11 @@ export class Sdg04DetailContent {
   }
 
   clearStepMotion() {
-    this.stepRevealTimers.forEach((timer) => window.clearTimeout(timer));
-    this.stepRevealTimers = [];
-    if (!this.host) return;
-    this.host.querySelectorAll(".sdg04-step").forEach((step) => step.classList.remove("in-view"));
+    clearStepMotionTimers(this.stepRevealTimers, this.host, ".sdg04-step");
   }
 
   setupStepMotion() {
-    if (!this.host) return;
-    this.clearStepMotion();
-
-    const steps = this.host.querySelectorAll(".sdg04-step");
-    if (!steps.length) return;
-
-    steps.forEach((step, idx) => {
-      const timer = window.setTimeout(() => {
-        step.classList.add("in-view");
-      }, idx * 90);
-      this.stepRevealTimers.push(timer);
-    });
+    scheduleStepMotion(this.stepRevealTimers, this.host, ".sdg04-step", 90);
   }
 
   bindEvents() {

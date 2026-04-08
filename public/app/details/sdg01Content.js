@@ -1,3 +1,5 @@
+import { toggleDetailViewClass } from "./sharedRuntime.js";
+
 const LIFE_SCENARIOS = [
   {
     country: "에티오피아",
@@ -528,9 +530,7 @@ export class Sdg01DetailContent {
   }
 
   setTitleSectorHidden(hidden) {
-    const detailRoot = this.host?.closest("#detailView");
-    if (!detailRoot) return;
-    detailRoot.classList.toggle("sdg01-title-hidden", Boolean(hidden));
+    toggleDetailViewClass(this.host, "sdg01-title-hidden", hidden);
   }
 
   hideResultPanel(options = {}) {

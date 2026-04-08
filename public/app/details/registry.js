@@ -1,3 +1,5 @@
+import { normalizeCustomDetailRenderer } from "./rendererContract.js";
+
 const FRAME_META_OVERRIDES = new Map([
   [
     1,
@@ -109,7 +111,7 @@ export async function createCustomDetailRenderer(goalId, customHost) {
   if (!definition) return null;
   try {
     const mod = await definition.loadModule();
-    return definition.createRenderer(mod, customHost);
+    return normalizeCustomDetailRenderer(goalId, definition.createRenderer(mod, customHost));
   } catch {
     return null;
   }

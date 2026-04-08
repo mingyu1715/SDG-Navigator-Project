@@ -1,3 +1,5 @@
+import { clearStepMotionTimers, scheduleStepMotion, toggleDetailViewClass } from "./sharedRuntime.js";
+
 const EMERGENCY = {
   label: "급성 응급상황",
   severity: 3
@@ -239,9 +241,7 @@ export class Sdg03DetailContent {
   }
 
   setTitleSectorHidden(hidden) {
-    const detailRoot = this.host?.closest("#detailView");
-    if (!detailRoot) return;
-    detailRoot.classList.toggle("sdg03-title-hidden", Boolean(hidden));
+    toggleDetailViewClass(this.host, "sdg03-title-hidden", hidden);
   }
 
   clearSlotInterval() {
@@ -418,22 +418,11 @@ export class Sdg03DetailContent {
   }
 
   clearStepMotion() {
-    this.stepRevealTimers.forEach((timer) => window.clearTimeout(timer));
-    this.stepRevealTimers = [];
-    if (!this.host) return;
-    this.host.querySelectorAll(".sdg03-step").forEach((step) => step.classList.remove("in-view"));
+    clearStepMotionTimers(this.stepRevealTimers, this.host, ".sdg03-step");
   }
 
   setupStepMotion() {
-    this.clearStepMotion();
-    if (!this.host) return;
-    const steps = this.host.querySelectorAll(".sdg03-step");
-    steps.forEach((step, idx) => {
-      const timer = window.setTimeout(() => {
-        step.classList.add("in-view");
-      }, idx * 110);
-      this.stepRevealTimers.push(timer);
-    });
+    scheduleStepMotion(this.stepRevealTimers, this.host, ".sdg03-step", 110);
   }
 
   updateVisibility() {
