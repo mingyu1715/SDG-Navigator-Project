@@ -1,192 +1,24 @@
 import {
   clearStepMotionTimers,
-  escapeHtml,
-  loadJsonData,
   scheduleStepMotion,
   toggleDetailViewClass
 } from "./sharedRuntime.js";
-
-const WORK_START_MINUTES = 9 * 60;
-const WORK_END_MINUTES = 18 * 60;
-const WORK_DAY_MINUTES = WORK_END_MINUTES - WORK_START_MINUTES;
-const EXTRA_REVEAL_STAGGER_MS = 90;
-const ANIMATION_DURATION_MS = 2500;
-const ANIMATION_LOOPS = 6;
-
-const DEFAULT_PAY_GAP_DATA = [
-  {
-    code: "KR",
-    nameKo: "대한민국",
-    nameEn: "South Korea",
-    gapRate: 0.31,
-    source: "교육용 샘플 데이터",
-    sourceYear: 2025
-  },
-  {
-    code: "JP",
-    nameKo: "일본",
-    nameEn: "Japan",
-    gapRate: 0.23,
-    source: "교육용 샘플 데이터",
-    sourceYear: 2025
-  },
-  {
-    code: "US",
-    nameKo: "미국",
-    nameEn: "United States",
-    gapRate: 0.17,
-    source: "교육용 샘플 데이터",
-    sourceYear: 2025
-  },
-  {
-    code: "DE",
-    nameKo: "독일",
-    nameEn: "Germany",
-    gapRate: 0.18,
-    source: "교육용 샘플 데이터",
-    sourceYear: 2025
-  },
-  {
-    code: "FR",
-    nameKo: "프랑스",
-    nameEn: "France",
-    gapRate: 0.12,
-    source: "교육용 샘플 데이터",
-    sourceYear: 2025
-  },
-  {
-    code: "SE",
-    nameKo: "스웨덴",
-    nameEn: "Sweden",
-    gapRate: 0.08,
-    source: "교육용 샘플 데이터",
-    sourceYear: 2025
-  },
-  {
-    code: "IN",
-    nameKo: "인도",
-    nameEn: "India",
-    gapRate: 0.34,
-    source: "교육용 샘플 데이터",
-    sourceYear: 2025
-  }
-];
-
-const RESOURCE_ITEMS = [
-  {
-    type: "UN WOMEN",
-    title: "Equal Pay and Wage Transparency",
-    description: "임금 투명성과 동일임금 정책 권고를 정리한 자료",
-    url: "https://www.unwomen.org/en"
-  },
-  {
-    type: "ILO",
-    title: "Global Wage Report",
-    description: "성별 임금 격차와 노동시장 구조를 다루는 국제 보고서",
-    url: "https://www.ilo.org/global/research/global-reports/global-wage-report/lang--en/index.htm"
-  },
-  {
-    type: "OECD",
-    title: "Gender Wage Gap Indicator",
-    description: "국가별 성별 임금격차 지표를 비교할 수 있는 데이터 페이지",
-    url: "https://www.oecd.org/en/data/indicators/gender-wage-gap.html"
-  }
-];
-
-let payGapDataPromise = null;
-
-function clamp(value, min, max) {
-  return Math.min(max, Math.max(min, value));
-}
-
-function easeOutCubic(t) {
-  return 1 - Math.pow(1 - t, 3);
-}
-
-function toPercent(value) {
-  return Math.round((Number(value) || 0) * 1000) / 10;
-}
-
-function pad2(value) {
-  return String(value).padStart(2, "0");
-}
-
-function normalizeDayMinutes(minutes) {
-  const day = 24 * 60;
-  const value = Number(minutes) || 0;
-  return ((Math.round(value) % day) + day) % day;
-}
-
-function formatClockTime(minutes) {
-  const normalized = normalizeDayMinutes(minutes);
-  const hour = Math.floor(normalized / 60);
-  const minute = normalized % 60;
-  return `${pad2(hour)}:${pad2(minute)}`;
-}
-
-function formatKoreanTime(minutes) {
-  const normalized = normalizeDayMinutes(minutes);
-  const hour24 = Math.floor(normalized / 60);
-  const minute = normalized % 60;
-  const period = hour24 < 12 ? "오전" : "오후";
-  const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
-  return `${period} ${hour12}시 ${pad2(minute)}분`;
-}
-
-function calculatePayClock(gapRateInput) {
-  const gapRate = clamp(Number(gapRateInput) || 0, 0, 1);
-  const unpaidMinutes = Math.round(WORK_DAY_MINUTES * gapRate);
-  const unpaidStartMinutes = clamp(
-    WORK_END_MINUTES - unpaidMinutes,
-    WORK_START_MINUTES,
-    WORK_END_MINUTES
-  );
-
-  return {
-    gapRate,
-    unpaidMinutes,
-    unpaidStartMinutes
-  };
-}
-
-function normalizeCountryData(rawList) {
-  if (!Array.isArray(rawList) || !rawList.length) return DEFAULT_PAY_GAP_DATA;
-  const normalized = rawList
-    .map((item) => {
-      const code = String(item?.code || "").trim().toUpperCase();
-      const nameKo = String(item?.nameKo || "").trim();
-      const nameEn = String(item?.nameEn || "").trim();
-      const source = String(item?.source || "교육용 샘플 데이터").trim();
-      const sourceYear = Number(item?.sourceYear) || 2025;
-      const gapRate = clamp(Number(item?.gapRate) || 0, 0, 1);
-
-      if (!code || !nameKo || !nameEn) return null;
-      return {
-        code,
-        nameKo,
-        nameEn,
-        gapRate,
-        source,
-        sourceYear
-      };
-    })
-    .filter(Boolean);
-
-  return normalized.length ? normalized : DEFAULT_PAY_GAP_DATA;
-}
-
-function getPayGapData() {
-  if (!payGapDataPromise) {
-    payGapDataPromise = loadJsonData(
-      "/app/data/sdg05/payGapByCountry.json",
-      DEFAULT_PAY_GAP_DATA,
-      (data) => Array.isArray(data) && data.length > 0
-    )
-      .then((data) => normalizeCountryData(data))
-      .catch(() => DEFAULT_PAY_GAP_DATA);
-  }
-  return payGapDataPromise;
-}
+import {
+  SDG05_ANIMATION_DURATION_MS,
+  SDG05_ANIMATION_LOOPS,
+  SDG05_EXTRA_REVEAL_STAGGER_MS,
+  SDG05_WORK_START_MINUTES,
+  calculateSdg05PayClock,
+  clampSdg05Value,
+  createSdg05InitialState,
+  easeOutSdg05Cubic,
+  getSdg05ClockFaceView,
+  getSdg05CountrySelectionView,
+  getSdg05FallbackCountries,
+  getSdg05PayGapData,
+  getSdg05ResultView,
+  renderSdg05ResourceItems
+} from "./sdg05ContentModel.js";
 
 export class Sdg05DetailContent {
   constructor(host) {
@@ -196,7 +28,7 @@ export class Sdg05DetailContent {
 
     this.refs = {};
     this.countries = [];
-    this.state = this.createInitialState();
+    this.state = createSdg05InitialState();
     this.disposeRequested = false;
     this.animationRafId = null;
     this.mainStepTimers = [];
@@ -204,15 +36,6 @@ export class Sdg05DetailContent {
     this.hasEnteredMain = false;
     this.renderVersion = 0;
     this.runVersion = 0;
-  }
-
-  createInitialState() {
-    return {
-      selectedCode: "",
-      hasStarted: false,
-      running: false,
-      hasResult: false
-    };
   }
 
   setTitleSectorHidden(hidden) {
@@ -320,24 +143,13 @@ export class Sdg05DetailContent {
             <p class="sdg05-info-overline">관련 자료</p>
             <h3 class="sdg05-info-title">현실 데이터 더 보기</h3>
             <div class="sdg05-resource-list">
-              ${this.renderResourceItems()}
+              ${renderSdg05ResourceItems()}
             </div>
           </article>
           </section>
         </section>
       </div>
     `;
-  }
-
-  renderResourceItems() {
-    return RESOURCE_ITEMS.map((resource) => `
-      <article class="sdg05-resource-item">
-        <p class="sdg05-resource-type">${escapeHtml(resource.type)}</p>
-        <h4 class="sdg05-resource-title">${escapeHtml(resource.title)}</h4>
-        <p class="sdg05-resource-desc">${escapeHtml(resource.description)}</p>
-        <a class="sdg05-resource-open" href="${escapeHtml(resource.url)}" target="_blank" rel="noopener noreferrer">열기</a>
-      </article>
-    `).join("");
   }
 
   cacheRefs() {
@@ -416,34 +228,26 @@ export class Sdg05DetailContent {
 
   updateCountryHint() {
     const country = this.getSelectedCountry();
-    if (!country) {
-      if (this.refs.countryHint) this.refs.countryHint.textContent = "국가 데이터를 불러오지 못했습니다.";
-      if (this.refs.mainCountryLabel) this.refs.mainCountryLabel.textContent = "-";
-      return;
-    }
+    const countryView = getSdg05CountrySelectionView(country);
     if (this.refs.countryHint) {
-      this.refs.countryHint.textContent = `${country.nameKo} 임금 격차 ${toPercent(country.gapRate)}%`;
+      this.refs.countryHint.textContent = countryView.hint;
     }
     if (this.refs.mainCountryLabel) {
-      this.refs.mainCountryLabel.textContent = `${country.nameKo} · 임금 격차 ${toPercent(country.gapRate)}%`;
+      this.refs.mainCountryLabel.textContent = countryView.mainLabel;
     }
   }
 
   applyClockTime(minutes) {
-    const normalized = normalizeDayMinutes(minutes);
-    const minute = normalized % 60;
-    const hoursOnDial = (normalized % 720) / 60;
-    const hourDeg = hoursOnDial * 30;
-    const minuteDeg = minute * 6;
+    const clockView = getSdg05ClockFaceView(minutes);
 
     if (this.refs.hourHand) {
-      this.refs.hourHand.style.transform = `translate(-50%, -100%) rotate(${hourDeg}deg)`;
+      this.refs.hourHand.style.transform = `translate(-50%, -100%) rotate(${clockView.hourDeg}deg)`;
     }
     if (this.refs.minuteHand) {
-      this.refs.minuteHand.style.transform = `translate(-50%, -100%) rotate(${minuteDeg}deg)`;
+      this.refs.minuteHand.style.transform = `translate(-50%, -100%) rotate(${clockView.minuteDeg}deg)`;
     }
     if (this.refs.clockReadout) {
-      this.refs.clockReadout.textContent = formatClockTime(normalized);
+      this.refs.clockReadout.textContent = clockView.readout;
     }
   }
 
@@ -462,31 +266,29 @@ export class Sdg05DetailContent {
     this.clearExtraStepMotion();
     panel.hidden = false;
     panel.setAttribute("aria-hidden", "false");
-    scheduleStepMotion(this.extraStepTimers, panel, ".sdg05-extra-step", EXTRA_REVEAL_STAGGER_MS);
+    scheduleStepMotion(this.extraStepTimers, panel, ".sdg05-extra-step", SDG05_EXTRA_REVEAL_STAGGER_MS);
   }
 
   renderResult(country, result) {
-    const gapPercent = toPercent(result.gapRate);
-    const unpaidStartLabel = formatKoreanTime(result.unpaidStartMinutes);
-    const unpaidStartClock = formatClockTime(result.unpaidStartMinutes);
+    const resultView = getSdg05ResultView(country, result);
 
     if (this.refs.resultMain) {
-      this.refs.resultMain.textContent = `당신은 오늘 ${unpaidStartLabel}부터 무급으로 일하고 있습니다.`;
+      this.refs.resultMain.textContent = resultView.resultMain;
     }
     if (this.refs.resultMeta) {
-      this.refs.resultMeta.textContent = `무급 노동 시간 ${result.unpaidMinutes}분 · ${unpaidStartClock} ~ 18:00`;
+      this.refs.resultMeta.textContent = resultView.resultMeta;
     }
     if (this.refs.countryLine) {
-      this.refs.countryLine.textContent = `${country.nameKo} (${country.nameEn}) 임금 격차 ${gapPercent}%`;
+      this.refs.countryLine.textContent = resultView.countryLine;
     }
     if (this.refs.countrySource) {
-      this.refs.countrySource.textContent = `기준: ${country.sourceYear} · ${country.source}`;
+      this.refs.countrySource.textContent = resultView.countrySource;
     }
   }
 
   animateClockTo(targetMinutes, runId) {
-    const startVirtual = WORK_START_MINUTES;
-    const endVirtual = targetMinutes + ANIMATION_LOOPS * 720;
+    const startVirtual = SDG05_WORK_START_MINUTES;
+    const endVirtual = targetMinutes + SDG05_ANIMATION_LOOPS * 720;
     const startAt = performance.now();
 
     return new Promise((resolve) => {
@@ -498,8 +300,8 @@ export class Sdg05DetailContent {
         }
 
         const elapsed = now - startAt;
-        const progress = clamp(elapsed / ANIMATION_DURATION_MS, 0, 1);
-        const eased = easeOutCubic(progress);
+        const progress = clampSdg05Value(elapsed / SDG05_ANIMATION_DURATION_MS, 0, 1);
+        const eased = easeOutSdg05Cubic(progress);
         const virtualMinutes = startVirtual + (endVirtual - startVirtual) * eased;
         this.applyClockTime(virtualMinutes);
 
@@ -524,7 +326,7 @@ export class Sdg05DetailContent {
     if (!country) return;
 
     const runId = ++this.runVersion;
-    const result = calculatePayClock(country.gapRate);
+    const result = calculateSdg05PayClock(country.gapRate);
 
     this.state.hasStarted = true;
     this.state.running = true;
@@ -545,7 +347,7 @@ export class Sdg05DetailContent {
       this.refs.resultMeta.textContent = "남성과 동일 시급 기준으로 무급 시작 시각을 계산합니다.";
     }
 
-    this.applyClockTime(WORK_START_MINUTES);
+    this.applyClockTime(SDG05_WORK_START_MINUTES);
     await this.animateClockTo(result.unpaidStartMinutes, runId);
     if (this.disposeRequested || runId !== this.runVersion) return;
 
@@ -576,7 +378,7 @@ export class Sdg05DetailContent {
       this.refs.root.classList.remove("is-result");
     }
 
-    this.applyClockTime(WORK_START_MINUTES);
+    this.applyClockTime(SDG05_WORK_START_MINUTES);
     this.updateCountryHint();
 
     if (this.refs.resultMain) {
@@ -594,12 +396,12 @@ export class Sdg05DetailContent {
     this.disposeRequested = false;
     this.hasEnteredMain = false;
     this.setThemeActive(true);
-    this.state = this.createInitialState();
-    this.countries = await getPayGapData();
+    this.state = createSdg05InitialState();
+    this.countries = await getSdg05PayGapData();
     if (this.disposeRequested || renderVersion !== this.renderVersion) return;
 
     if (!this.countries.length) {
-      this.countries = DEFAULT_PAY_GAP_DATA;
+      this.countries = getSdg05FallbackCountries();
     }
     this.state.selectedCode = this.countries[0]?.code || "";
 
@@ -615,7 +417,7 @@ export class Sdg05DetailContent {
     this.renderVersion += 1;
     this.teardownRuntime();
     this.refs = {};
-    this.state = this.createInitialState();
+    this.state = createSdg05InitialState();
     this.hasEnteredMain = false;
     this.setTitleSectorHidden(false);
     this.setThemeActive(false);
