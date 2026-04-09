@@ -64,10 +64,20 @@ export class Sdg05DetailContent {
     if (!root || !main) return;
 
     const started = Boolean(this.state.hasStarted);
+    const hasResult = Boolean(this.state.hasResult);
     root.classList.toggle("is-started", started);
-    main.setAttribute("aria-hidden", started ? "false" : "true");
+    root.classList.toggle("is-result", hasResult);
+    root.classList.toggle("is-alert", hasResult);
+    main.setAttribute("aria-hidden", hasResult ? "false" : "true");
 
-    if (!started) {
+    if (this.refs.controlState) {
+      this.refs.controlState.setAttribute("aria-hidden", started ? "true" : "false");
+    }
+    if (this.refs.resultState) {
+      this.refs.resultState.setAttribute("aria-hidden", started ? "false" : "true");
+    }
+
+    if (!hasResult) {
       this.hasEnteredMain = false;
       this.clearMainStepMotion();
       return;
@@ -96,16 +106,6 @@ export class Sdg05DetailContent {
     return `
       <div class="sdg05-exp" data-role="root">
         <section class="sdg05-hero" data-role="hero">
-          <header class="sdg05-control-panel">
-            <p class="sdg05-control-kicker">국가 선택</p>
-            <div class="sdg05-control-row">
-              <label class="sdg05-control-label" for="sdg05CountrySelect">국가</label>
-              <select id="sdg05CountrySelect" class="sdg05-country-select" data-role="countrySelect"></select>
-              <button type="button" class="sdg05-action-btn" data-role="startButton">시계 시작</button>
-            </div>
-            <p class="sdg05-country-hint" data-role="countryHint">-</p>
-          </header>
-
           <section class="sdg05-clock-stage sdg05-clock-stage-hero" aria-label="임금 시계 미리보기">
             <div class="sdg05-clock-face" data-role="clockFace">
               <div class="sdg05-hand sdg05-hour-hand" data-role="hourHand"></div>
@@ -115,10 +115,23 @@ export class Sdg05DetailContent {
             <p class="sdg05-clock-readout" data-role="clockReadout">09:00</p>
           </section>
 
-          <section class="sdg05-result sdg05-main-step sdg05-result-hero" data-role="resultBlock" aria-live="polite">
-            <p class="sdg05-result-main" data-role="resultMain">국가를 선택하고 시계를 시작하세요.</p>
-            <p class="sdg05-result-meta" data-role="resultMeta">시작 전에는 타이틀이 시계 위에 표시됩니다.</p>
-            <p class="sdg05-result-guide">아래로 내려 추가 정보를 확인하세요.</p>
+          <section class="sdg05-control-panel" data-role="heroPanel">
+            <div class="sdg05-panel-state sdg05-panel-state-control" data-role="controlState" aria-hidden="false">
+              <p class="sdg05-control-kicker">국가 선택</p>
+              <div class="sdg05-control-row">
+                <label class="sdg05-control-label" for="sdg05CountrySelect">국가</label>
+                <select id="sdg05CountrySelect" class="sdg05-country-select" data-role="countrySelect"></select>
+                <button type="button" class="sdg05-action-btn" data-role="startButton">시계 시작</button>
+              </div>
+              <p class="sdg05-country-hint" data-role="countryHint">-</p>
+            </div>
+
+            <section class="sdg05-result sdg05-panel-state sdg05-panel-state-result" data-role="resultState" aria-live="polite" aria-hidden="true">
+              <p class="sdg05-result-kicker">임금 시계 결과</p>
+              <p class="sdg05-result-main" data-role="resultMain">국가를 선택하고 시계를 시작하세요.</p>
+              <p class="sdg05-result-meta" data-role="resultMeta">시작 전에는 타이틀이 시계 위에 표시됩니다.</p>
+              <p class="sdg05-result-guide">아래로 내려 추가 정보를 확인하세요.</p>
+            </section>
           </section>
         </section>
 
@@ -158,6 +171,8 @@ export class Sdg05DetailContent {
       root: get("root"),
       hero: get("hero"),
       main: get("main"),
+      controlState: get("controlState"),
+      resultState: get("resultState"),
       countrySelect: get("countrySelect"),
       startButton: get("startButton"),
       resetButton: get("resetButton"),
@@ -336,10 +351,6 @@ export class Sdg05DetailContent {
     this.setTitleSectorHidden(true);
     this.updateVisibility();
 
-    if (this.refs.root) {
-      this.refs.root.classList.remove("is-alert");
-      this.refs.root.classList.remove("is-result");
-    }
     if (this.refs.resultMain) {
       this.refs.resultMain.textContent = "시계가 임금 격차를 계산 중입니다...";
     }
@@ -354,13 +365,9 @@ export class Sdg05DetailContent {
     this.state.running = false;
     this.state.hasResult = true;
     this.setActionState();
+    this.updateVisibility();
     this.renderResult(country, result);
     this.showExtraPanel();
-
-    if (this.refs.root) {
-      this.refs.root.classList.add("is-alert");
-      this.refs.root.classList.add("is-result");
-    }
   }
 
   resetExperience() {
@@ -372,11 +379,6 @@ export class Sdg05DetailContent {
     this.setTitleSectorHidden(false);
     this.updateVisibility();
     this.setActionState();
-
-    if (this.refs.root) {
-      this.refs.root.classList.remove("is-alert");
-      this.refs.root.classList.remove("is-result");
-    }
 
     this.applyClockTime(SDG05_WORK_START_MINUTES);
     this.updateCountryHint();

@@ -1,0 +1,247 @@
+/* App shell, main view cards, and route transition UI */
+.app-shell {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.view {
+  position: absolute;
+  inset: 0;
+}
+
+.main-view {
+  --card-w: 437px;
+  --card-h: 663px;
+  --arc-size: 3200px;
+  --arc-center-x: 50%;
+  --arc-center-y: 2530px;
+  --arc-border: 4px;
+  background: #fff;
+  cursor: grab;
+}
+
+.main-view:active { cursor: grabbing; }
+
+.cards-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+  z-index: 3;
+}
+
+.card-item {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  display: block;
+  text-align: left;
+  font: inherit;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--card-w);
+  height: var(--card-h);
+  transform-origin: center center;
+  will-change: transform, opacity;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.card {
+  --text: #fff;
+  --line: rgba(255, 255, 255, 0.3);
+  position: relative;
+  width: 250px;
+  height: 360px;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--card) 85%, #fff) 0%, var(--card) 62%);
+  padding: clamp(20px, 4.2vw, 34px);
+  border: 0;
+  box-shadow: 0 26px 52px rgba(0, 0, 0, 0.2);
+  color: var(--text);
+  overflow: hidden;
+}
+
+.card::before,
+.card::after {
+  content: "";
+  position: absolute;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.card::before {
+  width: 72%;
+  height: 72%;
+  right: -16%;
+  top: -12%;
+}
+
+.card::after {
+  width: 54%;
+  height: 54%;
+  left: -18%;
+  bottom: -20%;
+}
+
+.goal-no {
+  margin: 0;
+  font-size: 92px;
+  line-height: 0.86;
+  font-weight: 760;
+  letter-spacing: -0.04em;
+}
+
+.goal-title {
+  max-width: 85%;
+  font-size: 30px;
+  line-height: 1.04;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.goal-sub {
+  margin: 8px 0 0;
+  font-size: 8px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.desc {
+  margin: clamp(18px, 4.8vw, 34px) 0 0;
+  font-size: 7px;
+  line-height: 1.45;
+  max-width: 88%;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.meta {
+  position: absolute;
+  left: clamp(18px, 4vw, 34px);
+  right: clamp(18px, 4vw, 34px);
+  bottom: clamp(16px, 3.6vw, 28px);
+  display: flex;
+  justify-content: space-between;
+  font-size: 7px;
+  color: rgba(255, 255, 255, 0.88);
+  letter-spacing: 0.03em;
+}
+
+.filler-card { background: #111; }
+.filler-card::before,
+.filler-card::after,
+.filler-card .goal-no,
+.filler-card .goal-title,
+.filler-card .goal-sub,
+.filler-card .desc,
+.filler-card .meta { display: none; }
+
+.arc {
+  position: absolute;
+  left: var(--arc-center-x);
+  top: var(--arc-center-y);
+  width: var(--arc-size);
+  height: var(--arc-size);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: var(--arc-border) solid rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.shadow { display: none; }
+
+.page-mark {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: "Dancing Script", cursive;
+  font-size: 26px;
+  color: #5f5f5f;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.page-actions {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 5;
+}
+
+.text-link {
+  color: #6f6f6f;
+  font-size: 11px;
+  text-decoration: none;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.nav-card-clone {
+  position: fixed !important;
+  margin: 0;
+  pointer-events: none;
+  z-index: 40;
+  transform-origin: center center;
+  will-change: transform, opacity;
+}
+
+.route-transition-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 39;
+  pointer-events: none;
+  background: var(--detail-accent, #101827);
+}
+
+.route-transition-loader {
+  position: fixed;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom) + clamp(72px, 13vh, 148px));
+  transform: translateX(-50%);
+  z-index: 46;
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.route-transition-loader.is-visible {
+  opacity: 1;
+}
+
+.route-transition-loader-spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 2px solid rgba(234, 241, 255, 0.28);
+  border-top-color: rgba(249, 252, 255, 0.96);
+  animation: route-transition-spin 0.85s linear infinite;
+}
+
+.route-transition-loader-text {
+  margin: 0;
+  color: rgba(238, 245, 255, 0.92);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+@keyframes route-transition-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
