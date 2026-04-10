@@ -408,9 +408,9 @@
 .sdg06-weight-ground {
   position: absolute;
   left: 50%;
-  bottom: 50px;
+  bottom: clamp(14px, 2.6vh, 24px);
   width: min(82%, 360px);
-  height: 40px;
+  height: 34px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(110, 190, 227, 0.34) 0%, rgba(110, 190, 227, 0.1) 56%, transparent 100%);
   transform: translateX(-50%);
