@@ -11,7 +11,6 @@ import {
   formatSdg06Liters,
   formatSdg06Minutes,
   formatSdg06Weight,
-  getSdg06DetailView,
   getSdg06ResultView,
   getSdg06WeightMotion,
   normalizeSdg06Minutes,
@@ -131,13 +130,6 @@ export class Sdg06DetailContent {
 
             <section class="sdg06-detail-panel" aria-label="세부 정보">
               <article class="sdg06-info-card">
-                <p class="sdg06-info-overline">물의 의미</p>
-                <h3 class="sdg06-info-title">이 결과가 말하는 것</h3>
-                <p class="sdg06-info-body" data-role="detailBody">-</p>
-                <p class="sdg06-info-sub" data-role="detailSub">-</p>
-              </article>
-
-              <article class="sdg06-info-card">
                 <p class="sdg06-info-overline">관련 자료</p>
                 <h3 class="sdg06-info-title">현실 데이터 더 보기</h3>
                 <div class="sdg06-resource-list">
@@ -170,8 +162,6 @@ export class Sdg06DetailContent {
       resultDistance: get("resultDistance"),
       resultNote: get("resultNote"),
       resetButton: get("resetButton"),
-      detailBody: get("detailBody"),
-      detailSub: get("detailSub"),
       weightCaption: get("weightCaption"),
       containerWrap: get("containerWrap"),
       containerWater: get("containerWater"),
@@ -328,7 +318,6 @@ export class Sdg06DetailContent {
 
   prepareResult(metrics) {
     const resultView = getSdg06ResultView(metrics);
-    const detailView = getSdg06DetailView(metrics);
 
     if (this.refs.resultMessage) {
       this.refs.resultMessage.textContent = resultView.message;
@@ -338,12 +327,6 @@ export class Sdg06DetailContent {
     }
     if (this.refs.weightCaption) {
       this.refs.weightCaption.textContent = resultView.weightCaption;
-    }
-    if (this.refs.detailBody) {
-      this.refs.detailBody.textContent = detailView.body;
-    }
-    if (this.refs.detailSub) {
-      this.refs.detailSub.textContent = detailView.sub;
     }
     if (this.refs.resultLiters) {
       this.refs.resultLiters.textContent = "0L";

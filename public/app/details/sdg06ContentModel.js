@@ -110,15 +110,6 @@ export function getSdg06ResultView(metricsInput) {
   };
 }
 
-export function getSdg06DetailView(metricsInput) {
-  const metrics = calculateSdg06Metrics(metricsInput?.minutes ?? metricsInput);
-
-  return {
-    body: `${formatSdg06Minutes(metrics.minutes)} 샤워는 ${formatSdg06Liters(metrics.waterLiters)}의 물 사용으로 계산했고, 같은 양을 ${formatSdg06Weight(metrics.weightKg)}의 물통으로 환산했습니다.`,
-    sub: `${formatSdg06Distance(metrics.distanceKm)}는 20L 물통 1개를 1km 옮긴다고 가정한 체험용 거리입니다.`
-  };
-}
-
 export function getSdg06WeightMotion(metricsInput) {
   const metrics = calculateSdg06Metrics(metricsInput?.minutes ?? metricsInput);
   const ratio = clampSdg06Value(
