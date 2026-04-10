@@ -131,8 +131,8 @@ export class Sdg06DetailContent {
 
             <section class="sdg06-detail-panel" aria-label="세부 정보">
               <article class="sdg06-info-card">
-                <p class="sdg06-info-overline">체험 기준</p>
-                <h3 class="sdg06-info-title">이번 결과를 읽는 방법</h3>
+                <p class="sdg06-info-overline">물의 의미</p>
+                <h3 class="sdg06-info-title">이 결과가 말하는 것</h3>
                 <p class="sdg06-info-body" data-role="detailBody">-</p>
                 <p class="sdg06-info-sub" data-role="detailSub">-</p>
               </article>
