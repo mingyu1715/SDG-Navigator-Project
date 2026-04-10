@@ -46,6 +46,15 @@ const FRAME_META_OVERRIDES = new Map([
       lead: "퇴근 시간은 같아도, 임금 격차가 있으면 무급 노동이 시작되는 시각은 달라집니다.",
       hint: "국가를 선택하고 시작하세요"
     }
+  ],
+  [
+    6,
+    {
+      title: "The Weight of Water",
+      subtitle: "물통의 무게",
+      lead: "당신이 일상적으로 쓰는 물은 누군가에게는 들어 올리고 옮겨야 하는 무게가 됩니다.",
+      hint: "샤워 시간을 입력하고 물의 무게를 체감하세요"
+    }
   ]
 ]);
 
@@ -83,6 +92,13 @@ const CUSTOM_DETAIL_DEFINITIONS = new Map([
     {
       loadModule: () => import("./sdg05Content.js"),
       createRenderer: (mod, customHost) => new mod.Sdg05DetailContent(customHost)
+    }
+  ],
+  [
+    6,
+    {
+      loadModule: () => import("./sdg06Content.js"),
+      createRenderer: (mod, customHost) => new mod.Sdg06DetailContent(customHost)
     }
   ]
 ]);

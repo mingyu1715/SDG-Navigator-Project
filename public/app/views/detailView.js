@@ -14,7 +14,8 @@ const DETAIL_PANEL_VARIANT_CLASSES = [
   "detail-card-sdg02",
   "detail-card-sdg03",
   "detail-card-sdg04",
-  "detail-card-sdg05"
+  "detail-card-sdg05",
+  "detail-card-sdg06"
 ];
 const DETAIL_ROOT_VARIANT_CLASSES = [
   "sdg01-title-hidden",
@@ -23,7 +24,9 @@ const DETAIL_ROOT_VARIANT_CLASSES = [
   "sdg03-title-hidden",
   "sdg04-title-hidden",
   "sdg05-title-hidden",
-  "sdg05-theme"
+  "sdg05-theme",
+  "sdg06-title-hidden",
+  "sdg06-theme"
 ];
 const DETAIL_GLOBAL_ORPHAN_SELECTORS = [
   ".sdg02-rx-throw-ghost",
