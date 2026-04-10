@@ -419,7 +419,7 @@
 .sdg06-weight-shadow {
   position: absolute;
   left: 50%;
-  bottom: 74px;
+  bottom: clamp(86px, 10vh, 102px);
   width: 210px;
   height: 46px;
   border-radius: 50%;
