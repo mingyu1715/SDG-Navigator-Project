@@ -96,10 +96,10 @@
 
 .sdg06-exp::before {
   background:
-    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.7) 0%, transparent 34%),
-    radial-gradient(circle at 84% 12%, rgba(160, 227, 255, 0.52) 0%, transparent 28%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.54), rgba(255, 255, 255, 0));
-  opacity: 0.92;
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.44) 0%, transparent 32%),
+    radial-gradient(circle at 84% 12%, rgba(160, 227, 255, 0.26) 0%, transparent 24%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0));
+  opacity: 0.68;
 }
 
 .sdg06-exp::after {
@@ -161,30 +161,28 @@
 .sdg06-result-card,
 .sdg06-metric-card,
 .sdg06-detail-panel,
-.sdg06-info-card,
 .sdg06-resource-item {
   position: relative;
   overflow: hidden;
   border: 1px solid rgba(102, 180, 219, 0.22);
   border-radius: 28px;
-  background: rgba(255, 255, 255, 0.78);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(245, 252, 255, 0.82));
   box-shadow:
-    0 18px 34px rgba(101, 159, 192, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(14px);
+    0 16px 28px rgba(101, 159, 192, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(10px);
 }
 
 .sdg06-input-card::before,
 .sdg06-transition-card::before,
 .sdg06-result-card::before,
-.sdg06-detail-panel::before,
-.sdg06-info-card::before {
+.sdg06-detail-panel::before {
   content: "";
   position: absolute;
-  inset: 0 0 auto;
-  height: 48%;
+  inset: 0;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.46), transparent 100%);
+  background:
+    radial-gradient(72% 46% at 50% 0%, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.12) 42%, transparent 76%);
 }
 
 .sdg06-input-card {
@@ -567,11 +565,7 @@
 }
 
 .sdg06-detail-panel {
-  display: block;
-}
-
-.sdg06-info-card {
-  padding: 18px;
+  padding: 20px 22px 22px;
 }
 
 .sdg06-info-overline {
@@ -591,15 +585,19 @@
 }
 
 .sdg06-resource-list {
-  margin-top: 10px;
+  margin-top: 14px;
   display: grid;
-  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .sdg06-resource-item {
-  padding: 12px;
-  border-radius: 18px;
-  background: linear-gradient(180deg, rgba(244, 252, 255, 0.98), rgba(231, 247, 255, 0.9));
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 16px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(249, 253, 255, 0.96), rgba(238, 249, 255, 0.9));
 }
 
 .sdg06-resource-type {
@@ -629,7 +627,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-top: 9px;
+  margin-top: auto;
+  align-self: flex-start;
   border: 1px solid rgba(99, 177, 214, 0.24);
   border-radius: 999px;
   padding: 6px 11px;
@@ -684,6 +683,10 @@
     grid-template-columns: 1fr;
   }
 
+  .sdg06-resource-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .sdg06-weight-stage {
     min-height: 420px;
     padding-bottom: 12px;
@@ -705,6 +708,14 @@
   .sdg06-transition-card {
     min-height: 400px;
     padding: 34px 20px 28px;
+  }
+
+  .sdg06-detail-panel {
+    padding: 18px;
+  }
+
+  .sdg06-resource-list {
+    grid-template-columns: 1fr;
   }
 
   .sdg06-container-wrap {

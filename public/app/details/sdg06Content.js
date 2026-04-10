@@ -129,13 +129,11 @@ export class Sdg06DetailContent {
             </div>
 
             <section class="sdg06-detail-panel" aria-label="세부 정보">
-              <article class="sdg06-info-card">
-                <p class="sdg06-info-overline">관련 자료</p>
-                <h3 class="sdg06-info-title">현실 데이터 더 보기</h3>
-                <div class="sdg06-resource-list">
-                  ${renderSdg06ResourceItems()}
-                </div>
-              </article>
+              <p class="sdg06-info-overline">관련 자료</p>
+              <h3 class="sdg06-info-title">현실 데이터 더 보기</h3>
+              <div class="sdg06-resource-list">
+                ${renderSdg06ResourceItems()}
+              </div>
             </section>
           </div>
         </section>
