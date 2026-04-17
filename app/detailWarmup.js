@@ -35,7 +35,10 @@ export function createDetailWarmupController({
   const warmedDetailGoalIds = new Set();
 
   function getBootPreloadTargets() {
-    return goalIds.map((goalId) => `/api/sdgs/${goalId}`);
+    return [
+      "/app/data/sdgs.json",
+      "/app/data/detailDraftOverrides.json"
+    ];
   }
 
   function fetchWithTimeout(url, timeoutMs) {
@@ -74,8 +77,6 @@ export function createDetailWarmupController({
     if (await preloadCustomDetailRenderer(id)) {
       return;
     }
-
-    await fetchWithTimeout(`/api/sdgs/${id}`, preloadRequestTimeoutMs).catch(() => null);
   }
 
   function getDetailWarmTargetIds(goalId) {

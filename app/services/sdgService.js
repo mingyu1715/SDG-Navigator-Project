@@ -14,16 +14,7 @@ export async function fetchGoalDetail(goalId) {
     return draft;
   }
 
-  const fallback = getGoalById(id);
-  try {
-    const res = await fetch(`/api/sdgs/${id}`);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    cache.set(id, data);
-    return data;
-  } catch {
-    const fallbackData = toGoalDetailFallback(id, fallback);
-    cache.set(id, fallbackData);
-    return fallbackData;
-  }
+  const fallbackData = toGoalDetailFallback(id, getGoalById(id));
+  cache.set(id, fallbackData);
+  return fallbackData;
 }
