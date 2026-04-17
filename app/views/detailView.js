@@ -31,6 +31,7 @@ const DETAIL_ROOT_VARIANT_CLASSES = [
   "sdg06-theme",
   "sdg07-title-hidden",
   "sdg07-theme",
+  "sdg08-title-hidden",
   "sdg08-theme"
 ];
 const DETAIL_GLOBAL_ORPHAN_SELECTORS = [
