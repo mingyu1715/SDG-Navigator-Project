@@ -64,6 +64,15 @@ const FRAME_META_OVERRIDES = new Map([
       lead: "어둠을 보여주는 대신, 우리가 직접 도시를 깨끗하게 밝히는 시뮬레이터입니다.",
       hint: "슬라이더를 움직여 도시 전환의 결과를 바로 확인하세요"
     }
+  ],
+  [
+    8,
+    {
+      title: "Growth vs Job Quality",
+      subtitle: "성장과 고용의 딜레마",
+      lead: "경제 성장률이 올라가도 일자리 질은 같은 방향으로 움직이지 않을 수 있습니다.",
+      hint: "체험 시작 후 한 번의 선택으로 결과를 확인하세요"
+    }
   ]
 ]);
 
@@ -115,6 +124,13 @@ const CUSTOM_DETAIL_DEFINITIONS = new Map([
     {
       loadModule: () => import("./sdg07Content.js"),
       createRenderer: (mod, customHost) => new mod.Sdg07DetailContent(customHost)
+    }
+  ],
+  [
+    8,
+    {
+      loadModule: () => import("./sdg08Content.js"),
+      createRenderer: (mod, customHost) => new mod.Sdg08DetailContent(customHost)
     }
   ]
 ]);
