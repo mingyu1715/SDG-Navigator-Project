@@ -2,15 +2,15 @@ const DEFAULT_DETAIL_FEATURES = Object.freeze(["초안 포인트를 입력하세
 
 export const FRONTEND_SDG_SURFACE_SOURCES = Object.freeze({
   cardMeta: Object.freeze({
-    source: "public/app/data/sdgs.json | FALLBACK_SDG_DATA",
+    source: "app/data/sdgs.json | FALLBACK_SDG_DATA",
     fields: Object.freeze(["id", "color", "title", "sub", "detailed", "titleSize"])
   }),
   editableDetailDraft: Object.freeze({
-    source: "public/app/data/detailDraftOverrides.json + public/app/data/sdgs.js",
+    source: "app/data/detailDraftOverrides.json + app/data/sdgs.js",
     fields: Object.freeze(["id", "title", "subtitle", "description", "features"])
   }),
   goalDetailFallback: Object.freeze({
-    source: "public/app/data/sdgs.js",
+    source: "app/data/sdgs.js",
     fields: Object.freeze(["id", "title", "subtitle", "description", "features"])
   })
 });

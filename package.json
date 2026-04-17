@@ -4,6 +4,6 @@
   "private": true,
   "description": "SDG circular card UI (static)",
   "scripts": {
-    "start": "python3 -m http.server 3000 --directory public"
+    "start": "python3 -m http.server 3000"
   }
 }
