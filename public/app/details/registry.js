@@ -55,6 +55,15 @@ const FRAME_META_OVERRIDES = new Map([
       lead: "당신이 일상적으로 쓰는 물은 누군가에게는 들어 올리고 옮겨야 하는 무게가 됩니다.",
       hint: "샤워 시간을 입력하고 물의 무게를 체감하세요"
     }
+  ],
+  [
+    7,
+    {
+      title: "The Green Mixer",
+      subtitle: "우리 도시 에너지 믹스",
+      lead: "어둠을 보여주는 대신, 우리가 직접 도시를 깨끗하게 밝히는 시뮬레이터입니다.",
+      hint: "슬라이더를 움직여 도시 전환의 결과를 바로 확인하세요"
+    }
   ]
 ]);
 
@@ -99,6 +108,13 @@ const CUSTOM_DETAIL_DEFINITIONS = new Map([
     {
       loadModule: () => import("./sdg06Content.js"),
       createRenderer: (mod, customHost) => new mod.Sdg06DetailContent(customHost)
+    }
+  ],
+  [
+    7,
+    {
+      loadModule: () => import("./sdg07Content.js"),
+      createRenderer: (mod, customHost) => new mod.Sdg07DetailContent(customHost)
     }
   ]
 ]);

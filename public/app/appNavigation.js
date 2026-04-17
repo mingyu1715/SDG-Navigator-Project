@@ -83,6 +83,9 @@ export function createAppNavigation({
       } else {
         setMainVisible(false);
         detailView.setVisible(true);
+        // Start loading immediately so the overlay appears before warmup runs,
+        // preventing a brief flash of the frame-header at the wrong position.
+        void startDetailLoad();
         await runDetailWarmups(goalId, 1);
         void runDetailWarmups(goalId, 3).catch(() => null);
         await startDetailLoad();
