@@ -24,22 +24,7 @@
 }
 
 .detail-view.sdg08-theme .detail-frame-header {
-  top: 42%;
-  width: min(820px, 92vw);
-  box-sizing: border-box;
-  padding: 24px 26px;
-  border-radius: 32px;
-  background: radial-gradient(82% 118% at 50% 50%, rgba(208, 226, 255, 0.26) 0%, rgba(158, 197, 238, 0.08) 50%, transparent 78%);
-  opacity: 1;
-  pointer-events: none;
-  transition:
-    opacity 0.5s ease,
-    transform 0.5s ease;
-}
-
-.detail-view.sdg08-title-hidden .detail-frame-header {
-  opacity: 0;
-  transform: translate(-50%, -56%);
+  display: none;
 }
 
 .detail-view.sdg08-theme .detail-wrap {
@@ -47,31 +32,6 @@
   max-width: none;
   margin-top: 0;
   padding: 0;
-  transition: margin-top 0.3s ease;
-}
-
-.detail-view.sdg08-title-hidden .detail-wrap {
-  margin-top: 0;
-}
-
-.detail-view.sdg08-theme .detail-goal {
-  color: #8eb1d8;
-  text-shadow: 0 1px 10px rgba(6, 12, 24, 0.34);
-}
-
-.detail-view.sdg08-theme .detail-title {
-  color: #edf4ff;
-  text-shadow: 0 14px 30px rgba(5, 11, 22, 0.44);
-}
-
-.detail-view.sdg08-theme .detail-sub {
-  color: #c6d7ea;
-  text-shadow: 0 10px 24px rgba(5, 11, 22, 0.32);
-}
-
-.detail-view.sdg08-theme .detail-lead,
-.detail-view.sdg08-theme .detail-hint {
-  display: none;
 }
 
 .detail-card.detail-card-sdg08 {

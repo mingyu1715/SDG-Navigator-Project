@@ -184,7 +184,7 @@ export class Sdg08DetailContent {
       node.setAttribute("aria-hidden", active ? "false" : "true");
     });
 
-    this.setTitleSectorHidden(stage !== SDG08_STAGE_INTRO);
+    this.setTitleSectorHidden(true);
   }
 
   setDecisionButtonsDisabled(disabled) {
@@ -315,7 +315,7 @@ export class Sdg08DetailContent {
     this.state = createSdg08InitialState();
     this.reduceMotion = Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches);
     this.setThemeActive(true);
-    this.setTitleSectorHidden(false);
+    this.setTitleSectorHidden(true);
 
     this.host.innerHTML = this.template();
     this.cacheRefs();
