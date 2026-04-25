@@ -4,6 +4,6 @@
   "private": true,
   "description": "SDG circular card UI (static)",
   "scripts": {
-    "start": "python3 -m http.server 3000"
+    "start": "echo 'Server running at http://localhost:3000' && python3 -m http.server 3000"
   }
 }
