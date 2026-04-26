@@ -82,6 +82,15 @@ const FRAME_META_OVERRIDES = new Map([
       lead: "기술 인프라가 끊어진 산업 생태계를 연결하면 생산과 혁신이 함께 움직이기 시작합니다.",
       hint: "산업과 혁신을 연결할 기반 시설을 선택하세요"
     }
+  ],
+  [
+    10,
+    {
+      title: "The Wealth Cake",
+      subtitle: "부의 케이크 나누기",
+      lead: "공정하다고 생각한 분배와 현실의 전 세계 자산 분포를 하나의 케이크로 비교합니다.",
+      hint: "슬라이더로 분배를 정한 뒤 현실 보기 버튼을 눌러보세요"
+    }
   ]
 ]);
 
@@ -147,6 +156,13 @@ const CUSTOM_DETAIL_DEFINITIONS = new Map([
     {
       loadModule: () => import("./sdg09Content.js"),
       createRenderer: (mod, customHost) => new mod.Sdg09DetailContent(customHost)
+    }
+  ],
+  [
+    10,
+    {
+      loadModule: () => import("./sdg10Content.js"),
+      createRenderer: (mod, customHost) => new mod.Sdg10DetailContent(customHost)
     }
   ]
 ]);
