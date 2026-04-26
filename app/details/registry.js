@@ -73,6 +73,15 @@ const FRAME_META_OVERRIDES = new Map([
       lead: "경제 성장률이 올라가도 일자리 질은 같은 방향으로 움직이지 않을 수 있습니다.",
       hint: "체험 시작 후 한 번의 선택으로 결과를 확인하세요"
     }
+  ],
+  [
+    9,
+    {
+      title: "The Connection Bridge",
+      subtitle: "미래 연결 브릿지",
+      lead: "기술 인프라가 끊어진 산업 생태계를 연결하면 생산과 혁신이 함께 움직이기 시작합니다.",
+      hint: "산업과 혁신을 연결할 기반 시설을 선택하세요"
+    }
   ]
 ]);
 
@@ -131,6 +140,13 @@ const CUSTOM_DETAIL_DEFINITIONS = new Map([
     {
       loadModule: () => import("./sdg08Content.js"),
       createRenderer: (mod, customHost) => new mod.Sdg08DetailContent(customHost)
+    }
+  ],
+  [
+    9,
+    {
+      loadModule: () => import("./sdg09Content.js"),
+      createRenderer: (mod, customHost) => new mod.Sdg09DetailContent(customHost)
     }
   ]
 ]);
