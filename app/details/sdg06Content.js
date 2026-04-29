@@ -52,7 +52,7 @@ export class Sdg06DetailContent {
               <p class="sdg06-input-meta">
                 <span class="sdg06-input-meta-value" data-role="minutesPreview">${SDG06_DEFAULT_MINUTES}분</span>
                 <span class="sdg06-input-meta-dot" aria-hidden="true"></span>
-                <span class="sdg06-input-meta-value" data-role="litersPreview">${SDG06_DEFAULT_MINUTES * 11}L</span>
+                <span class="sdg06-input-meta-value" data-role="litersPreview">${formatSdg06Liters(calculateSdg06Metrics(SDG06_DEFAULT_MINUTES).waterLiters)}</span>
               </p>
 
               <label id="sdg06MinutesLabel" class="sdg06-slider-label" for="sdg06MinutesRange">샤워 시간</label>

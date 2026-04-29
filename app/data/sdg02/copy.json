@@ -11,7 +11,7 @@
   "selectCtaIdle": "음식을 선택하세요",
   "selectedCountTemplate": "{count}개 선택됨",
   "reportTitle": "당신이 버린 것들",
-  "reportMessage": "전 세계에서 생산되는 음식의 1/3이 버려집니다. 작은 변화가 지구를 지킵니다.",
+  "reportMessage": "UNEP Food Waste Index 2024는 매일 10억 끼가 넘는 음식이 낭비된다고 추정합니다.",
   "dragHint": "식재료를 잡아 버려보세요.",
   "binLabel": "버리는 순간, 낭비는 끝나지 않습니다.",
   "resultTitleTemplate": "당신이 방금 버린 {item} {count}개의 대가",
@@ -37,7 +37,7 @@
       "type": "REPORT",
       "title": "UNEP Food Waste Index",
       "description": "전 세계 음식물 폐기량과 환경 영향 보고서",
-      "url": "https://www.unep.org/resources/report/unep-food-waste-index-report-2024"
+      "url": "https://www.unep.org/resources/publication/food-waste-index-report-2024"
     },
     {
       "type": "ARTICLE",

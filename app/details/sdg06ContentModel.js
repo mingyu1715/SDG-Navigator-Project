@@ -3,15 +3,43 @@ import { escapeHtml } from "./sharedRuntime.js";
 export const SDG06_DEFAULT_MINUTES = 7;
 export const SDG06_MIN_MINUTES = 1;
 export const SDG06_MAX_MINUTES = 20;
-export const SDG06_LITERS_PER_MINUTE = 11;
+export const SDG06_LITERS_PER_MINUTE = 9.5;
 export const SDG06_LITERS_PER_KM = 20;
 export const SDG06_TRANSITION_DURATION_MS = 1500;
+
+export const SDG06_SOURCES = Object.freeze({
+  showerFlow: Object.freeze({
+    type: "derived",
+    name: "EPA WaterSense showerheads",
+    detail: "2.5 gallons per minute federal showerhead maximum converted to about 9.5 liters per minute",
+    url: "https://www.epa.gov/watersense/showerheads"
+  }),
+  waterAccess: Object.freeze({
+    type: "official",
+    name: "WHO/UNICEF Joint Monitoring Programme",
+    detail: "Drinking water, sanitation, and hygiene monitoring context",
+    url: "https://washdata.org/"
+  }),
+  carryingDistance: Object.freeze({
+    type: "simulation",
+    name: "20L water-container distance conversion",
+    detail: "Educational conversion: every 20L of water is shown as carrying one full container for 1km",
+    url: ""
+  })
+});
+
 const SDG06_RESOURCE_ITEMS = Object.freeze([
   {
     type: "UN SDG",
     title: "Goal 6: Clean Water and Sanitation",
     description: "깨끗한 물과 위생 목표의 세부 타깃과 전반적인 과제를 확인할 수 있는 공식 페이지입니다.",
     url: "https://sdgs.un.org/goals/goal6"
+  },
+  {
+    type: "EPA",
+    title: "WaterSense Showerheads",
+    description: "샤워기 유량 기준과 절수형 샤워기 정보를 확인할 수 있는 자료입니다.",
+    url: SDG06_SOURCES.showerFlow.url
   },
   {
     type: "WHO",
@@ -106,7 +134,7 @@ export function getSdg06ResultView(metricsInput) {
   return {
     message: `당신이 ${formatSdg06Minutes(metrics.minutes)} 동안 사용한 물은 누군가에게는 ${formatSdg06Weight(metrics.weightKg)}의 물통이며 ${formatSdg06Distance(metrics.distanceKm)}를 걸어야 얻을 수 있습니다.`,
     weightCaption: `${formatSdg06Weight(metrics.weightKg)}의 물이 아래로 내려앉습니다.`,
-    distanceNote: "이동 거리는 20L 물통 1개를 1km 옮긴다고 가정한 체험용 환산 규칙입니다."
+    distanceNote: "샤워 유량은 EPA 2.5gpm 기준을 L/min으로 환산했고, 이동 거리는 20L 물통 1개를 1km 옮긴다고 가정한 체험용 규칙입니다."
   };
 }
 

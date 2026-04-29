@@ -1,5 +1,13 @@
 import { escapeHtml, loadJsonData } from "./sharedRuntime.js";
 
+const SDG05_OECD_GENDER_WAGE_GAP_SOURCE = Object.freeze({
+  source: "OECD Gender Wage Gap indicator",
+  sourceType: "official",
+  sourceYear: 2024,
+  sourceDetail: "Unadjusted median gender wage gap, percentage of men's median wages",
+  sourceUrl: "https://www.oecd.org/en/data/indicators/gender-wage-gap.html"
+});
+
 export const SDG05_WORK_START_MINUTES = 9 * 60;
 export const SDG05_WORK_END_MINUTES = 18 * 60;
 export const SDG05_WORK_DAY_MINUTES = SDG05_WORK_END_MINUTES - SDG05_WORK_START_MINUTES;
@@ -12,57 +20,50 @@ const DEFAULT_PAY_GAP_DATA = [
     code: "KR",
     nameKo: "대한민국",
     nameEn: "South Korea",
-    gapRate: 0.31,
-    source: "교육용 샘플 데이터",
-    sourceYear: 2025
+    gapRate: 0.2895,
+    ...SDG05_OECD_GENDER_WAGE_GAP_SOURCE
   },
   {
     code: "JP",
     nameKo: "일본",
     nameEn: "Japan",
-    gapRate: 0.23,
-    source: "교육용 샘플 데이터",
-    sourceYear: 2025
+    gapRate: 0.2065,
+    ...SDG05_OECD_GENDER_WAGE_GAP_SOURCE
   },
   {
     code: "US",
     nameKo: "미국",
     nameEn: "United States",
-    gapRate: 0.17,
-    source: "교육용 샘플 데이터",
-    sourceYear: 2025
+    gapRate: 0.1729,
+    ...SDG05_OECD_GENDER_WAGE_GAP_SOURCE
   },
   {
     code: "DE",
     nameKo: "독일",
     nameEn: "Germany",
-    gapRate: 0.18,
-    source: "교육용 샘플 데이터",
-    sourceYear: 2025
+    gapRate: 0.1347,
+    ...SDG05_OECD_GENDER_WAGE_GAP_SOURCE
   },
   {
     code: "FR",
     nameKo: "프랑스",
     nameEn: "France",
-    gapRate: 0.12,
-    source: "교육용 샘플 데이터",
-    sourceYear: 2025
+    gapRate: 0.0658,
+    ...SDG05_OECD_GENDER_WAGE_GAP_SOURCE
   },
   {
     code: "SE",
     nameKo: "스웨덴",
     nameEn: "Sweden",
-    gapRate: 0.08,
-    source: "교육용 샘플 데이터",
-    sourceYear: 2025
+    gapRate: 0.0751,
+    ...SDG05_OECD_GENDER_WAGE_GAP_SOURCE
   },
   {
     code: "IN",
     nameKo: "인도",
     nameEn: "India",
-    gapRate: 0.34,
-    source: "교육용 샘플 데이터",
-    sourceYear: 2025
+    gapRate: 0.3526,
+    ...SDG05_OECD_GENDER_WAGE_GAP_SOURCE
   }
 ];
 
@@ -150,8 +151,11 @@ function normalizeCountryData(rawList) {
       const code = String(item?.code || "").trim().toUpperCase();
       const nameKo = String(item?.nameKo || "").trim();
       const nameEn = String(item?.nameEn || "").trim();
-      const source = String(item?.source || "교육용 샘플 데이터").trim();
-      const sourceYear = Number(item?.sourceYear) || 2025;
+      const source = String(item?.source || SDG05_OECD_GENDER_WAGE_GAP_SOURCE.source).trim();
+      const sourceType = String(item?.sourceType || SDG05_OECD_GENDER_WAGE_GAP_SOURCE.sourceType).trim();
+      const sourceDetail = String(item?.sourceDetail || SDG05_OECD_GENDER_WAGE_GAP_SOURCE.sourceDetail).trim();
+      const sourceUrl = String(item?.sourceUrl || SDG05_OECD_GENDER_WAGE_GAP_SOURCE.sourceUrl).trim();
+      const sourceYear = Number(item?.sourceYear) || SDG05_OECD_GENDER_WAGE_GAP_SOURCE.sourceYear;
       const gapRate = clampSdg05Value(Number(item?.gapRate) || 0, 0, 1);
 
       if (!code || !nameKo || !nameEn) return null;
@@ -161,7 +165,10 @@ function normalizeCountryData(rawList) {
         nameEn,
         gapRate,
         source,
-        sourceYear
+        sourceYear,
+        sourceType,
+        sourceDetail,
+        sourceUrl
       };
     })
     .filter(Boolean);
@@ -238,7 +245,7 @@ export function getSdg05ResultView(country, result) {
     resultMain: `당신은 오늘 ${unpaidStartLabel}부터 무급으로 일하고 있습니다.`,
     resultMeta: `무급 노동 시간 ${result.unpaidMinutes}분 · ${unpaidStartClock} ~ 18:00`,
     countryLine: `${country.nameKo} (${country.nameEn}) 임금 격차 ${gapPercent}%`,
-    countrySource: `기준: ${country.sourceYear} · ${country.source}`
+    countrySource: `기준: ${country.sourceYear} · ${country.source} · median`
   };
 }
 

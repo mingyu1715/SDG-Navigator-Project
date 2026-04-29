@@ -6,6 +6,7 @@ import {
   SDG03_HIGH_RESULT_HOLD_MS,
   SDG03_LOW_ACCESS_KEYS,
   SDG03_MID_WARNING_HOLD_MS,
+  SDG03_MODEL_BASIS_COPY,
   calculateSdg03Outcome,
   clampSdg03Value,
   countryFlowSentence,
@@ -181,7 +182,7 @@ export class Sdg03DetailContent {
               </div>
             </div>
             <p class="sdg03-metric-basis" data-role="metricBasis">
-              기준: 교육용 더미 모델(의료 접근성 1~5, 응급 중증도 3). 처치 시작은 증상 발생 후 응급 처치 개시까지의 예상 시간입니다.
+              ${SDG03_MODEL_BASIS_COPY}
             </p>
             <button type="button" class="sdg03-action-btn" data-role="actionBtn">비교 재생</button>
           </section>
@@ -197,10 +198,10 @@ export class Sdg03DetailContent {
                 <a class="sdg03-resource-open" href="https://www.who.int/health-topics/emergency-care" target="_blank" rel="noopener noreferrer">자료 보기</a>
               </article>
               <article class="sdg03-resource-item">
-                <p class="sdg03-resource-type">World Bank</p>
+                <p class="sdg03-resource-type">WHO</p>
                 <h5 class="sdg03-resource-title">Universal Health Coverage</h5>
-                <p class="sdg03-resource-desc">국가별 보편적 의료보장 과제와 지표</p>
-                <a class="sdg03-resource-open" href="https://www.worldbank.org/en/topic/universalhealthcoverage" target="_blank" rel="noopener noreferrer">자료 보기</a>
+                <p class="sdg03-resource-desc">보편적 의료보장과 필수 의료서비스 접근성 지표</p>
+                <a class="sdg03-resource-open" href="https://www.who.int/news-room/fact-sheets/detail/universal-health-coverage-(uhc)" target="_blank" rel="noopener noreferrer">자료 보기</a>
               </article>
               <article class="sdg03-resource-item">
                 <p class="sdg03-resource-type">UN SDG</p>

@@ -2,6 +2,7 @@ import { escapeHtml, toggleDetailViewClass } from "./sharedRuntime.js";
 import {
   SDG09_BUILD_ANIMATION_MS,
   SDG09_COUNT_ANIMATION_MS,
+  SDG09_MODEL_NOTE,
   SDG09_STAGE_BUILD,
   SDG09_STAGE_INTRO,
   SDG09_STAGE_RESULT,
@@ -13,7 +14,7 @@ import {
 } from "./sdg09ContentModel.js";
 
 const SDG09_DEFAULT_SUMMARY = "기반 시설을 선택하면 끊어진 산업 생태계가 어떻게 연결되는지 보여줍니다.";
-const SDG09_DEFAULT_MESSAGE = "인프라의 연결은 곧 혁신의 시작입니다.";
+const SDG09_DEFAULT_MESSAGE = SDG09_MODEL_NOTE;
 const SDG09_DEFAULT_BRIDGE_LABEL = "WAITING FOR INFRASTRUCTURE";
 const SDG09_RESOURCE_EMPTY_COPY = "선택한 인프라의 현실 자료가 여기에 표시됩니다.";
 
@@ -351,7 +352,9 @@ export class Sdg09DetailContent {
       this.refs.resultSummary.textContent = scenario?.summary || SDG09_DEFAULT_SUMMARY;
     }
     if (this.refs.resultMessage) {
-      this.refs.resultMessage.textContent = scenario?.message || SDG09_DEFAULT_MESSAGE;
+      this.refs.resultMessage.textContent = scenario?.message
+        ? `${scenario.message} ${SDG09_MODEL_NOTE}`
+        : SDG09_DEFAULT_MESSAGE;
     }
     this.renderMetricLabels(scenario);
     this.renderResources(scenario?.resources || []);

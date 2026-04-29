@@ -8,6 +8,30 @@ export const SDG07_DEFAULT_MIX = Object.freeze({
   thermal: 40
 });
 export const SDG07_DEFAULT_TRANSITION_LEVEL = SDG07_DEFAULT_MIX.solar + SDG07_DEFAULT_MIX.wind;
+export const SDG07_SOURCES = Object.freeze({
+  energyProgress: Object.freeze({
+    type: "official",
+    name: "Tracking SDG7: The Energy Progress Report 2025",
+    detail: "Global electricity access, clean cooking access, renewable energy share, and energy efficiency progress",
+    url: "https://www.iea.org/reports/tracking-sdg7-the-energy-progress-report-2025"
+  }),
+  scenarioModel: Object.freeze({
+    type: "simulation",
+    name: "Energy transition city model",
+    detail: "Air-quality and carbon scores are educational scenario scores derived from the selected energy mix",
+    url: ""
+  })
+});
+export const SDG07_BASELINE_METRICS = Object.freeze({
+  electricityAccess2023Pct: 92,
+  cleanCookingAccess2023Pct: 74,
+  renewableFinalEnergy2022Pct: 17.9,
+  source: SDG07_SOURCES.energyProgress
+});
+export const SDG07_MODEL_NOTE =
+  "공기질과 탄소 절감은 선택한 에너지 비율을 바탕으로 만든 체험용 점수입니다.";
+export const SDG07_BASELINE_NOTE =
+  "Tracking SDG7 2025 기준: 전 세계 전력 접근 약 92%, 청정 조리 접근 74%, 최종에너지 내 재생에너지 17.9%.";
 
 const RENEWABLE_KEYS = Object.freeze(["solar", "wind"]);
 const DEFAULT_RENEWABLE_WEIGHTS = Object.freeze([SDG07_DEFAULT_MIX.solar, SDG07_DEFAULT_MIX.wind]);
@@ -298,12 +322,14 @@ export function calculateSdg07Scenario(mixInput) {
       label: formatSdg07Percent(carbonSavings),
       description:
         carbonSavings >= 70
-          ? "화력 100% 도시 대비 탄소 부담이 크게 낮아진 상태입니다."
+          ? "화력 100% 도시 대비 탄소 부담이 크게 낮아진 체험용 지표입니다."
           : carbonSavings >= 45
-            ? "전환 효과가 보이기 시작하지만 추가 재생에너지 확대 여지가 남아 있습니다."
-            : "화력 비중이 높아 탄소 절감 효과가 아직 제한적입니다."
+            ? "전환 효과가 보이기 시작하지만 추가 재생에너지 확대 여지가 남은 체험용 지표입니다."
+            : "화력 비중이 높아 탄소 절감 효과가 아직 제한적인 체험용 지표입니다."
     },
     visualCaption,
+    modelNote: SDG07_MODEL_NOTE,
+    baselineNote: SDG07_BASELINE_NOTE,
     visual: {
       skyTop: interpolateHexColor("#8d9198", "#61c8ff", cleanRatio * 0.82 + solarRatio * 0.18),
       skyBottom: interpolateHexColor("#e2cfb5", "#dff6ff", cleanRatio * 0.7 + solarRatio * 0.3),

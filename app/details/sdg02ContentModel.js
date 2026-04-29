@@ -32,6 +32,32 @@ const DEFAULT_INGREDIENTS = [
 ];
 
 const DEFAULT_IMPACT_RULES = {
+  sources: {
+    waterPerUnitL: {
+      type: "derived",
+      name: "Water Footprint Network",
+      detail: "Product-level water footprint examples converted to the item units used in this interaction",
+      url: "https://www.waterfootprint.org/resources/interactive-tools/product-gallery/"
+    },
+    foodWasteContext: {
+      type: "official",
+      name: "UNEP Food Waste Index Report 2024",
+      detail: "Global food waste context; more than 1 billion meals wasted per day",
+      url: "https://www.unep.org/resources/publication/food-waste-index-report-2024"
+    },
+    priceKrw: {
+      type: "simulation",
+      name: "Educational local-price assumption",
+      detail: "Approximate Korean retail values used only to convert waste into meal opportunity cost",
+      url: ""
+    },
+    carbonPerKg: {
+      type: "simulation",
+      name: "Educational emissions conversion",
+      detail: "Average kgCO2e per kg wasted food used for relative feedback, not item-specific LCA",
+      url: ""
+    }
+  },
   waterPerUnitL: {
     apple: 70,
     milk: 255,
@@ -53,7 +79,12 @@ const DEFAULT_IMPACT_RULES = {
   mealCostKrw: 600,
   co2eKgPerKgWaste: 2.5,
   methaneMultiplier: 25,
-  drinkPerPersonLPerDay: 2
+  drinkPerPersonLPerDay: 2,
+  sourceNotes: {
+    waterPerUnitL: "Apple, milk, bread, and beef-water values follow common Water Footprint Network product examples at item scale.",
+    drinkPerPersonLPerDay: "2L per person per day is an educational drinking-water conversion, separate from total domestic water use.",
+    priceKrw: "Local prices are simulation values and should not be presented as official statistics."
+  }
 };
 
 const DEFAULT_COPY = {
@@ -67,7 +98,7 @@ const DEFAULT_COPY = {
   selectCtaIdle: "음식을 선택하세요",
   selectedCountTemplate: "{count}개 선택됨",
   reportTitle: "당신이 버린 것들",
-  reportMessage: "전 세계에서 생산되는 음식의 1/3이 버려집니다. 작은 변화가 지구를 지킵니다.",
+  reportMessage: "UNEP Food Waste Index 2024는 매일 10억 끼가 넘는 음식이 낭비된다고 추정합니다.",
   retryButton: "다시 해보기",
   resourcesTitle: "관련 자료",
   resourcesLead: "체험 수치를 실제 데이터와 연결해 보세요.",
@@ -82,7 +113,7 @@ const DEFAULT_COPY = {
       type: "REPORT",
       title: "UNEP Food Waste Index",
       description: "전 세계 음식물 폐기량과 환경 영향 보고서",
-      url: "https://www.unep.org/resources/report/unep-food-waste-index-report-2024"
+      url: "https://www.unep.org/resources/publication/food-waste-index-report-2024"
     },
     {
       type: "ARTICLE",
@@ -206,8 +237,8 @@ export function calculateSdg02Impact(items) {
 export function getSdg02ReportDescriptions(impact) {
   return {
     water: `${formatSdg02Number(impact.waterDays)}일치 식수`,
-    carbon: `자동차 ${formatSdg02Number(impact.carKm)}km 주행`,
-    price: `기아 아동 ${formatSdg02Number(impact.mealsLost)}끼 식사`
+    carbon: `체험 환산: 자동차 ${formatSdg02Number(impact.carKm)}km 주행`,
+    price: `체험 환산: 기아 아동 ${formatSdg02Number(impact.mealsLost)}끼 식사`
   };
 }
 

@@ -20,7 +20,7 @@ const SDG07_RESOURCE_ITEMS = Object.freeze([
   {
     source: "IEA",
     title: "Tracking SDG 7: The Energy Progress Report",
-    href: "https://www.iea.org/reports/tracking-sdg7-the-energy-progress-report-2024"
+    href: "https://www.iea.org/reports/tracking-sdg7-the-energy-progress-report-2025"
   },
   {
     source: "IRENA",
@@ -217,7 +217,7 @@ export class Sdg07DetailContent {
 
                   <article class="sdg07-result-card" data-role="airCard" data-tone="moderate">
                     <div class="sdg07-result-head">
-                      <span class="sdg07-result-label">공기질 등급</span>
+                      <span class="sdg07-result-label">공기질 점수</span>
                       <strong class="sdg07-result-main" data-role="airLabel">보통</strong>
                     </div>
                     <div class="sdg07-meter" aria-hidden="true">
@@ -228,7 +228,7 @@ export class Sdg07DetailContent {
 
                   <article class="sdg07-result-card sdg07-result-card-carbon" data-role="carbonCard">
                     <div class="sdg07-result-head">
-                      <span class="sdg07-result-label">탄소 절감량</span>
+                      <span class="sdg07-result-label">탄소 절감 점수</span>
                       <strong class="sdg07-result-main" data-role="carbonValue">0%</strong>
                     </div>
                     <div class="sdg07-meter" aria-hidden="true">
@@ -509,11 +509,7 @@ export class Sdg07DetailContent {
     }
     if (this.refs.actionLine) {
       this.refs.actionLine.textContent =
-        scenario.renewable >= 70
-          ? "현재 선택은 도시 공기질과 탄소 절감을 모두 강하게 개선하는 전환 시나리오입니다."
-          : scenario.renewable >= 45
-            ? "전환 효과는 보이지만 화력 의존을 더 낮추면 공기질 개선 폭이 커집니다."
-            : "화력 비중이 높아 결과가 제한적입니다. 슬라이더를 올려 전환 수준을 비교해 보세요.";
+        `${scenario.baselineNote} ${scenario.modelNote}`;
     }
   }
 

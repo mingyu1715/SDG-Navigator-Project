@@ -1,5 +1,22 @@
 import { escapeHtml } from "./sharedRuntime.js";
 
+export const SDG01_SOURCES = Object.freeze({
+  povertyBaseline: Object.freeze({
+    type: "official",
+    name: "World Bank Poverty and Inequality Platform",
+    detail: "Poverty-line and country poverty context",
+    url: "https://pip.worldbank.org/"
+  }),
+  scenarioModel: Object.freeze({
+    type: "simulation",
+    name: "Birth lottery life scenario model",
+    detail: "Daily budget, meal coverage, and water-time outputs are educational estimates based on scenario assumptions",
+    url: ""
+  })
+});
+export const SDG01_MODEL_NOTE =
+  "생계 가능 금액과 식사 가능 수준은 World Bank 빈곤 지표 맥락을 참고한 체험용 추정입니다.";
+
 export const SDG01_LIFE_SCENARIOS = [
   {
     country: "에티오피아",
@@ -213,9 +230,9 @@ const RELATED_RESOURCES = [
   },
   {
     type: "REPORT",
-    title: "World Bank: Poverty and Shared Prosperity",
-    description: "최신 빈곤 지표와 국가별 추세를 다루는 보고서",
-    url: "https://www.worldbank.org/en/publication/poverty-and-shared-prosperity"
+    title: "World Bank Poverty and Inequality Platform",
+    description: "빈곤선과 국가별 빈곤 지표를 확인할 수 있는 공식 데이터 플랫폼",
+    url: SDG01_SOURCES.povertyBaseline.url
   }
 ];
 
@@ -268,11 +285,11 @@ export function getSdg01ScenarioView(scenario) {
     resultTitle: `${scenario.country}에서 삶이 시작됩니다`,
     resultSummary: scenario.summary,
     birthPlace: `${scenario.flag} ${scenario.country}, ${scenario.region}`,
-    regionNote: "무작위로 선택된 출생 지역",
+    regionNote: "무작위로 선택된 체험 시나리오",
     incomeTier: `약 ${dailyBudgetKrw.toLocaleString("ko-KR")}원/일`,
-    incomeNote: `하루 세 끼 중 약 ${mealCoverage}끼 정도만 안정적으로 가능`,
+    incomeNote: `${SDG01_MODEL_NOTE} 하루 세 끼 중 약 ${mealCoverage}끼 정도만 안정적으로 가능`,
     waterAccess: formatWaterAccess(scenario.waterDistanceKm),
-    waterNote: "식수를 위해 이동에 쓰는 하루 시간",
+    waterNote: "물 접근 시간은 거리와 도보 시간을 단순 환산한 체험용 값",
     narrative: scenario.narrative
   };
 }

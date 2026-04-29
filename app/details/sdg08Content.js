@@ -5,6 +5,7 @@ import {
   SDG08_STAGE_DECISION,
   SDG08_STAGE_INTRO,
   SDG08_STAGE_RESULT,
+  SDG08_MODEL_NOTE,
   clampSdg08,
   createSdg08InitialState,
   easeOutSdg08Cubic,
@@ -16,7 +17,7 @@ import {
 } from "./sdg08ContentModel.js";
 
 const SDG08_DEFAULT_SUMMARY = "정책을 선택하면 성장의 속도와 고용의 안정이 어떻게 달라지는지 보여줍니다.";
-const SDG08_DEFAULT_MESSAGE = "각 선택은 성장과 고용에 서로 다른 비용을 남깁니다.";
+const SDG08_DEFAULT_MESSAGE = SDG08_MODEL_NOTE;
 const SDG08_DEFAULT_STABILITY_STATE = "고용 안정도";
 const SDG08_DEFAULT_STABILITY_COPY = "선택에 따라 고용의 안정감이 어떻게 달라지는지 확인해보세요.";
 const SDG08_DEFAULT_DETAIL = "-";
@@ -91,7 +92,7 @@ export class Sdg08DetailContent {
 
             <div class="sdg08-metric-grid">
               <article class="sdg08-metric-card">
-                <p class="sdg08-metric-label">경제 성장률</p>
+                <p class="sdg08-metric-label">성장 점수</p>
                 <div class="sdg08-gauge" aria-hidden="true">
                   <span class="sdg08-gauge-fill is-growth" data-role="growthFill"></span>
                 </div>
@@ -100,7 +101,7 @@ export class Sdg08DetailContent {
 
               <article class="sdg08-metric-card is-job">
                 <div class="sdg08-stability-head">
-                  <p class="sdg08-metric-label">고용 안정도</p>
+                  <p class="sdg08-metric-label">고용 안정 점수</p>
                   <span class="sdg08-stability-state" data-role="stabilityState">${SDG08_DEFAULT_STABILITY_STATE}</span>
                 </div>
                 <div class="sdg08-workforce" aria-hidden="true">
@@ -292,7 +293,9 @@ export class Sdg08DetailContent {
       this.refs.choiceLabel.textContent = result?.choiceLabel || "-";
     }
     if (this.refs.resultMessage) {
-      this.refs.resultMessage.textContent = result?.message || SDG08_DEFAULT_MESSAGE;
+      this.refs.resultMessage.textContent = result?.message
+        ? `${result.message} ${SDG08_MODEL_NOTE}`
+        : SDG08_DEFAULT_MESSAGE;
     }
     if (this.refs.stabilityState) {
       this.refs.stabilityState.textContent = result?.stabilityState || SDG08_DEFAULT_STABILITY_STATE;

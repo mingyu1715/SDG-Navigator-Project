@@ -8,6 +8,28 @@ export const SDG09_INFRA_TESTBED = "innovation-testbed";
 
 export const SDG09_BUILD_ANIMATION_MS = 1550;
 export const SDG09_COUNT_ANIMATION_MS = 1050;
+export const SDG09_SOURCES = Object.freeze({
+  connectivityBaseline: Object.freeze({
+    type: "official",
+    name: "ITU Facts and Figures 2025",
+    detail: "Global connectivity and digital-divide context for infrastructure scenarios",
+    url: "https://www.itu.int/itu-d/reports/statistics/facts-figures-2025/"
+  }),
+  industryBaseline: Object.freeze({
+    type: "official",
+    name: "UNIDO statistical databases",
+    detail: "Industrialization and manufacturing context",
+    url: "https://www.unido.org/researchers/statistical-databases"
+  }),
+  scenarioModel: Object.freeze({
+    type: "simulation",
+    name: "Infrastructure connection scenario model",
+    detail: "Jobs, connected people or firms, efficiency, and project counts are modeled outputs for this interaction",
+    url: ""
+  })
+});
+export const SDG09_MODEL_NOTE =
+  "아래 일자리·연결·효율 수치는 ITU/UNIDO 자료를 배경으로 한 체험용 모델 결과입니다.";
 
 function freezeSdg09Scenario(scenario) {
   return Object.freeze({
@@ -25,13 +47,13 @@ const SDG09_SHARED_RESOURCES = Object.freeze([
   }),
   Object.freeze({
     source: "UNIDO",
-    title: "Inclusive and Sustainable Industrial Development",
-    url: "https://www.unido.org/"
+    title: "Industrial statistics databases",
+    url: SDG09_SOURCES.industryBaseline.url
   }),
   Object.freeze({
     source: "ITU",
-    title: "Digital infrastructure and connectivity",
-    url: "https://www.itu.int/"
+    title: "Facts and Figures 2025",
+    url: SDG09_SOURCES.connectivityBaseline.url
   })
 ]);
 

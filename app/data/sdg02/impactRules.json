@@ -1,4 +1,30 @@
 {
+  "sources": {
+    "waterPerUnitL": {
+      "type": "derived",
+      "name": "Water Footprint Network",
+      "detail": "Product-level water footprint examples converted to the item units used in this interaction",
+      "url": "https://www.waterfootprint.org/resources/interactive-tools/product-gallery/"
+    },
+    "foodWasteContext": {
+      "type": "official",
+      "name": "UNEP Food Waste Index Report 2024",
+      "detail": "Global food waste context; more than 1 billion meals wasted per day",
+      "url": "https://www.unep.org/resources/publication/food-waste-index-report-2024"
+    },
+    "priceKrw": {
+      "type": "simulation",
+      "name": "Educational local-price assumption",
+      "detail": "Approximate Korean retail values used only to convert waste into meal opportunity cost",
+      "url": ""
+    },
+    "carbonPerKg": {
+      "type": "simulation",
+      "name": "Educational emissions conversion",
+      "detail": "Average kgCO2e per kg wasted food used for relative feedback, not item-specific LCA",
+      "url": ""
+    }
+  },
   "waterPerUnitL": {
     "apple": 70,
     "milk": 255,
@@ -20,5 +46,10 @@
   "mealCostKrw": 600,
   "co2eKgPerKgWaste": 2.5,
   "methaneMultiplier": 25,
-  "drinkPerPersonLPerDay": 2
+  "drinkPerPersonLPerDay": 2,
+  "sourceNotes": {
+    "waterPerUnitL": "Apple, milk, bread, and beef-water values follow common Water Footprint Network product examples at item scale.",
+    "drinkPerPersonLPerDay": "2L per person per day is an educational drinking-water conversion, separate from total domestic water use.",
+    "priceKrw": "Local prices are simulation values and should not be presented as official statistics."
+  }
 }

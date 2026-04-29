@@ -3,6 +3,28 @@ const EMERGENCY = {
   severity: 3
 };
 
+export const SDG03_SOURCES = Object.freeze({
+  uhcAccess: Object.freeze({
+    type: "official",
+    name: "WHO Universal Health Coverage fact sheet",
+    detail: "Health service access context, 2025 update",
+    url: "https://www.who.int/news-room/fact-sheets/detail/universal-health-coverage-(uhc)"
+  }),
+  emergencyCare: Object.freeze({
+    type: "official",
+    name: "WHO Emergency Care",
+    detail: "Emergency care system context",
+    url: "https://www.who.int/health-topics/emergency-care"
+  }),
+  outcomeModel: Object.freeze({
+    type: "simulation",
+    name: "SDG03 educational outcome model",
+    detail: "Access tiers 1-5 are a documented simulation scale informed by WHO health access and emergency care context."
+  })
+});
+
+export const SDG03_MODEL_BASIS_COPY = "기준: WHO 의료 접근성·응급의료 자료를 참고한 교육용 시뮬레이션입니다. 의료 접근성 1~5단계와 응급 중증도 3을 적용해 생존 가능성, 처치 시작, 골든타임 처치율을 환산합니다.";
+
 export const SDG03_COUNTRIES = {
   south_korea: {
     label: "대한민국",

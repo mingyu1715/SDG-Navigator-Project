@@ -26,6 +26,8 @@ build/
 .next/
 coverage/
 *.tsbuildinfo
+.github/
+.playwright-mcp/
 
 # IDE
 .vscode/

@@ -13,6 +13,22 @@ export const SDG08_CHOICE_SAFETY = "safety";
 
 export const SDG08_RESULT_ANIMATION_MS = 1120;
 export const SDG08_DECISION_PICK_SIZE = 4;
+export const SDG08_SOURCES = Object.freeze({
+  laborBaseline: Object.freeze({
+    type: "official",
+    name: "ILO Employment and Social Trends 2026",
+    detail: "Global labor-market baseline for decent work scenarios",
+    url: "https://researchrepository.ilo.org/esploro/outputs/report/Employment-and-social-trends-2026/995684768902676"
+  }),
+  scenarioModel: Object.freeze({
+    type: "simulation",
+    name: "Decent-work policy scenario model",
+    detail: "Growth and job-quality values are educational policy scores, not measured country statistics",
+    url: ""
+  })
+});
+export const SDG08_MODEL_NOTE =
+  "성장 점수와 고용 안정 점수는 ILO Employment and Social Trends 2026의 일자리·양질의 노동 논의를 참고한 체험용 시나리오 지표입니다.";
 
 function freezeSdg08Policy(policy) {
   return Object.freeze({
@@ -30,8 +46,8 @@ const SDG08_SHARED_RESOURCES = Object.freeze([
   }),
   Object.freeze({
     source: "ILO",
-    title: "Decent Work",
-    url: "https://www.ilo.org/topics/decent-work"
+    title: "Employment and Social Trends 2026",
+    url: SDG08_SOURCES.laborBaseline.url
   }),
   Object.freeze({
     source: "OECD",

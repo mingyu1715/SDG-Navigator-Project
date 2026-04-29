@@ -1,8 +1,63 @@
+export const SDG04_SOURCES = Object.freeze({
+  worldBankLiteracy: Object.freeze({
+    type: "official",
+    name: "World Bank adult literacy rate",
+    detail: "Indicator SE.ADT.LITR.ZS, adult total literacy rate",
+    url: "https://data.worldbank.org/indicator/SE.ADT.LITR.ZS"
+  }),
+  highLiteracyReference: Object.freeze({
+    type: "derived",
+    name: "UNESCO UIS literacy context",
+    detail: "High-literacy reference estimate used when the World Bank country series has no observation",
+    url: "https://uis.unesco.org/en/topic/literacy"
+  })
+});
+
 const COUNTRIES = [
-  { name: "Finland", nameKo: "핀란드", literacyRate: 99, region: "유럽" },
-  { name: "South Korea", nameKo: "대한민국", literacyRate: 99, region: "아시아" },
-  { name: "India", nameKo: "인도", literacyRate: 74, region: "아시아" },
-  { name: "Niger", nameKo: "니제르", literacyRate: 19, region: "아프리카" }
+  {
+    name: "Finland",
+    nameKo: "핀란드",
+    literacyRate: 99,
+    region: "유럽",
+    sourceType: "derived",
+    sourceYear: "reference",
+    source: "UNESCO UIS literacy context",
+    sourceDetail: "World Bank SE.ADT.LITR.ZS has no Finland observation; retained as a high-literacy reference estimate.",
+    sourceUrl: SDG04_SOURCES.highLiteracyReference.url
+  },
+  {
+    name: "South Korea",
+    nameKo: "대한민국",
+    literacyRate: 98,
+    region: "아시아",
+    sourceType: "official",
+    sourceYear: 2008,
+    source: "World Bank adult literacy rate",
+    sourceDetail: "SE.ADT.LITR.ZS, adult total literacy rate",
+    sourceUrl: SDG04_SOURCES.worldBankLiteracy.url
+  },
+  {
+    name: "India",
+    nameKo: "인도",
+    literacyRate: 78.2,
+    region: "아시아",
+    sourceType: "official",
+    sourceYear: 2024,
+    source: "World Bank adult literacy rate",
+    sourceDetail: "SE.ADT.LITR.ZS, adult total literacy rate",
+    sourceUrl: SDG04_SOURCES.worldBankLiteracy.url
+  },
+  {
+    name: "Niger",
+    nameKo: "니제르",
+    literacyRate: 35.6,
+    region: "아프리카",
+    sourceType: "official",
+    sourceYear: 2022,
+    source: "World Bank adult literacy rate",
+    sourceDetail: "SE.ADT.LITR.ZS, adult total literacy rate",
+    sourceUrl: SDG04_SOURCES.worldBankLiteracy.url
+  }
 ];
 
 const SENTENCES = [
@@ -63,6 +118,11 @@ function randomSymbol() {
   return SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
 }
 
+function formatPercent(value) {
+  const rounded = Math.round(value * 10) / 10;
+  return Number.isInteger(rounded) ? `${rounded}` : `${rounded.toFixed(1)}`;
+}
+
 function distortText(text, literacyRate) {
   const keep = Math.max(0, Math.min(1, literacyRate / 100));
   const out = Array.from(text).map((ch) => {
@@ -79,7 +139,7 @@ function distortText(text, literacyRate) {
 }
 
 function contextForRate(country) {
-  const lost = 100 - country.literacyRate;
+  const lost = formatPercent(100 - country.literacyRate);
   if (country.literacyRate < 50) {
     return `${country.nameKo}의 ${lost}% 사람들에게 이 문장은 의미 없는 기호처럼 보일 수 있습니다.`;
   }
@@ -117,10 +177,14 @@ export function renderSdg04ResourceItems() {
 }
 
 export function getSdg04CountryInfoView(country) {
+  const sourceLabel = country.sourceType === "derived"
+    ? "참고 추정"
+    : `${country.sourceYear}년 기준`;
+
   return {
     nameKo: country.nameKo,
-    meta: `${country.name} · ${country.region}`,
-    literacyRate: `${country.literacyRate}%`,
+    meta: `${country.name} · ${country.region} · ${sourceLabel}`,
+    literacyRate: `${formatPercent(country.literacyRate)}%`,
     literacyFillWidth: `${country.literacyRate}%`,
     contextMessage: contextForRate(country)
   };

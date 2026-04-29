@@ -3,56 +3,77 @@
     "code": "KR",
     "nameKo": "대한민국",
     "nameEn": "South Korea",
-    "gapRate": 0.31,
-    "source": "교육용 샘플 데이터",
-    "sourceYear": 2025
+    "gapRate": 0.2895,
+    "source": "OECD Gender Wage Gap indicator",
+    "sourceYear": 2024,
+    "sourceType": "official",
+    "sourceDetail": "Unadjusted median gender wage gap, percentage of men's median wages",
+    "sourceUrl": "https://www.oecd.org/en/data/indicators/gender-wage-gap.html"
   },
   {
     "code": "JP",
     "nameKo": "일본",
     "nameEn": "Japan",
-    "gapRate": 0.23,
-    "source": "교육용 샘플 데이터",
-    "sourceYear": 2025
+    "gapRate": 0.2065,
+    "source": "OECD Gender Wage Gap indicator",
+    "sourceYear": 2024,
+    "sourceType": "official",
+    "sourceDetail": "Unadjusted median gender wage gap, percentage of men's median wages",
+    "sourceUrl": "https://www.oecd.org/en/data/indicators/gender-wage-gap.html"
   },
   {
     "code": "US",
     "nameKo": "미국",
     "nameEn": "United States",
-    "gapRate": 0.17,
-    "source": "교육용 샘플 데이터",
-    "sourceYear": 2025
+    "gapRate": 0.1729,
+    "source": "OECD Gender Wage Gap indicator",
+    "sourceYear": 2024,
+    "sourceType": "official",
+    "sourceDetail": "Unadjusted median gender wage gap, percentage of men's median wages",
+    "sourceUrl": "https://www.oecd.org/en/data/indicators/gender-wage-gap.html"
   },
   {
     "code": "DE",
     "nameKo": "독일",
     "nameEn": "Germany",
-    "gapRate": 0.18,
-    "source": "교육용 샘플 데이터",
-    "sourceYear": 2025
+    "gapRate": 0.1347,
+    "source": "OECD Gender Wage Gap indicator",
+    "sourceYear": 2024,
+    "sourceType": "official",
+    "sourceDetail": "Unadjusted median gender wage gap, percentage of men's median wages",
+    "sourceUrl": "https://www.oecd.org/en/data/indicators/gender-wage-gap.html"
   },
   {
     "code": "FR",
     "nameKo": "프랑스",
     "nameEn": "France",
-    "gapRate": 0.12,
-    "source": "교육용 샘플 데이터",
-    "sourceYear": 2025
+    "gapRate": 0.0658,
+    "source": "OECD Gender Wage Gap indicator",
+    "sourceYear": 2024,
+    "sourceType": "official",
+    "sourceDetail": "Unadjusted median gender wage gap, percentage of men's median wages",
+    "sourceUrl": "https://www.oecd.org/en/data/indicators/gender-wage-gap.html"
   },
   {
     "code": "SE",
     "nameKo": "스웨덴",
     "nameEn": "Sweden",
-    "gapRate": 0.08,
-    "source": "교육용 샘플 데이터",
-    "sourceYear": 2025
+    "gapRate": 0.0751,
+    "source": "OECD Gender Wage Gap indicator",
+    "sourceYear": 2024,
+    "sourceType": "official",
+    "sourceDetail": "Unadjusted median gender wage gap, percentage of men's median wages",
+    "sourceUrl": "https://www.oecd.org/en/data/indicators/gender-wage-gap.html"
   },
   {
     "code": "IN",
     "nameKo": "인도",
     "nameEn": "India",
-    "gapRate": 0.34,
-    "source": "교육용 샘플 데이터",
-    "sourceYear": 2025
+    "gapRate": 0.3526,
+    "source": "OECD Gender Wage Gap indicator",
+    "sourceYear": 2024,
+    "sourceType": "official",
+    "sourceDetail": "Unadjusted median gender wage gap, percentage of men's median wages",
+    "sourceUrl": "https://www.oecd.org/en/data/indicators/gender-wage-gap.html"
   }
 ]

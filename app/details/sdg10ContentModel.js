@@ -7,6 +7,7 @@ export const SDG10_DEFAULT_TOP1_SHARE = 10;
 export const SDG10_COUNT_ANIMATION_MS = 820;
 
 export const SDG10_SOURCE = Object.freeze({
+  type: "official",
   name: "World Inequality Report 2022",
   detail: "Global net household wealth distribution, 2021",
   url: "https://wir2022.wid.world/chapter-1/"
