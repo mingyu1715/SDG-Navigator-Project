@@ -196,6 +196,46 @@ export const SDG_SOURCE_REGISTRY = Object.freeze({
     name: "Trash Ghost persistence model",
     detail: "Persistence years are educational estimates, not exact official decomposition dates",
     url: ""
+  }),
+  "un-goal-13": Object.freeze({
+    id: "un-goal-13",
+    goals: [13],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "UN SDG Goal 13",
+    detail: "Climate action targets and indicator context",
+    url: "https://sdgs.un.org/goals/goal13"
+  }),
+  "ipcc-ar6-wgi-sea-level": Object.freeze({
+    id: "ipcc-ar6-wgi-sea-level",
+    goals: [13],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "IPCC AR6 WGI Chapter 9",
+    detail: "Global mean sea-level rise by warming level, Table 9.10",
+    url: "https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-9"
+  }),
+  "climate-central-picturing-future": Object.freeze({
+    id: "climate-central-picturing-future",
+    goals: [13],
+    type: SDG_SOURCE_TYPES.DERIVED,
+    name: "Climate Central: Picturing Our Future",
+    detail: "Long-term coastal exposure comparison at 1.5°C and 3°C warming",
+    url: "https://www.climatecentral.org/report/picturing-our-future"
+  }),
+  "nasa-sea-level-projection-tool": Object.freeze({
+    id: "nasa-sea-level-projection-tool",
+    goals: [13],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "NASA Sea Level Projection Tool",
+    detail: "IPCC AR6 sea-level projection tool and local projection context",
+    url: "https://sealevel.nasa.gov/ipcc-ar6-sea-level-projection-tool"
+  }),
+  "sdg13-rising-line-simulation": Object.freeze({
+    id: "sdg13-rising-line-simulation",
+    goals: [13],
+    type: SDG_SOURCE_TYPES.SIMULATION,
+    name: "Rising Line scenario model",
+    detail: "Water height and location lists are educational visualizations, not parcel-level flood maps",
+    url: ""
   })
 });
 

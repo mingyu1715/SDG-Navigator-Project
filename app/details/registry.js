@@ -109,6 +109,15 @@ const FRAME_META_OVERRIDES = new Map([
       lead: "버린 물건이 눈앞에서 사라진 뒤에도 지구에 남는 긴 시간을 보여줍니다.",
       hint: "오늘 버린 일회용품을 선택해 쓰레기 유령의 시간을 확인하세요"
     }
+  ],
+  [
+    13,
+    {
+      title: "The Rising Line",
+      subtitle: "침수 한계선",
+      lead: "지구 온난화가 해안 도시의 어느 선까지 물을 끌어올리는지 보여줍니다.",
+      hint: "예상 기온 상승폭을 선택해 수면선 변화를 확인하세요"
+    }
   ]
 ]);
 
@@ -195,6 +204,13 @@ const CUSTOM_DETAIL_DEFINITIONS = new Map([
     {
       loadModule: () => import("./sdg12Content.js"),
       createRenderer: (mod, customHost) => new mod.Sdg12DetailContent(customHost)
+    }
+  ],
+  [
+    13,
+    {
+      loadModule: () => import("./sdg13Content.js"),
+      createRenderer: (mod, customHost) => new mod.Sdg13DetailContent(customHost)
     }
   ]
 ]);
