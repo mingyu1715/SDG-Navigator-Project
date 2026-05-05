@@ -124,6 +124,38 @@ export const SDG_SOURCE_REGISTRY = Object.freeze({
     name: "World Inequality Report 2022",
     detail: "Global net household wealth distribution, 2021",
     url: "https://wir2022.wid.world/chapter-1/"
+  }),
+  "un-goal-11": Object.freeze({
+    id: "un-goal-11",
+    goals: [11],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "UN SDG Goal 11",
+    detail: "Sustainable cities and communities targets",
+    url: "https://sdgs.un.org/goals/goal11"
+  }),
+  "who-air-quality-guidelines": Object.freeze({
+    id: "who-air-quality-guidelines",
+    goals: [11],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "WHO global air quality guidelines",
+    detail: "PM2.5 health guideline context",
+    url: "https://www.who.int/publications/i/item/9789240034228"
+  }),
+  "un-habitat-world-cities-2024": Object.freeze({
+    id: "un-habitat-world-cities-2024",
+    goals: [11],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "UN-Habitat World Cities Report 2024",
+    detail: "World Cities Report 2024: Cities and Climate Action",
+    url: "https://unhabitat.org/sites/default/files/2024/11/wcr2024_-_full_report.pdf"
+  }),
+  "sdg11-city-planner-simulation": Object.freeze({
+    id: "sdg11-city-planner-simulation",
+    goals: [11],
+    type: SDG_SOURCE_TYPES.SIMULATION,
+    name: "City Planner simulation",
+    detail: "Happiness and PM2.5 outputs are educational scenario values, not official city statistics",
+    url: ""
   })
 });
 
