@@ -156,6 +156,46 @@ export const SDG_SOURCE_REGISTRY = Object.freeze({
     name: "City Planner simulation",
     detail: "Happiness and PM2.5 outputs are educational scenario values, not official city statistics",
     url: ""
+  }),
+  "un-goal-12": Object.freeze({
+    id: "un-goal-12",
+    goals: [12],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "UN SDG Goal 12",
+    detail: "Responsible consumption and production target context",
+    url: "https://sdgs.un.org/goals/goal12"
+  }),
+  "noaa-marine-debris-plastic": Object.freeze({
+    id: "noaa-marine-debris-plastic",
+    goals: [12],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "NOAA Marine Debris Program: Plastic",
+    detail: "Plastic fragments into microplastics and may never fully go away",
+    url: "https://marinedebris.noaa.gov/what-marine-debris/plastic"
+  }),
+  "noaa-debris-degradation": Object.freeze({
+    id: "noaa-debris-degradation",
+    goals: [12],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "NOAA Ocean Service: marine debris degradation",
+    detail: "Debris degradation depends on material, size, thickness, and environmental conditions",
+    url: "https://oceanservice.noaa.gov/facts/degrade.html"
+  }),
+  "unep-single-use-plastics": Object.freeze({
+    id: "unep-single-use-plastics",
+    goals: [12],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "UNEP Single-use plastics roadmap",
+    detail: "Single-use plastic consumption and policy context",
+    url: "https://www.unep.org/resources/report/single-use-plastics-roadmap-sustainability"
+  }),
+  "sdg12-trash-ghost-simulation": Object.freeze({
+    id: "sdg12-trash-ghost-simulation",
+    goals: [12],
+    type: SDG_SOURCE_TYPES.SIMULATION,
+    name: "Trash Ghost persistence model",
+    detail: "Persistence years are educational estimates, not exact official decomposition dates",
+    url: ""
   })
 });
 

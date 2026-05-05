@@ -100,6 +100,15 @@ const FRAME_META_OVERRIDES = new Map([
       lead: "공원, 대중교통, 재활용 거점을 조절해 도시의 행복지수와 미세먼지 변화를 확인합니다.",
       hint: "도시 전략과 전환 강도를 정해 회색 격자를 살아 있는 도시로 바꿔보세요"
     }
+  ],
+  [
+    12,
+    {
+      title: "The Trash Ghost",
+      subtitle: "쓰레기 유령",
+      lead: "버린 물건이 눈앞에서 사라진 뒤에도 지구에 남는 긴 시간을 보여줍니다.",
+      hint: "오늘 버린 일회용품을 선택해 쓰레기 유령의 시간을 확인하세요"
+    }
   ]
 ]);
 
@@ -179,6 +188,13 @@ const CUSTOM_DETAIL_DEFINITIONS = new Map([
     {
       loadModule: () => import("./sdg11Content.js"),
       createRenderer: (mod, customHost) => new mod.Sdg11DetailContent(customHost)
+    }
+  ],
+  [
+    12,
+    {
+      loadModule: () => import("./sdg12Content.js"),
+      createRenderer: (mod, customHost) => new mod.Sdg12DetailContent(customHost)
     }
   ]
 ]);
