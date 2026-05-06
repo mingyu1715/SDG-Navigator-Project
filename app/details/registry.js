@@ -118,6 +118,15 @@ const FRAME_META_OVERRIDES = new Map([
       lead: "지구 온난화가 해안 도시의 어느 선까지 물을 끌어올리는지 보여줍니다.",
       hint: "예상 기온 상승폭을 선택해 수면선 변화를 확인하세요"
     }
+  ],
+  [
+    14,
+    {
+      title: "The Ocean's Stomach",
+      subtitle: "바다의 위장",
+      lead: "우리가 버린 플라스틱이 해양 생물의 몸 안에 어떤 무게로 남는지 보여줍니다.",
+      hint: "화면을 클릭해 바다거북의 위장에 쌓이는 파편을 확인하세요"
+    }
   ]
 ]);
 
@@ -211,6 +220,13 @@ const CUSTOM_DETAIL_DEFINITIONS = new Map([
     {
       loadModule: () => import("./sdg13Content.js"),
       createRenderer: (mod, customHost) => new mod.Sdg13DetailContent(customHost)
+    }
+  ],
+  [
+    14,
+    {
+      loadModule: () => import("./sdg14Content.js"),
+      createRenderer: (mod, customHost) => new mod.Sdg14DetailContent(customHost)
     }
   ]
 ]);

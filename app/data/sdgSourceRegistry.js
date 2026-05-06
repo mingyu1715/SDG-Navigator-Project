@@ -236,6 +236,46 @@ export const SDG_SOURCE_REGISTRY = Object.freeze({
     name: "Rising Line scenario model",
     detail: "Water height and location lists are educational visualizations, not parcel-level flood maps",
     url: ""
+  }),
+  "un-goal-14": Object.freeze({
+    id: "un-goal-14",
+    goals: [14],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "UN SDG Goal 14",
+    detail: "Life below water targets and marine pollution indicator context",
+    url: "https://sdgs.un.org/goals/goal14"
+  }),
+  "noaa-marine-debris-ingestion": Object.freeze({
+    id: "noaa-marine-debris-ingestion",
+    goals: [14],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "NOAA Marine Debris Program: Ingestion",
+    detail: "Marine species can mistake debris for food and suffer blocked or damaged digestive systems",
+    url: "https://marinedebris.noaa.gov/why-marine-debris-problem/ingestion"
+  }),
+  "iucn-marine-plastic-pollution": Object.freeze({
+    id: "iucn-marine-plastic-pollution",
+    goals: [14],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "IUCN Marine Plastic Pollution",
+    detail: "Marine plastic pollution causes ingestion, entanglement, and ecosystem impacts",
+    url: "https://www.iucn.org/resources/issues-brief/marine-plastic-pollution"
+  }),
+  "unep-marine-litter-assessment": Object.freeze({
+    id: "unep-marine-litter-assessment",
+    goals: [14],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "UNEP marine litter and plastic pollution assessment",
+    detail: "Global assessment of marine litter and plastic pollution impacts",
+    url: "https://www.unep.org/resources/pollution-solution-global-assessment-marine-litter-and-plastic-pollution"
+  }),
+  "sdg14-ocean-stomach-simulation": Object.freeze({
+    id: "sdg14-ocean-stomach-simulation",
+    goals: [14],
+    type: SDG_SOURCE_TYPES.SIMULATION,
+    name: "Ocean's Stomach click model",
+    detail: "Health index and microplastic load are educational interaction scores, not veterinary measurements",
+    url: ""
   })
 });
 
