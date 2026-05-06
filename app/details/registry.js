@@ -136,6 +136,15 @@ const FRAME_META_OVERRIDES = new Map([
       lead: "하나의 소비가 숲의 첫 도미노를 밀면 생태계 연결망은 연쇄적으로 무너집니다.",
       hint: "소비 자원을 선택해 서식지와 멸종위기종에 이어지는 변화를 확인하세요"
     }
+  ],
+  [
+    16,
+    {
+      title: "The Silence of Conflict",
+      subtitle: "침묵의 총성",
+      lead: "평화로운 일상 이면에서 계속되는 분쟁과 폭력의 현실을 현재 시각으로 환산합니다.",
+      hint: "현재 시각을 입력해 이 순간의 침묵 뒤 통계를 확인하세요"
+    }
   ]
 ]);
 
@@ -243,6 +252,13 @@ const CUSTOM_DETAIL_DEFINITIONS = new Map([
     {
       loadModule: () => import("./sdg15Content.js"),
       createRenderer: (mod, customHost) => new mod.Sdg15DetailContent(customHost)
+    }
+  ],
+  [
+    16,
+    {
+      loadModule: () => import("./sdg16Content.js"),
+      createRenderer: (mod, customHost) => new mod.Sdg16DetailContent(customHost)
     }
   ]
 ]);

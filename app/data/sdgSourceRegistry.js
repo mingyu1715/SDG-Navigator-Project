@@ -348,6 +348,38 @@ export const SDG_SOURCE_REGISTRY = Object.freeze({
     name: "Extinction Domino scenario model",
     detail: "Domino steps and pressure scores are educational interaction values, not official biodiversity metrics",
     url: ""
+  }),
+  "un-goal-16": Object.freeze({
+    id: "un-goal-16",
+    goals: [16],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "UN SDG Goal 16",
+    detail: "Peace, justice and strong institutions targets and indicator context",
+    url: "https://sdgs.un.org/goals/goal16"
+  }),
+  "un-sdg-report-2025-goal-16": Object.freeze({
+    id: "un-sdg-report-2025-goal-16",
+    goals: [16],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "UN SDG Report 2025: Goal 16",
+    detail: "Conflict-related deaths, homicide rate, forced displacement, and killings of protected groups",
+    url: "https://unstats.un.org/sdgs/report/2025/Goal-16/"
+  }),
+  "unodc-global-study-homicide-2023": Object.freeze({
+    id: "unodc-global-study-homicide-2023",
+    goals: [16],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "UNODC Global Study on Homicide 2023",
+    detail: "Intentional homicide definition and global violence measurement context",
+    url: "https://www.unodc.org/unodc/en/data-and-analysis/global-study-on-homicide.html"
+  }),
+  "sdg16-silence-conflict-simulation": Object.freeze({
+    id: "sdg16-silence-conflict-simulation",
+    goals: [16],
+    type: SDG_SOURCE_TYPES.SIMULATION,
+    name: "Silence of Conflict time conversion model",
+    detail: "Moment counts and red points are annual SDG statistics converted into an educational time-based visualization",
+    url: ""
   })
 });
 
