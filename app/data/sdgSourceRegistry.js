@@ -276,6 +276,78 @@ export const SDG_SOURCE_REGISTRY = Object.freeze({
     name: "Ocean's Stomach click model",
     detail: "Health index and microplastic load are educational interaction scores, not veterinary measurements",
     url: ""
+  }),
+  "un-goal-15": Object.freeze({
+    id: "un-goal-15",
+    goals: [15],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "UN SDG Goal 15",
+    detail: "Life on Land targets for forests, biodiversity, ecosystems, and threatened species",
+    url: "https://sdgs.un.org/goals/goal15"
+  }),
+  "iucn-red-list": Object.freeze({
+    id: "iucn-red-list",
+    goals: [15],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "IUCN Red List",
+    detail: "Threatened species categories and species-level conservation status reference",
+    url: "https://www.iucnredlist.org/"
+  }),
+  "wwf-palm-oil-species": Object.freeze({
+    id: "wwf-palm-oil-species",
+    goals: [15],
+    type: SDG_SOURCE_TYPES.DERIVED,
+    name: "WWF: species threatened by unsustainable palm oil",
+    detail: "Palm oil expansion context for orangutans, tigers, elephants, and tropical forest species",
+    url: "https://www.worldwildlife.org/stories/endangered-species-threatened-by-unsustainable-palm-oil-production"
+  }),
+  "wwf-cerrado": Object.freeze({
+    id: "wwf-cerrado",
+    goals: [15],
+    type: SDG_SOURCE_TYPES.DERIVED,
+    name: "WWF: Cerrado",
+    detail: "Cerrado habitat conversion context linked to agriculture and wildlife pressure",
+    url: "https://www.worldwildlife.org/places/cerrado"
+  }),
+  "wwf-soy-production": Object.freeze({
+    id: "wwf-soy-production",
+    goals: [15],
+    type: SDG_SOURCE_TYPES.DERIVED,
+    name: "WWF: soy production",
+    detail: "Soy expansion and ecosystem conversion context used for cattle-feed linkage",
+    url: "https://wwf.panda.org/discover/our_focus/food_practice/sustainable_production/soy/"
+  }),
+  "wwf-illegal-logging": Object.freeze({
+    id: "wwf-illegal-logging",
+    goals: [15],
+    type: SDG_SOURCE_TYPES.DERIVED,
+    name: "WWF: stopping illegal logging",
+    detail: "Illegal logging, timber demand, and forest degradation context",
+    url: "https://www.worldwildlife.org/our-work/forests/deforestation-and-forest-degradation/stopping-illegal-logging/"
+  }),
+  "wwf-asian-elephant": Object.freeze({
+    id: "wwf-asian-elephant",
+    goals: [15],
+    type: SDG_SOURCE_TYPES.DERIVED,
+    name: "WWF: Asian elephant",
+    detail: "Habitat loss and fragmentation context for Asian elephants",
+    url: "https://www.worldwildlife.org/species/asian-elephant"
+  }),
+  "wwf-red-panda": Object.freeze({
+    id: "wwf-red-panda",
+    goals: [15],
+    type: SDG_SOURCE_TYPES.DERIVED,
+    name: "WWF: red panda",
+    detail: "Forest habitat pressure context for red pandas",
+    url: "https://www.worldwildlife.org/species/red-panda"
+  }),
+  "sdg15-extinction-domino-simulation": Object.freeze({
+    id: "sdg15-extinction-domino-simulation",
+    goals: [15],
+    type: SDG_SOURCE_TYPES.SIMULATION,
+    name: "Extinction Domino scenario model",
+    detail: "Domino steps and pressure scores are educational interaction values, not official biodiversity metrics",
+    url: ""
   })
 });
 

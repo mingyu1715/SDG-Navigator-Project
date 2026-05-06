@@ -127,6 +127,15 @@ const FRAME_META_OVERRIDES = new Map([
       lead: "우리가 버린 플라스틱이 해양 생물의 몸 안에 어떤 무게로 남는지 보여줍니다.",
       hint: "화면을 클릭해 바다거북의 위장에 쌓이는 파편을 확인하세요"
     }
+  ],
+  [
+    15,
+    {
+      title: "The Extinction Domino",
+      subtitle: "멸종의 도미노",
+      lead: "하나의 소비가 숲의 첫 도미노를 밀면 생태계 연결망은 연쇄적으로 무너집니다.",
+      hint: "소비 자원을 선택해 서식지와 멸종위기종에 이어지는 변화를 확인하세요"
+    }
   ]
 ]);
 
@@ -227,6 +236,13 @@ const CUSTOM_DETAIL_DEFINITIONS = new Map([
     {
       loadModule: () => import("./sdg14Content.js"),
       createRenderer: (mod, customHost) => new mod.Sdg14DetailContent(customHost)
+    }
+  ],
+  [
+    15,
+    {
+      loadModule: () => import("./sdg15Content.js"),
+      createRenderer: (mod, customHost) => new mod.Sdg15DetailContent(customHost)
     }
   ]
 ]);
