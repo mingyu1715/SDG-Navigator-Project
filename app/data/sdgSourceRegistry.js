@@ -236,6 +236,206 @@ export const SDG_SOURCE_REGISTRY = Object.freeze({
     name: "Rising Line scenario model",
     detail: "Water height and location lists are educational visualizations, not parcel-level flood maps",
     url: ""
+  }),
+  "un-goal-14": Object.freeze({
+    id: "un-goal-14",
+    goals: [14],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "UN SDG Goal 14",
+    detail: "Life below water targets and marine pollution indicator context",
+    url: "https://sdgs.un.org/goals/goal14"
+  }),
+  "noaa-marine-debris-ingestion": Object.freeze({
+    id: "noaa-marine-debris-ingestion",
+    goals: [14],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "NOAA Marine Debris Program: Ingestion",
+    detail: "Marine species can mistake debris for food and suffer blocked or damaged digestive systems",
+    url: "https://marinedebris.noaa.gov/why-marine-debris-problem/ingestion"
+  }),
+  "iucn-marine-plastic-pollution": Object.freeze({
+    id: "iucn-marine-plastic-pollution",
+    goals: [14],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "IUCN Marine Plastic Pollution",
+    detail: "Marine plastic pollution causes ingestion, entanglement, and ecosystem impacts",
+    url: "https://www.iucn.org/resources/issues-brief/marine-plastic-pollution"
+  }),
+  "unep-marine-litter-assessment": Object.freeze({
+    id: "unep-marine-litter-assessment",
+    goals: [14],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "UNEP marine litter and plastic pollution assessment",
+    detail: "Global assessment of marine litter and plastic pollution impacts",
+    url: "https://www.unep.org/resources/pollution-solution-global-assessment-marine-litter-and-plastic-pollution"
+  }),
+  "sdg14-ocean-stomach-simulation": Object.freeze({
+    id: "sdg14-ocean-stomach-simulation",
+    goals: [14],
+    type: SDG_SOURCE_TYPES.SIMULATION,
+    name: "Ocean's Stomach click model",
+    detail: "Health index and microplastic load are educational interaction scores, not veterinary measurements",
+    url: ""
+  }),
+  "un-goal-15": Object.freeze({
+    id: "un-goal-15",
+    goals: [15],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "UN SDG Goal 15",
+    detail: "Life on Land targets for forests, biodiversity, ecosystems, and threatened species",
+    url: "https://sdgs.un.org/goals/goal15"
+  }),
+  "iucn-red-list": Object.freeze({
+    id: "iucn-red-list",
+    goals: [15],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "IUCN Red List",
+    detail: "Threatened species categories and species-level conservation status reference",
+    url: "https://www.iucnredlist.org/"
+  }),
+  "wwf-palm-oil-species": Object.freeze({
+    id: "wwf-palm-oil-species",
+    goals: [15],
+    type: SDG_SOURCE_TYPES.DERIVED,
+    name: "WWF: species threatened by unsustainable palm oil",
+    detail: "Palm oil expansion context for orangutans, tigers, elephants, and tropical forest species",
+    url: "https://www.worldwildlife.org/stories/endangered-species-threatened-by-unsustainable-palm-oil-production"
+  }),
+  "wwf-cerrado": Object.freeze({
+    id: "wwf-cerrado",
+    goals: [15],
+    type: SDG_SOURCE_TYPES.DERIVED,
+    name: "WWF: Cerrado",
+    detail: "Cerrado habitat conversion context linked to agriculture and wildlife pressure",
+    url: "https://www.worldwildlife.org/places/cerrado"
+  }),
+  "wwf-soy-production": Object.freeze({
+    id: "wwf-soy-production",
+    goals: [15],
+    type: SDG_SOURCE_TYPES.DERIVED,
+    name: "WWF: soy production",
+    detail: "Soy expansion and ecosystem conversion context used for cattle-feed linkage",
+    url: "https://wwf.panda.org/discover/our_focus/food_practice/sustainable_production/soy/"
+  }),
+  "wwf-illegal-logging": Object.freeze({
+    id: "wwf-illegal-logging",
+    goals: [15],
+    type: SDG_SOURCE_TYPES.DERIVED,
+    name: "WWF: stopping illegal logging",
+    detail: "Illegal logging, timber demand, and forest degradation context",
+    url: "https://www.worldwildlife.org/our-work/forests/deforestation-and-forest-degradation/stopping-illegal-logging/"
+  }),
+  "wwf-asian-elephant": Object.freeze({
+    id: "wwf-asian-elephant",
+    goals: [15],
+    type: SDG_SOURCE_TYPES.DERIVED,
+    name: "WWF: Asian elephant",
+    detail: "Habitat loss and fragmentation context for Asian elephants",
+    url: "https://www.worldwildlife.org/species/asian-elephant"
+  }),
+  "wwf-red-panda": Object.freeze({
+    id: "wwf-red-panda",
+    goals: [15],
+    type: SDG_SOURCE_TYPES.DERIVED,
+    name: "WWF: red panda",
+    detail: "Forest habitat pressure context for red pandas",
+    url: "https://www.worldwildlife.org/species/red-panda"
+  }),
+  "sdg15-extinction-domino-simulation": Object.freeze({
+    id: "sdg15-extinction-domino-simulation",
+    goals: [15],
+    type: SDG_SOURCE_TYPES.SIMULATION,
+    name: "Extinction Domino scenario model",
+    detail: "Domino steps and pressure scores are educational interaction values, not official biodiversity metrics",
+    url: ""
+  }),
+  "un-goal-16": Object.freeze({
+    id: "un-goal-16",
+    goals: [16],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "UN SDG Goal 16",
+    detail: "Peace, justice and strong institutions targets and indicator context",
+    url: "https://sdgs.un.org/goals/goal16"
+  }),
+  "un-sdg-report-2025-goal-16": Object.freeze({
+    id: "un-sdg-report-2025-goal-16",
+    goals: [16],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "UN SDG Report 2025: Goal 16",
+    detail: "Conflict-related deaths, homicide rate, forced displacement, and killings of protected groups",
+    url: "https://unstats.un.org/sdgs/report/2025/Goal-16/"
+  }),
+  "unodc-global-study-homicide-2023": Object.freeze({
+    id: "unodc-global-study-homicide-2023",
+    goals: [16],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "UNODC Global Study on Homicide 2023",
+    detail: "Intentional homicide definition and global violence measurement context",
+    url: "https://www.unodc.org/unodc/en/data-and-analysis/global-study-on-homicide.html"
+  }),
+  "acled-conflict-index-2025": Object.freeze({
+    id: "acled-conflict-index-2025",
+    goals: [16],
+    type: SDG_SOURCE_TYPES.DERIVED,
+    name: "ACLED Weekly Conflict Index",
+    detail: "Conflict severity ranking, weekly conflict intensity, and global conflict hotspot context",
+    url: "https://acleddata.com/platform/weekly-conflict-index"
+  }),
+  "sdg16-silence-conflict-simulation": Object.freeze({
+    id: "sdg16-silence-conflict-simulation",
+    goals: [16],
+    type: SDG_SOURCE_TYPES.SIMULATION,
+    name: "Silence of Conflict map model",
+    detail: "Conflict markers are representative educational map points, not live event markers",
+    url: ""
+  }),
+  "un-goal-17": Object.freeze({
+    id: "un-goal-17",
+    goals: [17],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "UN SDG Goal 17",
+    detail: "Partnerships for the Goals targets and indicator context",
+    url: "https://sdgs.un.org/goals/goal17"
+  }),
+  "itu-facts-2025-goal-17": Object.freeze({
+    id: "itu-facts-2025-goal-17",
+    goals: [17],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "ITU Facts and Figures 2025",
+    detail: "Estimated global Internet users and offline population",
+    url: "https://www.itu.int/en/mediacentre/Pages/PR-2025-11-17-Facts-and-Figures.aspx"
+  }),
+  "oecd-oda-2025-preliminary": Object.freeze({
+    id: "oecd-oda-2025-preliminary",
+    goals: [17],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "OECD preliminary ODA data",
+    detail: "Official development assistance by DAC members and associates, 2025 preliminary data",
+    url: "https://www.oecd.org/en/about/news/press-releases/2026/04/international-aid-fell-sharply-in-2025-says-oecd.html"
+  }),
+  "unctad-global-trade-2024": Object.freeze({
+    id: "unctad-global-trade-2024",
+    goals: [17],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "UNCTAD Global Trade Update",
+    detail: "Global trade in goods and services, 2024",
+    url: "https://unctad.org/news/global-trade-hits-record-33-trillion-2024-driven-services-and-developing-economies"
+  }),
+  "un-member-states": Object.freeze({
+    id: "un-member-states",
+    goals: [17],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "United Nations About Us",
+    detail: "UN Member States count",
+    url: "https://www.un.org/en/about-us/"
+  }),
+  "sdg17-global-network-simulation": Object.freeze({
+    id: "sdg17-global-network-simulation",
+    goals: [17],
+    type: SDG_SOURCE_TYPES.SIMULATION,
+    name: "Global Network visualization model",
+    detail: "Nodes and links are educational visualizations, not live institution locations",
+    url: ""
   })
 });
 

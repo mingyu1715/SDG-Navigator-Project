@@ -118,6 +118,42 @@ const FRAME_META_OVERRIDES = new Map([
       lead: "지구 온난화가 해안 도시의 어느 선까지 물을 끌어올리는지 보여줍니다.",
       hint: "예상 기온 상승폭을 선택해 수면선 변화를 확인하세요"
     }
+  ],
+  [
+    14,
+    {
+      title: "The Ocean's Stomach",
+      subtitle: "바다의 위장",
+      lead: "우리가 버린 플라스틱이 해양 생물의 몸 안에 어떤 무게로 남는지 보여줍니다.",
+      hint: "화면을 클릭해 바다거북의 위장에 쌓이는 파편을 확인하세요"
+    }
+  ],
+  [
+    15,
+    {
+      title: "The Extinction Domino",
+      subtitle: "멸종의 도미노",
+      lead: "하나의 소비가 숲의 첫 도미노를 밀면 생태계 연결망은 연쇄적으로 무너집니다.",
+      hint: "소비 자원을 선택해 서식지와 멸종위기종에 이어지는 변화를 확인하세요"
+    }
+  ],
+  [
+    16,
+    {
+      title: "The Silence of Conflict",
+      subtitle: "침묵의 총성",
+      lead: "평화로운 일상 이면에서 계속되는 분쟁과 폭력의 현실을 현재 시각으로 환산합니다.",
+      hint: "현재 시각을 입력해 이 순간의 침묵 뒤 통계를 확인하세요"
+    }
+  ],
+  [
+    17,
+    {
+      title: "The Power of Link",
+      subtitle: "글로벌 네트워크",
+      lead: "지속가능발전목표는 혼자 해결할 수 없습니다. 연결된 세계의 협력망이 문제를 해결하는 힘이 됩니다.",
+      hint: "연결 보기 버튼으로 글로벌 네트워크를 확인하세요"
+    }
   ]
 ]);
 
@@ -211,6 +247,34 @@ const CUSTOM_DETAIL_DEFINITIONS = new Map([
     {
       loadModule: () => import("./sdg13Content.js"),
       createRenderer: (mod, customHost) => new mod.Sdg13DetailContent(customHost)
+    }
+  ],
+  [
+    14,
+    {
+      loadModule: () => import("./sdg14Content.js"),
+      createRenderer: (mod, customHost) => new mod.Sdg14DetailContent(customHost)
+    }
+  ],
+  [
+    15,
+    {
+      loadModule: () => import("./sdg15Content.js"),
+      createRenderer: (mod, customHost) => new mod.Sdg15DetailContent(customHost)
+    }
+  ],
+  [
+    16,
+    {
+      loadModule: () => import("./sdg16Content.js?v=20260507-conflict-facts"),
+      createRenderer: (mod, customHost) => new mod.Sdg16DetailContent(customHost)
+    }
+  ],
+  [
+    17,
+    {
+      loadModule: () => import("./sdg17Content.js?v=20260507-sdg17-routefix"),
+      createRenderer: (mod, customHost) => new mod.Sdg17DetailContent(customHost)
     }
   ]
 ]);
