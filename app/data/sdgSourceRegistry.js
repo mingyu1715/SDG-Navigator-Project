@@ -373,12 +373,68 @@ export const SDG_SOURCE_REGISTRY = Object.freeze({
     detail: "Intentional homicide definition and global violence measurement context",
     url: "https://www.unodc.org/unodc/en/data-and-analysis/global-study-on-homicide.html"
   }),
+  "acled-conflict-index-2025": Object.freeze({
+    id: "acled-conflict-index-2025",
+    goals: [16],
+    type: SDG_SOURCE_TYPES.DERIVED,
+    name: "ACLED Weekly Conflict Index",
+    detail: "Conflict severity ranking, weekly conflict intensity, and global conflict hotspot context",
+    url: "https://acleddata.com/platform/weekly-conflict-index"
+  }),
   "sdg16-silence-conflict-simulation": Object.freeze({
     id: "sdg16-silence-conflict-simulation",
     goals: [16],
     type: SDG_SOURCE_TYPES.SIMULATION,
-    name: "Silence of Conflict time conversion model",
-    detail: "Moment counts and red points are annual SDG statistics converted into an educational time-based visualization",
+    name: "Silence of Conflict map model",
+    detail: "Conflict markers are representative educational map points, not live event markers",
+    url: ""
+  }),
+  "un-goal-17": Object.freeze({
+    id: "un-goal-17",
+    goals: [17],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "UN SDG Goal 17",
+    detail: "Partnerships for the Goals targets and indicator context",
+    url: "https://sdgs.un.org/goals/goal17"
+  }),
+  "itu-facts-2025-goal-17": Object.freeze({
+    id: "itu-facts-2025-goal-17",
+    goals: [17],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "ITU Facts and Figures 2025",
+    detail: "Estimated global Internet users and offline population",
+    url: "https://www.itu.int/en/mediacentre/Pages/PR-2025-11-17-Facts-and-Figures.aspx"
+  }),
+  "oecd-oda-2025-preliminary": Object.freeze({
+    id: "oecd-oda-2025-preliminary",
+    goals: [17],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "OECD preliminary ODA data",
+    detail: "Official development assistance by DAC members and associates, 2025 preliminary data",
+    url: "https://www.oecd.org/en/about/news/press-releases/2026/04/international-aid-fell-sharply-in-2025-says-oecd.html"
+  }),
+  "unctad-global-trade-2024": Object.freeze({
+    id: "unctad-global-trade-2024",
+    goals: [17],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "UNCTAD Global Trade Update",
+    detail: "Global trade in goods and services, 2024",
+    url: "https://unctad.org/news/global-trade-hits-record-33-trillion-2024-driven-services-and-developing-economies"
+  }),
+  "un-member-states": Object.freeze({
+    id: "un-member-states",
+    goals: [17],
+    type: SDG_SOURCE_TYPES.OFFICIAL,
+    name: "United Nations About Us",
+    detail: "UN Member States count",
+    url: "https://www.un.org/en/about-us/"
+  }),
+  "sdg17-global-network-simulation": Object.freeze({
+    id: "sdg17-global-network-simulation",
+    goals: [17],
+    type: SDG_SOURCE_TYPES.SIMULATION,
+    name: "Global Network visualization model",
+    detail: "Nodes and links are educational visualizations, not live institution locations",
     url: ""
   })
 });

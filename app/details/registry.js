@@ -145,6 +145,15 @@ const FRAME_META_OVERRIDES = new Map([
       lead: "평화로운 일상 이면에서 계속되는 분쟁과 폭력의 현실을 현재 시각으로 환산합니다.",
       hint: "현재 시각을 입력해 이 순간의 침묵 뒤 통계를 확인하세요"
     }
+  ],
+  [
+    17,
+    {
+      title: "The Power of Link",
+      subtitle: "글로벌 네트워크",
+      lead: "지속가능발전목표는 혼자 해결할 수 없습니다. 연결된 세계의 협력망이 문제를 해결하는 힘이 됩니다.",
+      hint: "연결 보기 버튼으로 글로벌 네트워크를 확인하세요"
+    }
   ]
 ]);
 
@@ -257,8 +266,15 @@ const CUSTOM_DETAIL_DEFINITIONS = new Map([
   [
     16,
     {
-      loadModule: () => import("./sdg16Content.js"),
+      loadModule: () => import("./sdg16Content.js?v=20260507-conflict-facts"),
       createRenderer: (mod, customHost) => new mod.Sdg16DetailContent(customHost)
+    }
+  ],
+  [
+    17,
+    {
+      loadModule: () => import("./sdg17Content.js?v=20260507-sdg17-routefix"),
+      createRenderer: (mod, customHost) => new mod.Sdg17DetailContent(customHost)
     }
   ]
 ]);
