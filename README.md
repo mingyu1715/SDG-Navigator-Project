@@ -86,7 +86,8 @@ http://localhost:3000
 │       ├── layout/
 │       └── pages/
 ├── docs/
-│   └── sdg-data-source-audit.md
+│   ├── sdg-data-source-audit.md
+│   └── final-submission-checklist.md
 ├── vercel.json
 └── package.json
 ```
@@ -107,6 +108,7 @@ http://localhost:3000
 - `app/data/sdgs.js`: 메인 카드용 SDG 메타데이터 로드
 - `app/data/sdgSourceRegistry.js`: 수치·자료 출처 관리
 - `docs/sdg-data-source-audit.md`: SDG별 데이터 출처 점검 문서
+- `docs/final-submission-checklist.md`: 최종 제출 전 정적 점검 문서
 - `css/styles/pages/sdgXX.css`: SDG별 상세 화면 스타일
 - `vercel.json`: Vercel 상세 경로 rewrite 설정
 

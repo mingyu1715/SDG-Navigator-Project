@@ -35,6 +35,9 @@ coverage/
 *.swp
 *.swo
 *.md
+!README.md
+!docs/
+!docs/*.md
 
 # Local submission artifacts
 SDG_Explorer_*.html
