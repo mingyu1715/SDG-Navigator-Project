@@ -35,3 +35,7 @@ coverage/
 *.swp
 *.swo
 *.md
+
+# Local submission artifacts
+SDG_Explorer_*.html
+*qr.png
