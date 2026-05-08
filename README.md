@@ -124,6 +124,7 @@ http://localhost:3000
 
 통계, 지표, 현실값을 추가하거나 수정할 때는 공식 또는 권위 있는 출처를 먼저 확인합니다.
 
+- 전체 SDG 1–17 출처 목록: [SDG 데이터 출처 점검 문서](docs/sdg-data-source-audit.md)
 - 공식 통계값: 출처명, 기준연도, 지표 정의, URL을 데이터 모델 또는 `app/data/sdgSourceRegistry.js`에 남깁니다.
 - 체험용 환산값: UI와 코드에서 공식 통계가 아니라 시뮬레이션 값임을 구분합니다.
 - 출처 점검 내용: `docs/sdg-data-source-audit.md`에 정리합니다.
