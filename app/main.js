@@ -1,5 +1,5 @@
-import { MainView } from "./views/mainView.js";
-import { DetailView } from "./views/detailView.js";
+import { MainView } from "./views/mainView.js?v=20260515-card-rotation3";
+import { DetailView } from "./views/detailView.js?v=20260515-card-rotation3";
 import { SDG_DATA, getGoalById, toGoalRoute } from "./data/sdgs.js";
 import { preloadCustomDetailRenderer } from "./details/registry.js";
 import { createAppNavigation } from "./appNavigation.js";
@@ -55,6 +55,8 @@ const detailView = new DetailView(detailRoot, {
 
 function setMainVisible(visible) {
   mainRoot.style.pointerEvents = visible ? "auto" : "none";
+  mainRoot.style.visibility = visible ? "visible" : "hidden";
+  mainRoot.setAttribute("aria-hidden", visible ? "false" : "true");
 }
 
 const { preloadOnBoot, runDetailWarmups } = createDetailWarmupController({

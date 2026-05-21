@@ -177,6 +177,7 @@ export class DetailView {
 
   setVisible(visible) {
     this.root.classList.toggle("active", visible);
+    this.root.style.visibility = visible ? "visible" : "hidden";
     this.root.setAttribute("aria-hidden", visible ? "false" : "true");
     if (visible) {
       this.root.scrollTop = 0;

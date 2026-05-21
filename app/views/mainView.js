@@ -21,6 +21,13 @@ function normalizeAngle(deg) {
   return a;
 }
 
+function normalizeCardTilt(deg) {
+  const angle = normalizeAngle(deg);
+  if (angle > 90) return angle - 180;
+  if (angle < -90) return angle + 180;
+  return angle;
+}
+
 function easeOutCubic(t) {
   return 1 - Math.pow(1 - t, 3);
 }
@@ -91,7 +98,7 @@ export class MainView {
 
   playIntroToGoal(goalId = this.config.introGoalId) {
     if (this.isIntroPlaying) return;
-    const item = this.items.find((entry) => !entry.isFiller && entry.goalId === Number(goalId));
+    const item = this.findClosestGoalItem(goalId);
     if (!item) return;
 
     this.stopTween();
@@ -172,12 +179,14 @@ export class MainView {
   }
 
   buildCards() {
-    const ringSlots = 44;
+    const fillerSlots = 5;
+    const cycleSlots = SDG_DATA.length + fillerSlots;
+    const ringSlots = cycleSlots * 2;
     const sequence = [
       ...SDG_DATA,
-      ...Array.from({ length: 5 }, () => BLACK_FILLER),
+      ...Array.from({ length: fillerSlots }, () => BLACK_FILLER),
       ...SDG_DATA,
-      ...Array.from({ length: 5 }, () => BLACK_FILLER)
+      ...Array.from({ length: fillerSlots }, () => BLACK_FILLER)
     ];
 
     this.items = Array.from({ length: ringSlots }, (_, index) => {
@@ -242,8 +251,25 @@ export class MainView {
     });
   }
 
+  findClosestGoalItem(goalId) {
+    const id = Number(goalId);
+    let closestItem = null;
+    let closestDiff = Number.POSITIVE_INFINITY;
+
+    this.items.forEach((item) => {
+      if (item.isFiller || item.goalId !== id) return;
+      const diff = Math.abs(normalizeAngle(item.baseAngle + this.state.rotation - this.config.focusAngle));
+      if (diff < closestDiff) {
+        closestDiff = diff;
+        closestItem = item;
+      }
+    });
+
+    return closestItem;
+  }
+
   getCardRect(goalId) {
-    const item = this.items.find((entry) => !entry.isFiller && entry.goalId === Number(goalId));
+    const item = this.findClosestGoalItem(goalId);
     if (!item) return null;
     return item.el.getBoundingClientRect();
   }
@@ -271,7 +297,7 @@ export class MainView {
 
   focusGoal(goalId, options = {}) {
     const { animate = false } = options;
-    const item = this.items.find((entry) => !entry.isFiller && entry.goalId === Number(goalId));
+    const item = this.findClosestGoalItem(goalId);
     if (!item) return;
 
     const diff = normalizeAngle(item.baseAngle + this.state.rotation - this.config.focusAngle);
@@ -380,8 +406,9 @@ export class MainView {
 
       const tx = x - this.layout.cardWidth / 2;
       const ty = y - this.layout.cardHeight / 2;
+      const cardTilt = normalizeCardTilt(angleDeg);
 
-      item.el.style.transform = `translate(${tx}px, ${ty}px) rotate(${angleDeg}deg) scale(${scale})`;
+      item.el.style.transform = `translate(${tx}px, ${ty}px) rotate(${cardTilt}deg) scale(${scale})`;
       item.el.style.opacity = "1";
       item.el.style.zIndex = String(zIndex);
     });
