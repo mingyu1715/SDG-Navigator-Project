@@ -1,5 +1,5 @@
-import { MainView } from "./views/mainView.js?v=20260522-phase1";
-import { DetailView } from "./views/detailView.js?v=20260522-phase1";
+import { MainView } from "./views/mainView.js?v=20260522-phase2";
+import { DetailView } from "./views/detailView.js?v=20260522-phase2";
 import { SDG_DATA, getGoalById, toGoalRoute } from "./data/sdgs.js";
 import { preloadCustomDetailRenderer } from "./details/registry.js";
 import { createAppNavigation } from "./appNavigation.js";
