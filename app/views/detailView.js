@@ -3,9 +3,10 @@ import { fetchGoalDetail } from "../services/sdgService.js";
 import { DetailFrame } from "./detailFrame.js";
 import {
   createCustomDetailRenderer,
+  getDetailExperienceFlow,
   getDetailFrameMeta,
   hasCustomDetailRenderer
-} from "../details/registry.js";
+} from "../details/registry.js?v=20260522-phase4";
 
 const MIN_DETAIL_OVERLAY_MS = 1200;
 const DETAIL_PANEL_VARIANT_CLASSES = [
@@ -45,9 +46,38 @@ const DETAIL_GLOBAL_ORPHAN_SELECTORS = [
   'script[data-sdg01-three-script="true"]'
 ];
 const CONCEPT_LABEL_TEXT = "이 SDG는 무엇인가";
+const EXPERIENCE_FLOW_LABEL_TEXT = "체험 흐름";
+const EXPERIENCE_FLOW_ANCHOR_SELECTORS = new Map([
+  [1, '[data-role="targetReadout"]'],
+  [2, ".sdg02-rx-intro-lead"],
+  [3, ".sdg03-hero-lead"],
+  [4, ".sdg04-lead"],
+  [5, '[data-role="countryHint"]'],
+  [6, ".sdg06-input-copy"],
+  [7, ".sdg07-master-meta"],
+  [8, ".sdg08-copy"]
+]);
 
 function hasKoreanText(text) {
   return /[가-힣]/.test(String(text || ""));
+}
+
+function toGoalClassPrefix(goalId) {
+  return `sdg${String(Number(goalId)).padStart(2, "0")}`;
+}
+
+function findCustomLead(customContent, goalId) {
+  const prefix = toGoalClassPrefix(goalId);
+  return customContent?.querySelector(`.${prefix}-lead, .${prefix}-hero-lead, .${prefix}-rx-intro-lead`) || null;
+}
+
+function findExperienceFlowAnchor(customContent, goalId) {
+  const id = Number(goalId);
+  const anchorSelector = EXPERIENCE_FLOW_ANCHOR_SELECTORS.get(id);
+  if (anchorSelector) {
+    return customContent?.querySelector(anchorSelector) || null;
+  }
+  return findCustomLead(customContent, id);
 }
 
 export class DetailView {
@@ -287,7 +317,7 @@ export class DetailView {
     const id = String(Number(goalId)).padStart(2, "0");
     const title = this.customContent?.querySelector(`.sdg${id}-title`);
     const subtitle = this.customContent?.querySelector(`.sdg${id}-subtitle`);
-    const lead = this.customContent?.querySelector(`.sdg${id}-lead`);
+    const lead = findCustomLead(this.customContent, goalId);
 
     if (title && subtitle) {
       const titleText = title.textContent.trim();
@@ -298,11 +328,23 @@ export class DetailView {
       }
     }
 
-    if (!lead || lead.previousElementSibling?.classList.contains("detail-concept-label")) return;
-    const conceptLabel = document.createElement("p");
-    conceptLabel.className = "detail-concept-label";
-    conceptLabel.textContent = CONCEPT_LABEL_TEXT;
-    lead.parentNode?.insertBefore(conceptLabel, lead);
+    if (lead && !lead.previousElementSibling?.classList.contains("detail-concept-label")) {
+      const conceptLabel = document.createElement("p");
+      conceptLabel.className = "detail-concept-label";
+      conceptLabel.textContent = CONCEPT_LABEL_TEXT;
+      lead.parentNode?.insertBefore(conceptLabel, lead);
+    }
+
+    const flowText = getDetailExperienceFlow(goalId);
+    const flowAnchor = findExperienceFlowAnchor(this.customContent, goalId);
+    if (!flowText || !flowAnchor || this.customContent?.querySelector(".detail-experience-flow")) return;
+
+    const flow = document.createElement("p");
+    const label = document.createElement("strong");
+    flow.className = "detail-experience-flow";
+    label.textContent = EXPERIENCE_FLOW_LABEL_TEXT;
+    flow.append(label, document.createTextNode(` ${flowText}`));
+    flowAnchor.insertAdjacentElement("afterend", flow);
   }
 
   async load(goalId) {

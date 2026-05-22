@@ -157,6 +157,26 @@ const FRAME_META_OVERRIDES = new Map([
   ]
 ]);
 
+const EXPERIENCE_FLOW_OVERRIDES = new Map([
+  [1, "출발 조건 → 무작위 지역 선택 → 생존 지표 확인"],
+  [2, "버려진 음식 → 냉장고 조작 → 낭비 결과 확인"],
+  [3, "응급상황 → 접근 조건 비교 → 생존 결과 확인"],
+  [4, "문해 격차 → 국가 선택 → 읽히는 정보 변화"],
+  [5, "임금 격차 → 국가 선택 → 무급 노동 시작 시각"],
+  [6, "일상 물 사용 → 시간 입력 → 물의 무게와 이동 거리"],
+  [7, "에너지 선택 → 전환 레벨 조절 → 도시와 탄소 변화"],
+  [8, "성장 방식 선택 → 정책 결정 → 고용 안정 변화"],
+  [9, "끊어진 산업망 → 인프라 선택 → 생산·혁신 흐름"],
+  [10, "내 분배 기준 → 현실 분포 비교 → 격차 체감"],
+  [11, "도시 요소 배치 → 전환 강도 조절 → 생활감·대기질 변화"],
+  [12, "버린 물건 선택 → 시간 흐름 확인 → 남는 흔적 체감"],
+  [13, "기온 상승폭 선택 → 수면선 이동 → 침수 범위 확인"],
+  [14, "플라스틱 클릭 → 파편 축적 → 해양 생물 부담 확인"],
+  [15, "소비 자원 선택 → 도미노 전개 → 생태계 영향 확인"],
+  [16, "현재 시각 입력 → 통계 환산 → 분쟁 현실 확인"],
+  [17, "협력망 연결 → 네트워크 확장 → 공동 대응 확인"]
+]);
+
 const CUSTOM_DETAIL_DEFINITIONS = new Map([
   [
     1,
@@ -316,4 +336,8 @@ export function getDetailFrameMeta(goalId, baseGoal) {
   if (override) return override;
 
   return toDefaultDetailFrameMeta(id, baseGoal);
+}
+
+export function getDetailExperienceFlow(goalId) {
+  return EXPERIENCE_FLOW_OVERRIDES.get(Number(goalId)) || "";
 }
