@@ -171,6 +171,22 @@
   pointer-events: none;
 }
 
+.main-purpose {
+  position: absolute;
+  top: 54px;
+  left: 50%;
+  width: min(420px, calc(100vw - 40px));
+  margin: 0;
+  transform: translateX(-50%);
+  color: #6f6f6f;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.45;
+  text-align: center;
+  z-index: 5;
+  pointer-events: none;
+}
+
 .page-actions {
   position: absolute;
   left: 50%;
