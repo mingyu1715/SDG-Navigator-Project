@@ -64,7 +64,6 @@ export class DetailView {
     this.features = root.querySelector("#detailFeatures");
     this.status = root.querySelector("#detailStatus");
     this.activeCustomRenderer = null;
-    this.customRendererCache = new Map();
     this.loadVersion = 0;
     this.loadingOverlay = null;
     this.loadingToken = 0;
@@ -257,14 +256,7 @@ export class DetailView {
 
   async getCustomRenderer(goalId) {
     const id = Number(goalId);
-    if (this.customRendererCache.has(id)) {
-      return this.customRendererCache.get(id);
-    }
-
-    const renderer = await createCustomDetailRenderer(id, this.customContent);
-    if (!renderer) return null;
-    this.customRendererCache.set(id, renderer);
-    return renderer;
+    return createCustomDetailRenderer(id, this.customContent);
   }
 
   async renderCustomDetail(goalId, baseGoal, loadVersion) {
