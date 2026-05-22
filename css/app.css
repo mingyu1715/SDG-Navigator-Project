@@ -1,7 +1,7 @@
 @import url("./styles/base/reset.css");
 @import url("./styles/pages/sdg02-rx.css");
 @import url("./styles/layout/app-shell.css");
-@import url("./styles/layout/detail-shell.css");
+@import url("./styles/layout/detail-shell.css?v=20260522-phase2-detail");
 @import url("./styles/pages/sdg01-base.css");
 @import url("./styles/pages/sdg02-lite.css");
 @import url("./styles/pages/sdg02-legacy.css");

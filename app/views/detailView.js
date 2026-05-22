@@ -44,6 +44,11 @@ const DETAIL_GLOBAL_ORPHAN_SELECTORS = [
   ".sdg02-rx-throw-ghost",
   'script[data-sdg01-three-script="true"]'
 ];
+const CONCEPT_LABEL_TEXT = "이 SDG는 무엇인가";
+
+function hasKoreanText(text) {
+  return /[가-힣]/.test(String(text || ""));
+}
 
 export class DetailView {
   constructor(root, options = {}) {
@@ -274,7 +279,30 @@ export class DetailView {
     this.frame.setGoalMeta(goalId, getDetailFrameMeta(goalId, baseGoal));
     await Promise.resolve(renderer.render());
     if (loadVersion !== this.loadVersion) return true;
+    this.enhanceCustomReadability(goalId);
     return true;
+  }
+
+  enhanceCustomReadability(goalId) {
+    const id = String(Number(goalId)).padStart(2, "0");
+    const title = this.customContent?.querySelector(`.sdg${id}-title`);
+    const subtitle = this.customContent?.querySelector(`.sdg${id}-subtitle`);
+    const lead = this.customContent?.querySelector(`.sdg${id}-lead`);
+
+    if (title && subtitle) {
+      const titleText = title.textContent.trim();
+      const subtitleText = subtitle.textContent.trim();
+      if (!hasKoreanText(titleText) && hasKoreanText(subtitleText)) {
+        title.textContent = subtitleText;
+        subtitle.textContent = titleText;
+      }
+    }
+
+    if (!lead || lead.previousElementSibling?.classList.contains("detail-concept-label")) return;
+    const conceptLabel = document.createElement("p");
+    conceptLabel.className = "detail-concept-label";
+    conceptLabel.textContent = CONCEPT_LABEL_TEXT;
+    lead.parentNode?.insertBefore(conceptLabel, lead);
   }
 
   async load(goalId) {

@@ -220,8 +220,17 @@
   font-weight: 500;
 }
 
+.detail-concept-label {
+  margin: 18px 0 0;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: 0;
+  color: rgba(239, 246, 255, 0.92);
+}
+
 .detail-lead {
-  margin: 22px 0 0;
+  margin: 8px 0 0;
   line-height: 1.58;
   color: #c2cadb;
   font-size: 16px;
