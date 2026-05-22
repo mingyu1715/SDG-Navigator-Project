@@ -91,18 +91,16 @@
 
 .goal-no {
   margin: 0;
-  font-size: 88px;
+  font-size: 92px;
   line-height: 0.86;
   font-weight: 760;
   letter-spacing: -0.04em;
 }
 
 .goal-title {
-  max-width: 92%;
-  margin: 0;
+  max-width: 85%;
   font-size: 30px;
-  line-height: 1.08;
-  font-weight: 800;
+  line-height: 1.04;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -112,27 +110,16 @@
 }
 
 .goal-sub {
-  margin: 6px 0 0;
-  font-size: 7px;
-  font-weight: 700;
-  line-height: 1.24;
-  color: rgba(255, 255, 255, 0.76);
-  text-transform: uppercase;
-}
-
-.goal-question {
-  margin: clamp(18px, 4.8vw, 30px) 0 0;
+  margin: 8px 0 0;
   font-size: 8px;
-  font-weight: 800;
-  line-height: 1.25;
-  color: rgba(255, 255, 255, 0.96);
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .desc {
-  margin: 7px 0 0;
-  font-size: 8px;
-  line-height: 1.55;
-  max-width: 92%;
+  margin: clamp(18px, 4.8vw, 34px) 0 0;
+  font-size: 7px;
+  line-height: 1.45;
+  max-width: 88%;
   color: rgba(255, 255, 255, 0.9);
 }
 
@@ -154,7 +141,6 @@
 .filler-card .goal-no,
 .filler-card .goal-title,
 .filler-card .goal-sub,
-.filler-card .goal-question,
 .filler-card .desc,
 .filler-card .meta { display: none; }
 

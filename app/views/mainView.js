@@ -206,13 +206,13 @@ export class MainView {
       card.className = "card";
       card.style.setProperty("--card", cardView.color);
       if (isFiller) card.classList.add("filler-card");
+      const titleStyle = cardView.titleSize ? ` style=\"font-size:${cardView.titleSize}px\"` : "";
       card.innerHTML = isFiller
         ? ""
         : `
           <p class="goal-no">${String(cardView.id).padStart(2, "0")}</p>
-          <h1 class="goal-title">${cardView.subtitle}</h1>
-          <p class="goal-sub">${cardView.title}</p>
-          <p class="goal-question">이 SDG는 무엇인가</p>
+          <h1 class="goal-title"${titleStyle}>${cardView.title}</h1>
+          <p class="goal-sub">${cardView.subtitle}</p>
           <p class="desc">${cardView.description}</p>
           <div class="meta"><span>SDG NAVIGATOR</span><span>TEXT EDITION</span></div>
         `;
