@@ -3,9 +3,11 @@ import { fetchGoalDetail } from "../services/sdgService.js";
 import { DetailFrame } from "./detailFrame.js";
 import {
   createCustomDetailRenderer,
+  getDetailExperienceFlow,
   getDetailFrameMeta,
+  getSdgSourcesForGoal,
   hasCustomDetailRenderer
-} from "../details/registry.js";
+} from "../details/registry.js?v=20260526-phase5";
 
 const MIN_DETAIL_OVERLAY_MS = 1200;
 const DETAIL_PANEL_VARIANT_CLASSES = [
@@ -44,6 +46,64 @@ const DETAIL_GLOBAL_ORPHAN_SELECTORS = [
   ".sdg02-rx-throw-ghost",
   'script[data-sdg01-three-script="true"]'
 ];
+const CONCEPT_LABEL_TEXT = "이 SDG는 무엇인가";
+const EXPERIENCE_FLOW_LABEL_TEXT = "체험 흐름";
+const SOURCE_PANEL_TITLE = "출처와 수치 성격";
+const SOURCE_PANEL_NOTE = "체험용 항목은 실제 통계값이 아니라 교육용 모델 또는 시각화입니다.";
+const SOURCE_TYPE_LABELS = Object.freeze({
+  official: "공식 자료",
+  derived: "환산/참고",
+  simulation: "체험용"
+});
+const EXPERIENCE_FLOW_ANCHOR_SELECTORS = new Map([
+  [1, '[data-role="targetReadout"]'],
+  [2, ".sdg02-rx-intro-lead"],
+  [3, ".sdg03-hero-lead"],
+  [4, ".sdg04-lead"],
+  [5, '[data-role="countryHint"]'],
+  [6, ".sdg06-input-copy"],
+  [7, ".sdg07-master-meta"],
+  [8, ".sdg08-copy"]
+]);
+
+function hasKoreanText(text) {
+  return /[가-힣]/.test(String(text || ""));
+}
+
+function toGoalClassPrefix(goalId) {
+  return `sdg${String(Number(goalId)).padStart(2, "0")}`;
+}
+
+function findCustomLead(customContent, goalId) {
+  const prefix = toGoalClassPrefix(goalId);
+  return customContent?.querySelector(`.${prefix}-lead, .${prefix}-hero-lead, .${prefix}-rx-intro-lead`) || null;
+}
+
+function findExperienceFlowAnchor(customContent, goalId) {
+  const id = Number(goalId);
+  const anchorSelector = EXPERIENCE_FLOW_ANCHOR_SELECTORS.get(id);
+  if (anchorSelector) {
+    return customContent?.querySelector(anchorSelector) || null;
+  }
+  return findCustomLead(customContent, id);
+}
+
+function createSourceTypeLabel(type) {
+  return SOURCE_TYPE_LABELS[type] || "자료";
+}
+
+function createSourceSummary(sources) {
+  const counts = sources.reduce((summary, source) => {
+    const type = source?.type || "";
+    summary[type] = (summary[type] || 0) + 1;
+    return summary;
+  }, {});
+
+  return ["official", "derived", "simulation"]
+    .filter((type) => counts[type])
+    .map((type) => `${createSourceTypeLabel(type)} ${counts[type]}개`)
+    .join(" · ");
+}
 
 export class DetailView {
   constructor(root, options = {}) {
@@ -64,7 +124,6 @@ export class DetailView {
     this.features = root.querySelector("#detailFeatures");
     this.status = root.querySelector("#detailStatus");
     this.activeCustomRenderer = null;
-    this.customRendererCache = new Map();
     this.loadVersion = 0;
     this.loadingOverlay = null;
     this.loadingToken = 0;
@@ -177,6 +236,7 @@ export class DetailView {
 
   setVisible(visible) {
     this.root.classList.toggle("active", visible);
+    this.root.style.visibility = visible ? "visible" : "hidden";
     this.root.setAttribute("aria-hidden", visible ? "false" : "true");
     if (visible) {
       this.root.scrollTop = 0;
@@ -256,14 +316,7 @@ export class DetailView {
 
   async getCustomRenderer(goalId) {
     const id = Number(goalId);
-    if (this.customRendererCache.has(id)) {
-      return this.customRendererCache.get(id);
-    }
-
-    const renderer = await createCustomDetailRenderer(id, this.customContent);
-    if (!renderer) return null;
-    this.customRendererCache.set(id, renderer);
-    return renderer;
+    return createCustomDetailRenderer(id, this.customContent);
   }
 
   async renderCustomDetail(goalId, baseGoal, loadVersion) {
@@ -281,7 +334,104 @@ export class DetailView {
     this.frame.setGoalMeta(goalId, getDetailFrameMeta(goalId, baseGoal));
     await Promise.resolve(renderer.render());
     if (loadVersion !== this.loadVersion) return true;
+    this.enhanceCustomReadability(goalId);
+    this.appendSourceTrustPanel(goalId);
     return true;
+  }
+
+  enhanceCustomReadability(goalId) {
+    const id = String(Number(goalId)).padStart(2, "0");
+    const title = this.customContent?.querySelector(`.sdg${id}-title`);
+    const subtitle = this.customContent?.querySelector(`.sdg${id}-subtitle`);
+    const lead = findCustomLead(this.customContent, goalId);
+
+    if (title && subtitle) {
+      const titleText = title.textContent.trim();
+      const subtitleText = subtitle.textContent.trim();
+      if (!hasKoreanText(titleText) && hasKoreanText(subtitleText)) {
+        title.textContent = subtitleText;
+        subtitle.textContent = titleText;
+      }
+    }
+
+    if (lead && !lead.previousElementSibling?.classList.contains("detail-concept-label")) {
+      const conceptLabel = document.createElement("p");
+      conceptLabel.className = "detail-concept-label";
+      conceptLabel.textContent = CONCEPT_LABEL_TEXT;
+      lead.parentNode?.insertBefore(conceptLabel, lead);
+    }
+
+    const flowText = getDetailExperienceFlow(goalId);
+    const flowAnchor = findExperienceFlowAnchor(this.customContent, goalId);
+    if (!flowText || !flowAnchor || this.customContent?.querySelector(".detail-experience-flow")) return;
+
+    const flow = document.createElement("p");
+    const label = document.createElement("strong");
+    flow.className = "detail-experience-flow";
+    label.textContent = EXPERIENCE_FLOW_LABEL_TEXT;
+    flow.append(label, document.createTextNode(` ${flowText}`));
+    flowAnchor.insertAdjacentElement("afterend", flow);
+  }
+
+  appendSourceTrustPanel(goalId) {
+    if (!this.customContent || this.customContent.querySelector(".detail-source-panel")) return;
+
+    const sources = getSdgSourcesForGoal(goalId);
+    if (!sources.length) return;
+
+    const panel = document.createElement("section");
+    panel.className = "detail-source-panel";
+    panel.setAttribute("aria-label", "자료 기준과 출처");
+
+    const overline = document.createElement("p");
+    overline.className = "detail-source-overline";
+    overline.textContent = "자료 기준";
+
+    const title = document.createElement("h3");
+    title.className = "detail-source-title";
+    title.textContent = SOURCE_PANEL_TITLE;
+
+    const summary = document.createElement("p");
+    summary.className = "detail-source-summary";
+    summary.textContent = createSourceSummary(sources);
+
+    const hasSimulation = sources.some((source) => source.type === "simulation");
+    const note = document.createElement("p");
+    note.className = "detail-source-note";
+    note.textContent = hasSimulation
+      ? SOURCE_PANEL_NOTE
+      : "아래 자료를 기준으로 상세 콘텐츠의 맥락을 구성했습니다.";
+
+    const list = document.createElement("div");
+    list.className = "detail-source-list";
+
+    sources.forEach((source) => {
+      const item = document.createElement(source.url ? "a" : "article");
+      item.className = "detail-source-item";
+      if (source.url) {
+        item.href = source.url;
+        item.target = "_blank";
+        item.rel = "noopener noreferrer";
+      }
+
+      const type = document.createElement("span");
+      type.className = `detail-source-type is-${source.type || "unknown"}`;
+      type.textContent = createSourceTypeLabel(source.type);
+
+      const name = document.createElement("strong");
+      name.className = "detail-source-name";
+      name.textContent = source.name || "자료";
+
+      const detail = document.createElement("span");
+      detail.className = "detail-source-detail";
+      detail.textContent = source.detail || "세부 설명 없음";
+
+      item.append(type, name, detail);
+      list.appendChild(item);
+    });
+
+    panel.append(overline, title, summary, note, list);
+    this.customContent.appendChild(panel);
   }
 
   async load(goalId) {

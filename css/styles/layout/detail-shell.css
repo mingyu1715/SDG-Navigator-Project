@@ -220,11 +220,132 @@
   font-weight: 500;
 }
 
+.detail-concept-label {
+  margin: 18px 0 0;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: 0;
+  color: rgba(239, 246, 255, 0.92);
+}
+
 .detail-lead {
-  margin: 22px 0 0;
+  margin: 8px 0 0;
   line-height: 1.58;
   color: #c2cadb;
   font-size: 16px;
+}
+
+.detail-experience-flow {
+  max-width: min(560px, 100%);
+  margin: 10px auto 0;
+  color: currentColor;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: 0;
+  opacity: 0.74;
+}
+
+.detail-experience-flow strong {
+  font-weight: 800;
+  opacity: 0.95;
+}
+
+.detail-source-panel {
+  width: min(920px, calc(100% - 32px));
+  margin: 40px auto 72px;
+  padding: 18px;
+  border: 1px solid rgba(80, 96, 126, 0.18);
+  border-radius: 8px;
+  background: rgba(248, 250, 252, 0.94);
+  color: #172033;
+  box-shadow: 0 18px 36px rgba(8, 15, 28, 0.16);
+}
+
+.detail-source-overline {
+  margin: 0;
+  color: #5b6678;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.detail-source-title {
+  margin: 6px 0 0;
+  color: #121926;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.detail-source-summary,
+.detail-source-note {
+  margin: 8px 0 0;
+  color: #4b5567;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.detail-source-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.detail-source-item {
+  display: grid;
+  gap: 5px;
+  min-height: 100%;
+  padding: 12px;
+  border: 1px solid rgba(80, 96, 126, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.74);
+  color: inherit;
+  text-decoration: none;
+}
+
+.detail-source-item:hover {
+  border-color: rgba(80, 96, 126, 0.34);
+}
+
+.detail-source-type {
+  width: fit-content;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #e7edf7;
+  color: #36465d;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.detail-source-type.is-official {
+  background: #dcefe6;
+  color: #1f5e3e;
+}
+
+.detail-source-type.is-derived {
+  background: #e6ebf6;
+  color: #334a76;
+}
+
+.detail-source-type.is-simulation {
+  background: #fff0d8;
+  color: #74480d;
+}
+
+.detail-source-name {
+  color: #151c28;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.detail-source-detail {
+  color: #5d6675;
+  font-size: 11px;
+  line-height: 1.45;
 }
 
 .detail-hint {

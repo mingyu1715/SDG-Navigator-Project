@@ -1,7 +1,7 @@
-import { MainView } from "./views/mainView.js";
-import { DetailView } from "./views/detailView.js";
+import { MainView } from "./views/mainView.js?v=20260522-phase2-detail";
+import { DetailView } from "./views/detailView.js?v=20260526-phase5";
 import { SDG_DATA, getGoalById, toGoalRoute } from "./data/sdgs.js";
-import { preloadCustomDetailRenderer } from "./details/registry.js";
+import { preloadCustomDetailRenderer } from "./details/registry.js?v=20260526-phase5";
 import { createAppNavigation } from "./appNavigation.js";
 import { createDetailWarmupController, nextFrame, scheduleBackgroundTask } from "./detailWarmup.js";
 import { navigate, parseRoute, startRouter, subscribe, emitRoute } from "./router.js";
@@ -55,6 +55,8 @@ const detailView = new DetailView(detailRoot, {
 
 function setMainVisible(visible) {
   mainRoot.style.pointerEvents = visible ? "auto" : "none";
+  mainRoot.style.visibility = visible ? "visible" : "hidden";
+  mainRoot.setAttribute("aria-hidden", visible ? "false" : "true");
 }
 
 const { preloadOnBoot, runDetailWarmups } = createDetailWarmupController({

@@ -76,10 +76,10 @@
 
 .sdg05-exp:not(.is-started) {
   min-height: 100svh;
-  height: 100svh;
+  height: auto;
   padding-top: clamp(56px, 7vh, 88px);
   padding-bottom: clamp(16px, 3vh, 28px);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .sdg05-exp:not(.is-started) .sdg05-hero {
@@ -616,7 +616,7 @@
 
   .sdg05-exp:not(.is-started) {
     min-height: 100dvh;
-    height: 100dvh;
+    height: auto;
     padding-top: clamp(48px, 6vh, 72px);
     padding-bottom: 16px;
   }
@@ -716,4 +716,3 @@
     border-radius: 14px;
   }
 }
-
