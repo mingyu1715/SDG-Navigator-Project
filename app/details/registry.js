@@ -1,4 +1,5 @@
 import { normalizeCustomDetailRenderer } from "./rendererContract.js";
+import { getSdgSourcesForGoal as getRegisteredSdgSourcesForGoal } from "../data/sdgSourceRegistry.js";
 import { toDefaultDetailFrameMeta } from "../data/sdgViewAdapters.js";
 
 const FRAME_META_OVERRIDES = new Map([
@@ -340,4 +341,8 @@ export function getDetailFrameMeta(goalId, baseGoal) {
 
 export function getDetailExperienceFlow(goalId) {
   return EXPERIENCE_FLOW_OVERRIDES.get(Number(goalId)) || "";
+}
+
+export function getSdgSourcesForGoal(goalId) {
+  return getRegisteredSdgSourcesForGoal(goalId);
 }

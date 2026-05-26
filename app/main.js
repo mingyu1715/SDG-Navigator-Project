@@ -1,7 +1,7 @@
 import { MainView } from "./views/mainView.js?v=20260522-phase2-detail";
-import { DetailView } from "./views/detailView.js?v=20260522-phase4";
+import { DetailView } from "./views/detailView.js?v=20260526-phase5";
 import { SDG_DATA, getGoalById, toGoalRoute } from "./data/sdgs.js";
-import { preloadCustomDetailRenderer } from "./details/registry.js?v=20260522-phase4";
+import { preloadCustomDetailRenderer } from "./details/registry.js?v=20260526-phase5";
 import { createAppNavigation } from "./appNavigation.js";
 import { createDetailWarmupController, nextFrame, scheduleBackgroundTask } from "./detailWarmup.js";
 import { navigate, parseRoute, startRouter, subscribe, emitRoute } from "./router.js";
