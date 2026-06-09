@@ -135,15 +135,6 @@
   letter-spacing: 0.03em;
 }
 
-.filler-card { background: #111; }
-.filler-card::before,
-.filler-card::after,
-.filler-card .goal-no,
-.filler-card .goal-title,
-.filler-card .goal-sub,
-.filler-card .desc,
-.filler-card .meta { display: none; }
-
 .arc {
   position: absolute;
   left: var(--arc-center-x);

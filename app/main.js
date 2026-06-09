@@ -1,4 +1,4 @@
-import { MainView } from "./views/mainView.js?v=20260522-phase2-detail";
+import { MainView } from "./views/mainView.js?v=20260609-ring-density";
 import { DetailView } from "./views/detailView.js?v=20260529-cleanup";
 import { SDG_DATA, getGoalById, toGoalRoute } from "./data/sdgs.js";
 import { preloadCustomDetailRenderer } from "./details/registry.js?v=20260526-phase5";
